@@ -13,3 +13,6 @@ fit:
           - "/**/s3/file/**"
           - "/**/code/**"
           - "/**/knowledge-manager/**"
+
+filter:
+  static-resource-filter: 'enable'

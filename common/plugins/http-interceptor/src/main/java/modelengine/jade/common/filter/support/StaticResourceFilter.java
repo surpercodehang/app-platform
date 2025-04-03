@@ -53,12 +53,16 @@ public class StaticResourceFilter implements HttpServerFilter {
             ".json",
             ".xml",
             ".pdf");
+    private static final String FILTER_ENABLE_VALUE = "enable";
     private final List<String> matchPatterns;
     private final List<String> mismatchPatterns;
+    private final boolean isStaticResourceFilterEnabled;
 
-    public StaticResourceFilter(@Value("${include}") String includeUrls, @Value("${exclude}") String excludeUrls) {
+    public StaticResourceFilter(@Value("${include}") String includeUrls, @Value("${exclude}") String excludeUrls,
+            @Value("${filter.static-resource-filter}") String staticResourceFilterEnabled) {
         this.matchPatterns = this.splitUrls(ObjectUtils.nullIf(includeUrls, DEFAULT_MATCH_PATTERNS));
         this.mismatchPatterns = this.splitUrls(ObjectUtils.nullIf(excludeUrls, StringUtils.EMPTY));
+        this.isStaticResourceFilterEnabled = StringUtils.equals(staticResourceFilterEnabled, FILTER_ENABLE_VALUE);
     }
 
     private List<String> splitUrls(String urls) {
@@ -93,6 +97,10 @@ public class StaticResourceFilter implements HttpServerFilter {
     @Override
     public void doFilter(HttpClassicServerRequest request, HttpClassicServerResponse response,
             HttpServerFilterChain chain) throws DoHttpServerFilterException {
+        if (!this.isStaticResourceFilterEnabled) {
+            chain.doFilter(request, response);
+            return;
+        }
         String path = request.path();
         if (this.isStaticPath(path)) {
             this.setResponseHeader(request, response);
