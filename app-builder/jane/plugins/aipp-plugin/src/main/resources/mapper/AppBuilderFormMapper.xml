@@ -110,6 +110,12 @@
         <if test="cond.name != null">
             and name LIKE '%' || #{cond.name} || '%'
         </if>
+        <if test="cond.excludeNames != null and cond.excludeNames.size() > 0">
+            and name NOT IN
+            <foreach item="excludeName" collection="cond.excludeNames" open="(" separator="," close=")">
+                #{excludeName}
+            </foreach>
+        </if>
         ORDER BY update_at DESC, create_at DESC
         <if test="cond.offset != null and cond.limit != null">
             LIMIT #{cond.limit} OFFSET #{cond.offset}
@@ -122,11 +128,23 @@
         <if test="cond.tenantId != null">
             and tenant_id = #{cond.tenantId}
         </if>
+        <if test="cond.createBy != null">
+            and create_by = #{cond.createBy}
+        </if>
         <if test="cond.type != null">
             and type = #{cond.type}
         </if>
+        <if test="cond.id != null">
+            and id = #{cond.id}
+        </if>
         <if test="cond.name != null">
             and name LIKE '%' || #{cond.name} || '%'
+        </if>
+        <if test="cond.excludeNames != null and cond.excludeNames.size() > 0">
+            and name NOT IN
+            <foreach item="excludeName" collection="cond.excludeNames" open="(" separator="," close=")">
+                #{excludeName}
+            </foreach>
         </if>
     </select>
 </mapper>

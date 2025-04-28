@@ -77,7 +77,7 @@ public class AppBuilderAppController extends AbstractController {
     public Rsp<RangedResultSet<AppMetadata>> list(HttpClassicServerRequest httpRequest,
             @PathVariable("tenantId") @Property(description = "租户的唯一标识符") String tenantId,
             @RequestBean AppQueryParams cond) {
-        return Rsp.ok(this.appService.list(this.buildAppQueryCondition(cond), httpRequest, tenantId));
+        return Rsp.ok(this.appService.list(this.buildAppQueryCondition(cond), this.contextOf(httpRequest, tenantId)));
     }
 
     /**

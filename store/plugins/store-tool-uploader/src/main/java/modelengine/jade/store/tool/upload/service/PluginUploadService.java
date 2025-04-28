@@ -6,8 +6,8 @@
 
 package modelengine.jade.store.tool.upload.service;
 
+import modelengine.fel.tool.info.entity.HttpJsonEntity;
 import modelengine.fit.http.entity.NamedEntity;
-import modelengine.jade.carver.tool.info.entity.HttpJsonEntity;
 
 import java.util.List;
 

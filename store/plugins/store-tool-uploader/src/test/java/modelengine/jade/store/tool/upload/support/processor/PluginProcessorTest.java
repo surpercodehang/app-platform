@@ -6,11 +6,11 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
+import static modelengine.fel.tool.info.schema.PluginSchema.GROUP_ID;
+import static modelengine.fel.tool.info.schema.PluginSchema.TEMP_DIR;
+import static modelengine.fel.tool.info.schema.PluginSchema.TYPE;
+import static modelengine.fel.tool.info.schema.PluginSchema.UNIQUENESS;
 import static modelengine.fitframework.util.ObjectUtils.cast;
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.GROUP_ID;
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.TEMP_DIR;
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.TYPE;
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.UNIQUENESS;
 import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.getFileInfo;
 import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.getJsonInfo;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mockStatic;
 
+import modelengine.fel.tool.info.entity.PluginJsonEntity;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.log.Logger;
-import modelengine.jade.carver.tool.info.entity.PluginJsonEntity;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.entity.transfer.PluginData;
 

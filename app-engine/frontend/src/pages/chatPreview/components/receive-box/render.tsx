@@ -66,7 +66,9 @@ const Render = (props: {
     if (!event.data.type) return
     let iframeKey = event.data?.uniqueId;
     if (String(uniqueIdRef.current) === iframeKey) {
-      if (event.data.type === 'app-engine-form-resize') {
+      if (event.data.type === 'app-engine-form-ready') {
+        handleIframeLoad();
+      } else if (event.data.type === 'app-engine-form-resize') {
         const { height } = event.data;
         height && setIframeHeight(height);
       } else if (event.data.type === 'app-engine-form-terminate') {

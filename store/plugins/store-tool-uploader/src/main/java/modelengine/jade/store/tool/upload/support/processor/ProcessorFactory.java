@@ -6,9 +6,9 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.PLUGINS;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.DEFINITIONS;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.TOOLS;
+import static modelengine.fel.tool.info.schema.PluginSchema.PLUGINS;
+import static modelengine.fel.tool.info.schema.ToolsSchema.DEFINITIONS;
+import static modelengine.fel.tool.info.schema.ToolsSchema.TOOLS;
 
 import modelengine.fitframework.annotation.Component;
 
@@ -45,15 +45,11 @@ public class ProcessorFactory {
      * @return 表示处理器实例的 {@link Processor}.
      */
     public Processor createInstance(String type) {
-        switch (type) {
-            case PLUGINS:
-                return this.pluginProcessor;
-            case TOOLS:
-                return this.toolProcessor;
-            case DEFINITIONS:
-                return this.defProcessor;
-            default:
-                throw new IllegalArgumentException("Unknown type: " + type);
-        }
+        return switch (type) {
+            case PLUGINS -> this.pluginProcessor;
+            case TOOLS -> this.toolProcessor;
+            case DEFINITIONS -> this.defProcessor;
+            default -> throw new IllegalArgumentException("Unknown type: " + type);
+        };
     }
 }

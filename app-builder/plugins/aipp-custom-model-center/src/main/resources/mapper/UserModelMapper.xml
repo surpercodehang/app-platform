@@ -3,6 +3,7 @@
 <mapper namespace="modelengine.fit.jade.aipp.model.mapper.UserModelMapper">
     <resultMap id="BaseResultMap" type="modelengine.fit.jade.aipp.model.po.UserModelPo">
         <id property="id" column="id"/>
+        <result property="createdAt" column="created_at"/>
         <result property="userId" column="user_id"/>
         <result property="modelId" column="model_id"/>
         <result property="apiKey" column="api_key"/>
@@ -10,21 +11,53 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        user_id, model_id, api_key, is_default
+        created_at, user_id, model_id, api_key, is_default
     </sql>
 
     <select id="listUserModels" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo" resultMap="BaseResultMap">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from t_app_engine_user_model
-        where user_id = #{userId}
+        FROM t_app_engine_user_model
+        WHERE user_id = #{userId}
     </select>
 
     <select id="getDefault" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo" resultMap="BaseResultMap">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from t_app_engine_user_model
-        where user_id = #{userId}
-        and is_default = 1
+        FROM t_app_engine_user_model
+        WHERE user_id = #{userId}
+        AND is_default = 1
     </select>
+
+    <select id="hasDefaultModel" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1
+            FROM t_app_engine_user_model
+            WHERE user_id = #{userId}
+              AND is_default = 1
+        )
+    </select>
+
+    <insert id="insertUserModel" parameterType="modelengine.fit.jade.aipp.model.po.UserModelPo">
+        INSERT INTO t_app_engine_user_model (user_id, model_id, api_key, is_default, created_by, updated_by)
+        VALUES (#{userId}, #{modelId}, #{apiKey}, #{isDefault}, #{createdBy}, #{updatedBy})
+    </insert>
+
+    <delete id="deleteByModelId">
+        DELETE FROM t_app_engine_user_model
+        WHERE model_id = #{modelId}
+    </delete>
+
+    <select id="findLatestUserModel" resultType="modelengine.fit.jade.aipp.model.po.UserModelPo">
+        SELECT created_at, user_id, model_id, api_key, is_default
+        FROM t_app_engine_user_model
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC LIMIT 1
+    </select>
+
+    <update id="setDefault" parameterType="map">
+        UPDATE t_app_engine_user_model
+        SET is_default = CASE WHEN model_id = #{modelId} THEN 1 ELSE 0 END
+        WHERE user_id = #{userId}
+    </update>
 </mapper>

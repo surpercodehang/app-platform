@@ -6,19 +6,19 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
+import static modelengine.fel.tool.info.schema.ToolsSchema.ARRAY;
+import static modelengine.fel.tool.info.schema.ToolsSchema.ITEMS;
+import static modelengine.fel.tool.info.schema.ToolsSchema.OBJECT;
 import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS_PROPERTIES;
 import static modelengine.jade.carver.tool.ToolSchema.PROPERTIES_TYPE;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.ARRAY;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.ITEMS;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.OBJECT;
 import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.getFileInfo;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 
+import modelengine.fel.tool.info.entity.SchemaEntity;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
-import modelengine.jade.carver.tool.info.entity.SchemaEntity;
 import modelengine.jade.common.exception.ModelEngineException;
 
 import org.junit.jupiter.api.BeforeEach;

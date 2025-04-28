@@ -75,7 +75,7 @@ public class AppBuilderFormServiceImplTest {
         this.aippFormCreateConfig = new AippFormCreateConfig();
         this.aippFormCreateConfig.setMaximumNum(400L);
         this.appBuilderFormService = new AppBuilderFormServiceImpl(this.appBuilderFormRepository,
-                this.aippFormCreateConfig, this.uploadedFileManageService);
+                this.aippFormCreateConfig, this.uploadedFileManageService, null);
     }
 
     @Test

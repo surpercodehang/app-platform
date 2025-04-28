@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 为Form提供查询条件
  *
@@ -35,4 +37,6 @@ public class FormQueryCondition {
     private String id;
 
     private String createBy;
+
+    private List<String> excludeNames;
 }

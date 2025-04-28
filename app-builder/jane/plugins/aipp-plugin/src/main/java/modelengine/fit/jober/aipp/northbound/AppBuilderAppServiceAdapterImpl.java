@@ -8,7 +8,7 @@ package modelengine.fit.jober.aipp.northbound;
 
 import static modelengine.fitframework.inspection.Validation.notNull;
 
-import modelengine.fit.http.server.HttpClassicServerRequest;
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppMetadataDto;
@@ -37,16 +37,15 @@ public class AppBuilderAppServiceAdapterImpl implements AppBuilderAppServiceAdap
     }
 
     @Override
-    public RangedResultSet<AppMetadata> list(AppQueryParams params, HttpClassicServerRequest httpRequest,
-            String tenantId) {
+    public RangedResultSet<AppMetadata> list(AppQueryParams params, OperationContext context) {
         AppQueryCondition appQueryCondition = BeanUtils.copyProperties(params, AppQueryCondition.class);
         if (params.getType() == null) {
             params.setType("app");
         }
-        appQueryCondition.setTenantId(tenantId);
+        appQueryCondition.setTenantId(context.getTenantId());
         appQueryCondition.setType(params.getType());
         Rsp<RangedResultSet<AppBuilderAppMetadataDto>> rsp = this.appBuilderAppService.list(appQueryCondition,
-                httpRequest, tenantId, params.getOffset(), params.getLimit());
+                context, params.getOffset(), params.getLimit());
         return this.appMetadataDtoConvertToAdapter(rsp.getData());
     }
 

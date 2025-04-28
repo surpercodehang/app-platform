@@ -6,9 +6,9 @@
 
 package modelengine.jade.store.tool.deploy.util;
 
+import modelengine.fel.tool.info.schema.PluginSchema;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.FileUtils;
-import modelengine.jade.carver.tool.info.schema.PluginSchema;
 import modelengine.jade.store.entity.transfer.PluginData;
 import modelengine.jade.store.service.DeployService;
 import modelengine.jade.store.service.PluginService;
@@ -50,9 +50,8 @@ public class PluginDeployManagementUtils {
     public static void undeployPlugin(String pluginId, PluginService pluginService,
             PluginDeployQueryConfig pluginDeployQueryConfig) {
         PluginData pluginData = pluginService.getPlugin(pluginId);
-        Path deployedPath = Paths.get(
-                generateDeployPath(getPluginFullName(pluginData), pluginDeployQueryConfig.getToolsPath()).toString(),
-                getPluginFullName(pluginData));
+        Path deployedPath = Paths.get(generateDeployPath(getPluginFullName(pluginData),
+                pluginDeployQueryConfig.getToolsPath()).toString(), getPluginFullName(pluginData));
         try {
             FileUtils.delete(deployedPath.toFile());
         } catch (IllegalStateException e) {

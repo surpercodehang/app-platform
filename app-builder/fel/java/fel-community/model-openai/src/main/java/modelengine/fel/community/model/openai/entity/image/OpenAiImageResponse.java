@@ -7,7 +7,9 @@
 package modelengine.fel.community.model.openai.entity.image;
 
 import modelengine.fitframework.resource.web.Media;
+import modelengine.fitframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,9 @@ public class OpenAiImageResponse {
      * @return 表示模型嵌入向量列表的 {@link List}{@code <}{@link Media}{@code >}。
      */
     public List<Media> media() {
+        if (CollectionUtils.isEmpty(this.data)) {
+            return Collections.emptyList();
+        }
         return this.data.stream().map(OpenAiImage::media).collect(Collectors.toList());
     }
 }

@@ -45,4 +45,6 @@ public class AppQueryCondition {
 
     @RequestParam(name = "app_type", required = false)
     private String appType;
+
+    private String createBy;
 }

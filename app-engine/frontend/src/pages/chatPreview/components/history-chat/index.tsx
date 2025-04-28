@@ -14,7 +14,7 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 import Pagination from '@/components/pagination/index';
-import { clearChatHistory, getChatList } from '@/shared/http/chat';
+import { clearChatHistory, getChatList, queryFeedback } from '@/shared/http/chat';
 import { getChatRecentLog } from '@/shared/http/aipp';
 import { formatLocalDate } from '@/common/dataUtil';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
@@ -139,7 +139,14 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
     setLoading(true);
     try {
       const chatListRes = await getChatRecentLog(tenantId, chat_id, appId);
-      let chatArr = historyChatProcess(chatListRes);
+      let chatItem = historyChatProcess(chatListRes);
+      let chatArr = await Promise.all(chatItem.map(async (item) => {
+        if (item.type === 'receive' && item?.instanceId) {
+          const res = await queryFeedback(item.instanceId);
+          item.feedbackStatus = res?.usrFeedback ?? -1
+        }
+        return item;
+      }));
       setListCurrentList(chatArr);
       await dispatch(setChatList(chatArr));
       dispatch(setChatId(chat_id));
@@ -179,6 +186,10 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
     } catch {
       setLoading(false);
     }
+  }
+  const removeTagContent = (content: string) => {
+    if (!content) return '';
+    return content.replace(/^[\s\S]*?<\/think>/s, '');
   }
 
   useEffect(() => {
@@ -224,7 +235,7 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
       onClose={() => setOpen(false)}
       open={open}
       closeIcon={false}
-      width='420px'
+      width='460px'
       bodyStyle={{ padding: 0 }}
     >
       <Spin spinning={loading}>
@@ -236,16 +247,16 @@ const HistoryChatDrawer: React.FC<HistoryChatProps> = ({ openHistorySignal, setL
                 <div className='history-item-content'>
                   <div className='history-item-header'>
                     <Tooltip placement='top' title={<span style={{ color: '#4d4d4d' }}>{item?.chat_name}</span>} color='#ffffff'>
-                      <div className='history-item-title'>{item?.chat_name?.length > 10 ? item?.chat_name?.substring(0, 10) + '...' : item?.chat_name}</div>
+                      <div className='history-item-title'>{item?.chat_name}</div>
                     </Tooltip>
                     <span
-                      style={{ cursor: "pointer", color: "#1677ff" }}
+                      className='history-item-btn'
                       onClick={() => { continueChat(item?.chat_id, item.attributes.dimension_id); }}
                     >
                       {t('continueChat')}
                     </span>
                   </div>
-                  <div className='history-item-desc'>{item?.recent_info}</div>
+                  <div className='history-item-desc'>{removeTagContent(item?.recent_info)}</div>
                 </div>
                 <div className='history-item-footer'>
                   <span>{formatLocalDate(item?.update_time_timestamp)}</span>

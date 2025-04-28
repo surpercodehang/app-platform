@@ -106,7 +106,7 @@ const ToolTable = (props: any) => {
                     </span>
                     <Divider type='vertical' />
                     <span>
-                      {item.tags.map((tag: string, index: number) => {
+                      {item.tags?.map((tag: string, index: number) => {
                         if (tag.trim().length > 0) {
                           return (
                             <Tag className='tag-position' key={index}>
@@ -121,10 +121,10 @@ const ToolTable = (props: any) => {
               </div>
               <div className='user'>
                 <img width="18" height="18" src={userImg} alt="" />
-                <span className='user-creator'>{item.creator}</span>
+                <span className='user-creator'>{pluginData.creator}</span>
               </div>
               <div className='user-description'>
-                {item.pluginToolDataList === null ? item.extension.description : item.description}
+                {toolType === 'panel' ? item.extension.description : item.description}
               </div>
             </div>
             {(toolType === ToolType.TOOL || toolType === ToolType.WATERFLOW) && (
@@ -169,7 +169,7 @@ const ToolTable = (props: any) => {
           ? await getChatbotPluginDetail(param)
           : await getPluginDetail(param);
         if (res.code === 0) {
-          let newRes = pluginData.appCategory !== null ? [res.data] : res.data.pluginToolDataList;
+          let newRes = pluginData.appCategory ? [res.data] : res.data.pluginToolDataList;
           newRes.forEach((ite: any) => {
             if (checkedToolList.includes(ite.name)) {
               ite.isChecked = true;

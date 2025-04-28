@@ -17,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import modelengine.fel.tool.info.entity.SchemaEntity;
+import modelengine.fel.tool.info.entity.ToolJsonEntity;
 import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.util.FileUtils;
-import modelengine.jade.carver.tool.info.entity.SchemaEntity;
-import modelengine.jade.carver.tool.info.entity.ToolJsonEntity;
 import modelengine.jade.common.exception.ModelEngineException;
 
 import org.junit.jupiter.api.Disabled;
@@ -105,9 +105,10 @@ public class FormatFileUtilsTest {
     }
 
     @Test
-    @DisplayName("当 object 转 map 时， 正确")
+    @DisplayName("当 object 转 map 时，正确")
     void shouldOkWhenObjToMap() {
         SchemaEntity schemaEntity = new SchemaEntity();
+        schemaEntity.setName("testName");
         Map<String, Object> res = objToMap(this.serializer, schemaEntity);
         assertThat(res.containsKey("name")).isEqualTo(true);
     }
@@ -134,8 +135,8 @@ public class FormatFileUtilsTest {
         FileEntity fileEntity = mock(FileEntity.class);
         when(fileEntity.filename()).thenReturn("test-archive.zip");
         when(fileEntity.getInputStream()).thenReturn(Files.newInputStream(zipFile.toPath()));
-        ModelEngineException modelEngineException = assertThrows(ModelEngineException.class,
-                () -> unzipPlugin(fileEntity));
+        ModelEngineException modelEngineException =
+                assertThrows(ModelEngineException.class, () -> unzipPlugin(fileEntity));
         assertThat(modelEngineException.getMessage()).isEqualTo("Failed to unzip plugin file. [file=test-archive.zip]");
         FileUtils.delete(zipFile);
     }

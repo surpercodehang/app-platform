@@ -220,6 +220,11 @@
   .ant-input-search>.ant-input-group>.ant-input-group-addon:last-child .ant-input-search-button:not(.ant-btn-primary) {
     margin: 0;
   }
+  #elsa-graph {
+    .ant-btn {
+      min-width: unset;
+    }
+  }
 }
 .debug {
   .debug-header {
@@ -272,6 +277,7 @@ h5 {
   height: 32px;
   line-height: 32px;
   text-align: center;
+  width: 96px;
   color: #fff;
   background-color: #047bfc;
   cursor: pointer;

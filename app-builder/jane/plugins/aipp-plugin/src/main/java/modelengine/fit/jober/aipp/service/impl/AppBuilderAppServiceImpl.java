@@ -33,7 +33,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.opentelemetry.api.trace.Span;
-import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.dto.ModelListDto;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
@@ -251,6 +250,8 @@ public class AppBuilderAppServiceImpl
 
     private final AippFlowDefinitionService aippFlowDefinitionService;
 
+    private final String contextRoot;
+
     public AppBuilderAppServiceImpl(AppBuilderAppFactory appFactory, AippFlowService aippFlowService,
             AppBuilderAppRepository appRepository, AppTemplateFactory templateFactory,
             @Value("${validation.task.name.length.maximum:64}") int nameLengthMaximum, MetaService metaService,
@@ -260,7 +261,8 @@ public class AppBuilderAppServiceImpl
             AippChatService aippChatService, AippModelCenter aippModelCenter, AippChatMapper aippChatMapper,
             @Value("${export-meta}") Map<String, String> exportMeta, AppTypeService appTypeService,
             PluginToolService pluginToolService, PluginService pluginService,
-            FlowDefinitionService flowDefinitionService, AippFlowDefinitionService aippFlowDefinitionService) {
+            FlowDefinitionService flowDefinitionService, AippFlowDefinitionService aippFlowDefinitionService,
+            @Value("${app-engine.contextRoot}") String contextRoot) {
         this.nameLengthMaximum = nameLengthMaximum;
         this.appFactory = appFactory;
         this.templateFactory = templateFactory;
@@ -282,6 +284,7 @@ public class AppBuilderAppServiceImpl
         this.pluginService = pluginService;
         this.flowDefinitionService = flowDefinitionService;
         this.aippFlowDefinitionService = aippFlowDefinitionService;
+        this.contextRoot = contextRoot;
     }
 
     @Override
@@ -525,12 +528,16 @@ public class AppBuilderAppServiceImpl
     @Override
     @Fitable(id = "default")
     public Rsp<RangedResultSet<AppBuilderAppMetadataDto>> list(AppQueryCondition cond,
-            HttpClassicServerRequest httpRequest, String tenantId, long offset, int limit) {
-        List<AppBuilderAppMetadataDto> result = this.appRepository.selectWithLatestApp(cond, tenantId, offset, limit)
+            OperationContext context, long offset, int limit) {
+        if (cond == null) {
+            cond = new AppQueryCondition();
+        }
+        cond.setCreateBy(context.getOperator());
+        List<AppBuilderAppMetadataDto> result = this.appRepository.selectWithLatestApp(cond, context.getTenantId(), offset, limit)
                 .stream()
                 .map(this::buildAppMetaData)
                 .collect(Collectors.toList());
-        long total = this.appRepository.countWithLatestApp(tenantId, cond);
+        long total = this.appRepository.countWithLatestApp(context.getTenantId(), cond);
         return Rsp.ok(RangedResultSet.create(result, offset, limit, total));
     }
 
@@ -551,6 +558,7 @@ public class AppBuilderAppServiceImpl
                 .updateAt(app.getUpdateAt())
                 .appCategory(app.getAppCategory())
                 .tags(tags)
+                .appBuiltType(app.getAppBuiltType())
                 .build();
     }
 
@@ -573,11 +581,11 @@ public class AppBuilderAppServiceImpl
                 .replace(APP_BUILDER_DEFAULT_MODEL_NAME, firstModelInfo[MODEL_LIST_SERVICE_NAME])
                 .replace(APP_BUILDER_DEFAULT_SERVICE_NAME, firstModelInfo[MODEL_LIST_SERVICE_NAME])
                 .replace(APP_BUILDER_DEFAULT_TAG, firstModelInfo[MODEL_LIST_TAG]));
-        return this.createAppWithTemplate(dto, templateApp, context, isUpgrade, AppTypeEnum.APP.name());
+        return this.createAppWithTemplate(dto, templateApp, context, isUpgrade, AppTypeEnum.APP.name(), false);
     }
 
     private AppBuilderAppDto createAppWithTemplate(AppBuilderAppCreateDto dto, AppBuilderApp templateApp,
-            OperationContext context, boolean isUpgrade, String appType) {
+            OperationContext context, boolean isUpgrade, String appType, boolean isImport) {
         // 根据模板app复制app，仅需修改所有id
         // 优先copy下层内容，因为上层改变Id后，会影响下层对象的查询
         AppBuilderFlowGraph flowGraph = templateApp.getFlowGraph();
@@ -602,7 +610,7 @@ public class AppBuilderAppServiceImpl
         templateApp.setFlowGraphId(flowGraph.getId());
         templateApp.setType(appType);
         templateApp.setTenantId(context.getTenantId());
-        if (isUpgrade) {
+        if (!isImport) {
             templateApp.setState(AppState.INACTIVE.getName());
         }
         String preVersion = templateApp.getVersion();
@@ -1126,7 +1134,7 @@ public class AppBuilderAppServiceImpl
             AppBuilderApp templateApp = AppImExportUtil.convertToAppBuilderApp(appExportDto, context);
             this.appFactory.setRepositories(templateApp);
             AppBuilderAppDto appDto =
-                    this.createAppWithTemplate(null, templateApp, context, false, templateApp.getType());
+                    this.createAppWithTemplate(null, templateApp, context, false, templateApp.getType(), true);
             String iconContent =
                     iconAttr instanceof Map ? ObjectUtils.cast(ObjectUtils.<Map<String, Object>>cast(iconAttr)
                             .get("content")) : StringUtils.EMPTY;
@@ -1134,7 +1142,8 @@ public class AppBuilderAppServiceImpl
                 return appDto;
             }
             String iconExtension = ObjectUtils.cast(ObjectUtils.<Map<String, Object>>cast(iconAttr).get("type"));
-            String iconPath = AppImExportUtil.saveIconFile(iconContent, iconExtension, context.getTenantId());
+            String iconPath = AppImExportUtil.saveIconFile(iconContent, iconExtension, context.getTenantId(),
+                    this.contextRoot);
             if (StringUtils.isBlank(iconPath)) {
                 return appDto;
             }
@@ -1254,7 +1263,7 @@ public class AppBuilderAppServiceImpl
         } else {
             dto.setIcon(createDto.getIcon());
         }
-        return this.createAppWithTemplate(dto, appTemplate, context, false, AppTypeEnum.APP.code());
+        return this.createAppWithTemplate(dto, appTemplate, context, false, AppTypeEnum.APP.code(), false);
     }
 
     @Override
@@ -1983,12 +1992,18 @@ public class AppBuilderAppServiceImpl
     }
 
     private String[] getFirstModelInfo(OperationContext context) {
-        ModelListDto modelList = this.aippModelCenter.fetchModelList(AippConst.CHAT_MODEL_TYPE, null, context);
-        if (modelList != null && modelList.getModels() != null && !modelList.getModels().isEmpty()) {
-            ModelAccessInfo firstModel = modelList.getModels().get(0);
-            return new String[] {firstModel.getServiceName(), firstModel.getTag()};
-        } else {
-            return new String[] {StringUtils.EMPTY, StringUtils.EMPTY};
+        // TODO: 缩小异常捕获的范围。
+        try {
+            ModelListDto modelList = this.aippModelCenter.fetchModelList(AippConst.CHAT_MODEL_TYPE, null, context);
+            if (modelList != null && modelList.getModels() != null && !modelList.getModels().isEmpty()) {
+                ModelAccessInfo firstModel = modelList.getModels().get(0);
+                return new String[]{firstModel.getServiceName(), firstModel.getTag()};
+            } else {
+                return new String[]{StringUtils.EMPTY, StringUtils.EMPTY};
+            }
+        } catch (Exception e) {
+            log.error("Failed to get first model information.", e);
+            return new String[]{StringUtils.EMPTY, StringUtils.EMPTY};
         }
     }
 

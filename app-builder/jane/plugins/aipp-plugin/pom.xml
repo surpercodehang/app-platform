@@ -287,7 +287,7 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>modelengine.fit.jade.maven.plugin</groupId>
+                <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-maven-plugin</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
                 <executions>
@@ -309,7 +309,7 @@
                         <configuration>
                             <target>
                                 <copy file="${project.build.directory}/${project.build.finalName}.jar"
-                                      todir="../../../../framework/fit/java/target/plugins"/>
+                                      todir="../../../../build/plugins"/>
                             </target>
                         </configuration>
                         <goals>

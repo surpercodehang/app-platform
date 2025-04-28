@@ -34,6 +34,7 @@ jane:
 app-engine:
   endpoint: http://{$ip}:{$port}
   pathPrefix:
+  contextRoot: /api/jober
   exclude-names:
     - 'i18n_appBuilder_*demo*'
   resource:
@@ -45,6 +46,8 @@ app-engine:
     path: smart_form
     temporary-path: smart_form/temporary
     group-name: 60000
+    exclude-names:
+    - '表单'
   file:
     upload:
       maxStorageRatio: 0.9

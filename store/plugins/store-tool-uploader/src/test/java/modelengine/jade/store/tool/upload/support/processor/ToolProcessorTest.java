@@ -7,6 +7,10 @@
 package modelengine.jade.store.tool.upload.support.processor;
 
 import static java.util.prefs.Preferences.MAX_NAME_LENGTH;
+import static modelengine.fel.tool.info.schema.ToolsSchema.FIT;
+import static modelengine.fel.tool.info.schema.ToolsSchema.FITABLE_ID;
+import static modelengine.fel.tool.info.schema.ToolsSchema.MAX_FIT_TAG_LENGTH;
+import static modelengine.fel.tool.info.schema.ToolsSchema.TAGS;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 import static modelengine.jade.carver.tool.ToolSchema.DEFAULT_PARAMETER;
 import static modelengine.jade.carver.tool.ToolSchema.DESCRIPTION;
@@ -15,10 +19,6 @@ import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS;
 import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS_PROPERTIES;
 import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS_REQUIRED;
 import static modelengine.jade.carver.tool.ToolSchema.PROPERTIES_TYPE;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.FIT;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.FITABLE_ID;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.MAX_FIT_TAG_LENGTH;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.TAGS;
 import static modelengine.jade.store.code.PluginRetCode.LENGTH_EXCEEDED_LIMIT_FIELD;
 import static modelengine.jade.store.tool.upload.support.processor.ToolProcessor.enhanceSchema;
 import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.buildDefGroupMap;
@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import modelengine.fel.tool.info.entity.ToolJsonEntity;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.merge.ConflictResolverCollection;
 import modelengine.fitframework.merge.list.ListRemoveDuplicationConflictResolver;
@@ -35,7 +36,6 @@ import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.jade.carver.tool.ToolSchema;
-import modelengine.jade.carver.tool.info.entity.ToolJsonEntity;
 import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
 import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
 import modelengine.jade.common.exception.ModelEngineException;
@@ -116,9 +116,8 @@ public class ToolProcessorTest {
             this.tool.getToolGroups().get(0).getTools().get(0).setExtensions(null);
             this.processor.validate(this.tool, this.helper);
         }).isInstanceOf(ModelEngineException.class)
-                .hasMessageContaining(
-                        "The file must contain the property and cannot be empty. [file='tools.json', "
-                                + "property='toolGroups[].tools[].extensions']");
+                .hasMessageContaining("The file must contain the property and cannot be empty. [file='tools.json', "
+                        + "property='toolGroups[].tools[].extensions']");
     }
 
     @Test
@@ -177,7 +176,6 @@ public class ToolProcessorTest {
         List<ToolGroupData> res = cast(this.processor.transform(this.tool, this.helper));
         assertThat(res).isNotEmpty();
     }
-
 
     @Test
     @DisplayName("测试当合并 http 插件的 schema 时，成功")

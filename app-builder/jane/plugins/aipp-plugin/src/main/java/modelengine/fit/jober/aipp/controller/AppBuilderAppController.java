@@ -23,6 +23,7 @@ import modelengine.fit.http.entity.PartitionedEntity;
 import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.http.server.HttpClassicServerResponse;
 import modelengine.fit.jane.common.controller.AbstractController;
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
@@ -132,7 +133,7 @@ public class AppBuilderAppController extends AbstractController {
             @PathVariable("tenant_id") String tenantId, @RequestParam(value = "offset", defaultValue = "0") long offset,
             @RequestParam(value = "limit", defaultValue = "10") int limit, @RequestBean AppQueryCondition cond,
             @RequestQuery(name = "type", defaultValue = "app") String type) {
-        return this.appService.list(this.buildAppQueryCondition(cond, type), httpRequest, tenantId, offset, limit);
+        return this.appService.list(this.buildAppQueryCondition(cond, type), this.contextOf(httpRequest, tenantId), offset, limit);
     }
 
     /**
@@ -216,11 +217,13 @@ public class AppBuilderAppController extends AbstractController {
             @RequestBody @Validated @SpanAttr("name:$.name") AppBuilderAppCreateDto dto) {
         notNull(dto.getAppBuiltType(), "App built type cannot be null.");
         this.fitRuntime.publisherOfEvents().publishEvent(new AppCreatingEvent(this));
-        if (this.appService.getAppCount(tenantId, this.buildAppQueryCondition(new AppQueryCondition(), DEFAULT_TYPE))
-                >= this.maxAppNum) {
+        OperationContext context = this.contextOf(request, tenantId);
+        if (this.appService.getAppCount(tenantId,
+                this.buildAppQueryCondition(AppQueryCondition.builder().createBy(context.getOperator()).build(),
+                        DEFAULT_TYPE)) >= this.maxAppNum) {
             return Rsp.err(ERR_CODE, this.localeService.localize(AppBuilderAppController.ERR_LOCALE_CODE));
         }
-        return Rsp.ok(this.appService.create(appId, dto, this.contextOf(request, tenantId), false));
+        return Rsp.ok(this.appService.create(appId, dto, context, false));
     }
 
     /**

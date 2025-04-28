@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import modelengine.fel.tool.info.entity.ToolJsonEntity;
 import modelengine.fit.http.HttpMessage;
 import modelengine.fit.http.entity.Entity;
 import modelengine.fit.http.entity.FileEntity;
@@ -24,7 +25,6 @@ import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.FileUtils;
-import modelengine.jade.carver.tool.info.entity.ToolJsonEntity;
 import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
 import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
 import modelengine.jade.carver.tool.service.DefinitionGroupService;

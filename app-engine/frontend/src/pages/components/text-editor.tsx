@@ -75,14 +75,23 @@ const TextEditor = forwardRef((props, ref) => {
       Message({ type: 'error', content: err.message || t('uploadImageFail') });
     }
   }
+
+  // 基于环境调整tinymce初始化文件路径
+  const adjustInitPathByEnv = url => {
+    if (process.env.NODE_ENV === 'production' && process.env.PACKAGE_MODE === 'spa') {
+        return `/apps/appengine/${url}`;
+    }
+    return url;
+  }
+
   useEffect(() => {
     tinymce.init({
       selector: '#publish-editor',
       plugins: 'lists image table wordcount',
       language: 'zh_CN',
-      language_url: './src/assets/tinymce/lang/zh-CN.js',
-      skin_url: './src/assets/tinymce/skins/ui/oxide',
-      content_css: './src/assets/tinymce/skins/content/default/content.css',
+      language_url: cLocale === 'en-us' ? '': `${adjustInitPathByEnv('/src/assets/tinymce/lang/zh-CN.js')}`,
+      skin_url: `${adjustInitPathByEnv('/src/assets/tinymce/skins/ui/oxide')}`,
+      content_css: `${adjustInitPathByEnv('/src/assets/tinymce/skins/content/default/content.css')}`,
       height: 260,
       menubar: false,
       statusbar: false,

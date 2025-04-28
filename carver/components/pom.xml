@@ -15,6 +15,5 @@
 
     <modules>
         <module>telemetry-aop</module>
-        <module>tool-info</module>
     </modules>
 </project>

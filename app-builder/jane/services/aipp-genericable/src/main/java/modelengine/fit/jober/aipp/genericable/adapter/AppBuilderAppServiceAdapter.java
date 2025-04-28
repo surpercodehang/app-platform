@@ -6,7 +6,7 @@
 
 package modelengine.fit.jober.aipp.genericable.adapter;
 
-import modelengine.fit.http.server.HttpClassicServerRequest;
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.dto.chat.AppMetadata;
 import modelengine.fit.jober.aipp.dto.chat.AppQueryParams;
 import modelengine.fit.jober.common.RangedResultSet;
@@ -22,10 +22,9 @@ public interface AppBuilderAppServiceAdapter {
      * 获取应用的列表信息。
      *
      * @param params 表示查询条件参数的 {@link AppQueryParams}。
-     * @param httpRequest 表示 HTTP 请求的 {@link HttpClassicServerRequest}。
-     * @param tenantId 表示租户唯一标识的 {@link String}。
+     * @param context 表示操作上下文的 {@link OperationContext}。
      * @return 表示获取到的应用列表信息的
      * {@link RangedResultSet}{@code <}{@link AppMetadata}{@code >}。
      */
-    RangedResultSet<AppMetadata> list(AppQueryParams params, HttpClassicServerRequest httpRequest, String tenantId);
+    RangedResultSet<AppMetadata> list(AppQueryParams params, OperationContext context);
 }

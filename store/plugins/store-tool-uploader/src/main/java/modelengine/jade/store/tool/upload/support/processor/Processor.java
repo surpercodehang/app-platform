@@ -6,6 +6,12 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
+import static modelengine.fel.tool.info.schema.PluginSchema.DOT;
+import static modelengine.fel.tool.info.schema.PluginSchema.TYPE;
+import static modelengine.fel.tool.info.schema.ToolsSchema.ARRAY;
+import static modelengine.fel.tool.info.schema.ToolsSchema.ITEMS;
+import static modelengine.fel.tool.info.schema.ToolsSchema.OBJECT;
+import static modelengine.fel.tool.info.schema.ToolsSchema.TOOLS_JSON;
 import static modelengine.fitframework.inspection.Validation.lessThanOrEquals;
 import static modelengine.fitframework.inspection.Validation.notBlank;
 import static modelengine.fitframework.inspection.Validation.notNull;
@@ -18,25 +24,19 @@ import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS_REQUIRED;
 import static modelengine.jade.carver.tool.ToolSchema.PROPERTIES_TYPE;
 import static modelengine.jade.carver.tool.ToolSchema.RETURN_SCHEMA;
 import static modelengine.jade.carver.tool.ToolSchema.SCHEMA;
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.DOT;
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.TYPE;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.ARRAY;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.ITEMS;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.OBJECT;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.TOOLS_JSON;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildBlankParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildEmptyParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildNullParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildParserException;
 
+import modelengine.fel.tool.info.entity.ParameterEntity;
+import modelengine.fel.tool.info.entity.SchemaEntity;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.authentication.context.UserContext;
 import modelengine.jade.authentication.context.UserContextHolder;
-import modelengine.jade.carver.tool.info.entity.ParameterEntity;
-import modelengine.jade.carver.tool.info.entity.SchemaEntity;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.code.PluginRetCode;
 
@@ -175,7 +175,8 @@ public abstract class Processor {
         String typeStr = cast(type);
         if (!TYPE_LIST.contains(typeStr)) {
             throw buildParserException(StringUtils.format(
-                    "The parameter type must comply with the JSON schema parameter type format. [field='{0}', type='{1}']",
+                    "The parameter type must comply with the JSON schema parameter type format. [field='{0}', "
+                            + "type='{1}']",
                     fieldName,
                     typeStr));
         }

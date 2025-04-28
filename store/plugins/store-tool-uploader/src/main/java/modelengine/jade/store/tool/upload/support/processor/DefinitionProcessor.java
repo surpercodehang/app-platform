@@ -6,23 +6,23 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
+import static modelengine.fel.tool.info.schema.PluginSchema.DOT;
+import static modelengine.fel.tool.info.schema.ToolsSchema.DEFINITIONS;
+import static modelengine.fel.tool.info.schema.ToolsSchema.DEFINITION_GROUPS;
+import static modelengine.fel.tool.info.schema.ToolsSchema.LIST_NOTATION;
+import static modelengine.fel.tool.info.schema.ToolsSchema.TOOLS_JSON;
 import static modelengine.fitframework.inspection.Validation.notEmpty;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 import static modelengine.jade.carver.tool.ToolSchema.NAME;
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.DOT;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.DEFINITIONS;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.DEFINITION_GROUPS;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.LIST_NOTATION;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.TOOLS_JSON;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildEmptyParserException;
 import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.objToMap;
 
+import modelengine.fel.tool.info.entity.DefinitionEntity;
+import modelengine.fel.tool.info.entity.DefinitionGroupEntity;
+import modelengine.fel.tool.info.entity.ToolJsonEntity;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.serialization.ObjectSerializer;
-import modelengine.jade.carver.tool.info.entity.DefinitionEntity;
-import modelengine.jade.carver.tool.info.entity.DefinitionGroupEntity;
-import modelengine.jade.carver.tool.info.entity.ToolJsonEntity;
 import modelengine.jade.carver.tool.model.transfer.DefinitionData;
 import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
 

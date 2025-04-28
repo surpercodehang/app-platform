@@ -6,12 +6,12 @@
 
 package modelengine.jade.store.tool.deploy.service.support;
 
+import static modelengine.fel.tool.info.schema.PluginSchema.PLUGIN_FULL_NAME;
+import static modelengine.fel.tool.info.schema.ToolsSchema.FIT;
+import static modelengine.fel.tool.info.schema.ToolsSchema.FITABLE_ID;
+import static modelengine.fel.tool.info.schema.ToolsSchema.GENERICABLE_ID;
 import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.fitframework.util.ObjectUtils.cast;
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.PLUGIN_FULL_NAME;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.FIT;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.FITABLE_ID;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.GENERICABLE_ID;
 
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.log.Logger;
@@ -100,9 +100,9 @@ public class DefaultPluginDeployService implements PluginDeployService, FitRunti
                 .map(PluginData::getPluginId)
                 .collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(expiredStatusIds)) {
-            expiredStatusIds.forEach(
-                    pluginId -> PluginDeployManagementUtils.undeployPlugin(pluginId, this.pluginService,
-                            this.pluginDeployQueryConfig));
+            expiredStatusIds.forEach(pluginId -> PluginDeployManagementUtils.undeployPlugin(pluginId,
+                    this.pluginService,
+                    this.pluginDeployQueryConfig));
             this.pluginService.updateDeployStatus(expiredStatusIds, DeployStatus.UNDEPLOYED);
         }
         // 内置工具修改为已部署
@@ -133,7 +133,8 @@ public class DefaultPluginDeployService implements PluginDeployService, FitRunti
         List<String> newDeployedIds = new ArrayList<>(CollectionUtils.difference(toDeployPluginIds, deployedPluginIds));
         if (CollectionUtils.isNotEmpty(toUnDeployedIds)) {
             this.pluginService.updateDeployStatus(toUnDeployedIds, DeployStatus.UNDEPLOYED);
-            toUnDeployedIds.forEach(pluginId -> PluginDeployManagementUtils.undeployPlugin(pluginId, this.pluginService,
+            toUnDeployedIds.forEach(pluginId -> PluginDeployManagementUtils.undeployPlugin(pluginId,
+                    this.pluginService,
                     this.pluginDeployQueryConfig));
         }
         if (CollectionUtils.isNotEmpty(newDeployedIds)) {
@@ -189,7 +190,9 @@ public class DefaultPluginDeployService implements PluginDeployService, FitRunti
             if (!set.add(fitableId + genericableId)) {
                 throw new IllegalStateException(StringUtils.format(
                         "The current operation has duplicate fitable id and genericable id. "
-                                + "[fitableId={0}, genericableId={1}]", fitableId, genericableId));
+                                + "[fitableId={0}, genericableId={1}]",
+                        fitableId,
+                        genericableId));
             }
         }
     }
@@ -202,10 +205,12 @@ public class DefaultPluginDeployService implements PluginDeployService, FitRunti
         }
         int length = ((String) fitValue).length();
         if (length < MIN_FIT_LENGTH || length > MAX_FIT_OR_TAG_LENGTH) {
-            throw new ModelEngineException(PluginRetCode.JSON_PARSE_ERROR, StringUtils.format(
-                    "The length of field value in 'runnables' be compliant. "
-                            + "[field={0}, minLength={1}, maxLength={2}]", fitKey, MIN_FIT_LENGTH,
-                    MAX_FIT_OR_TAG_LENGTH));
+            throw new ModelEngineException(PluginRetCode.JSON_PARSE_ERROR,
+                    StringUtils.format("The length of field value in 'runnables' be compliant. "
+                                    + "[field={0}, minLength={1}, maxLength={2}]",
+                            fitKey,
+                            MIN_FIT_LENGTH,
+                            MAX_FIT_OR_TAG_LENGTH));
         }
     }
 
@@ -222,8 +227,9 @@ public class DefaultPluginDeployService implements PluginDeployService, FitRunti
         }
         this.registerQueryThread.execute(Task.builder()
                 .runnable(() -> this.deployService.deploy(pluginData, pluginFullName.get(), pluginId))
-                .uncaughtExceptionHandler(
-                        (thread, cause) -> this.exceptionCaught(cause, pluginData.getPluginName(), pluginId))
+                .uncaughtExceptionHandler((thread, cause) -> this.exceptionCaught(cause,
+                        pluginData.getPluginName(),
+                        pluginId))
                 .buildDisposable());
     }
 

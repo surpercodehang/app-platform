@@ -12,9 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import modelengine.fel.tool.info.entity.DefinitionGroupEntity;
+import modelengine.fel.tool.info.entity.ToolJsonEntity;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
-import modelengine.jade.carver.tool.info.entity.DefinitionGroupEntity;
-import modelengine.jade.carver.tool.info.entity.ToolJsonEntity;
 import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
 import modelengine.jade.common.exception.ModelEngineException;
 
@@ -81,9 +81,8 @@ public class DefinitionProcessorTest {
             definitionGroupEntity.setDefinitions(Collections.emptyList());
             this.processor.validate(this.tool, null);
         }).isInstanceOf(ModelEngineException.class)
-                .hasMessageContaining(
-                        "The file must contain the property and cannot be empty. [file='tools.json', "
-                                + "property='definitionGroups[].definitions']");
+                .hasMessageContaining("The file must contain the property and cannot be empty. [file='tools.json', "
+                        + "property='definitionGroups[].definitions']");
     }
 
     @Test

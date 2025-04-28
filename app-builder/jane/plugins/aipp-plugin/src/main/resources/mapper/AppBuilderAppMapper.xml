@@ -107,6 +107,9 @@
                     #{excludeName}
                 </foreach>
             </if>
+            <if test="cond.createBy != null">
+                and create_by = #{cond.createBy}
+            </if>
             ORDER BY
                 "name", update_at DESC
         ) as sub
@@ -173,6 +176,9 @@
         </if>
         <if test="cond.appCategory != null">
             and app_category = #{cond.appCategory}
+        </if>
+        <if test="cond.createBy != null">
+            and create_by = #{cond.createBy}
         </if>
         ) as latest_records WHERE <include refid="appTypeCondition"/>;
     </select>

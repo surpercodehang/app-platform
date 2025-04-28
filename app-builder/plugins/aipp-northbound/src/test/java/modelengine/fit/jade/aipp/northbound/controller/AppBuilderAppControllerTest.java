@@ -60,6 +60,9 @@ public class AppBuilderAppControllerTest {
     void shouldReturnOkWhenGetAppList() {
         AppQueryParams cond =
                 AppQueryParams.builder().name("name").state("state").type("type").offset(1).limit(2).build();
+        Mockito.when(request.headers()).thenReturn(new DefaultMessageHeaders());
+        Mockito.when(request.cookies()).thenReturn(new DefaultCookieCollection());
+        Mockito.when(request.remoteAddress()).thenReturn(Address.builder().hostAddress("127.0.0.1").port(6666).build());
         assertThatCode(() -> this.controller.list(request, "123", cond)).doesNotThrowAnyException();
     }
 

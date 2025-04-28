@@ -1,0 +1,43 @@
+name: App Platform Java Compile
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'app-builder/**'
+      - '!app-builder/fel/python/**'
+      - 'app-engine/**'
+      - '!app-engine/frontend/**'
+      - 'app-image/**'
+      - 'app-knowledge/**'
+      - 'carver/**'
+      - 'common/**'
+      - 'store/**'
+  pull_request:
+    branches:
+      - 'main'
+    paths:
+      - 'app-builder/**'
+      - '!app-builder/fel/python/**'
+      - 'app-engine/**'
+      - '!app-engine/frontend/**'
+      - 'app-image/**'
+      - 'app-knowledge/**'
+      - 'carver/**'
+      - 'common/**'
+      - 'store/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean install

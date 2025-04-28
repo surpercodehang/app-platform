@@ -13,14 +13,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-import modelengine.fit.jane.task.gateway.Authenticator;
-import modelengine.jade.authentication.AuthenticationService;
-
 import modelengine.fit.http.protocol.Address;
 import modelengine.fit.http.protocol.support.DefaultMessageHeaders;
 import modelengine.fit.http.server.HttpClassicServerRequest;
 import modelengine.fit.http.support.DefaultCookieCollection;
 import modelengine.fit.http.websocket.Session;
+import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
 import modelengine.fit.jober.aipp.service.AppChatService;
@@ -49,14 +47,26 @@ import java.util.List;
  */
 @ExtendWith(MockitoExtension.class)
 public class AppStreamControllerTest {
-    private final String chatMsg =
-            "{\n" + "    \"method\": \"appChat\",\n" + "    \"params\": {\n" + "        \"tenantId\": \"123\",\n"
-                    + "        \"isDebug\": true,\n" + "        \"data\": {\n" + "            \"app_id\": \"app_id\",\n"
-                    + "            \"chat_id\": \"chat_id\",\n" + "            \"question\": \"question\",\n"
-                    + "            \"context\": {\n" + "                \"use_memory\": true,\n"
-                    + "                \"user_context\": null,\n" + "                \"at_app_id\": \"at_app_id\",\n"
-                    + "                \"at_chat_id\": \"at_chai_id\",\n" + "                \"dimension\": \"test\"\n"
-                    + "            }\n" + "        }\n" + "    }\n" + "}";
+    private final String chatMsg = """
+            {
+                "method": "appChat",
+                "params": {
+                    "tenantId": "123",
+                    "isDebug": true,
+                    "data": {
+                        "app_id": "app_id",
+                        "chat_id": "chat_id",
+                        "question": "question",
+                        "context": {
+                            "use_memory": true,
+                            "user_context": null,
+                            "at_app_id": "at_app_id",
+                            "at_chat_id": "at_chai_id",
+                            "dimension": "test"
+                        }
+                    }
+                }
+            }""";
     private final List<String> result = new ArrayList<>();
     @Fit
     private AppStreamController appStreamController;
@@ -95,9 +105,8 @@ public class AppStreamControllerTest {
         appStreamController.onMessage(session, chatMsg);
 
         assertThat(result).hasSize(2)
-                .contains("{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":\"test route success\","
-                                + "\"completed\":false}",
-                        "{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":null,\"completed\":true}");
+                .contains("{\"code\":0,\"data\":\"test route success\",\"completed\":false}",
+                        "{\"code\":0,\"completed\":true}");
     }
 
     @Test
@@ -108,8 +117,7 @@ public class AppStreamControllerTest {
         appStreamController.onMessage(session, chatMsg);
 
         assertThat(result).hasSize(1)
-                .contains("{\"requestId\":null,\"code\":90000002,\"msg\":\"服务器内部错误，请联系管理员。\",\"data\":null,"
-                        + "\"completed\":true}");
+                .contains("{\"code\":90000002,\"msg\":\"服务器内部错误，请联系管理员。\",\"completed\":true}");
     }
 
     @Test
@@ -122,8 +130,7 @@ public class AppStreamControllerTest {
 
         appStreamController.onMessage(session, chatMsg);
         assertThat(result).hasSize(2)
-                .contains("{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":\"emit success\",\"completed\":false}",
-                        "{\"requestId\":null,\"code\":90000002,\"msg\":\"emit fail\",\"data\":null,"
-                                + "\"completed\":true}");
+                .contains("{\"code\":0,\"data\":\"emit success\",\"completed\":false}",
+                        "{\"code\":90000002,\"msg\":\"emit fail\",\"completed\":true}");
     }
 }

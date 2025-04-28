@@ -24,6 +24,7 @@ import modelengine.fit.jober.aipp.service.AppBuilderFormService;
 import modelengine.fit.jober.aipp.service.UploadedFileManageService;
 import modelengine.fit.jober.common.RangedResultSet;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.annotation.Value;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.StringUtils;
 
@@ -75,11 +76,15 @@ public class AppBuilderFormServiceImpl implements AppBuilderFormService {
 
     private final UploadedFileManageService uploadedFileManageService;
 
+    private final List<String> excludeNames;
+
     public AppBuilderFormServiceImpl(AppBuilderFormRepository formRepository, AippFormCreateConfig aippFormCreateConfig,
-            UploadedFileManageService uploadedFileManageService) {
+            UploadedFileManageService uploadedFileManageService,
+            @Value("${app-engine.form.exclude-names}") List<String> excludeNames) {
         this.formRepository = formRepository;
         this.aippFormCreateConfig = aippFormCreateConfig;
         this.uploadedFileManageService = uploadedFileManageService;
+        this.excludeNames = excludeNames;
     }
 
     @Override
@@ -171,6 +176,7 @@ public class AppBuilderFormServiceImpl implements AppBuilderFormService {
                 .offset(offset)
                 .limit(pageSize)
                 .name(name)
+                .excludeNames(excludeNames)
                 .build();
         long total = this.formRepository.countWithCondition(cond);
         List<AppBuilderFormDto> result = this.formRepository.selectWithCondition(cond)

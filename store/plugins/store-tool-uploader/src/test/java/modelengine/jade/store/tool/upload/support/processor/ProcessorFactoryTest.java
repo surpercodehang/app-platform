@@ -6,7 +6,7 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
-import static modelengine.jade.carver.tool.info.schema.PluginSchema.PLUGINS;
+import static modelengine.fel.tool.info.schema.PluginSchema.PLUGINS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;

@@ -25,8 +25,23 @@
     "uniqueName": ""
   },
   {
+    "type": "queryOptimizationNodeState",
+    "name": "Query Optimization",
+    "uniqueName": ""
+  },
+  {
     "type": "knowledgeRetrievalNodeState",
     "name": "Knowledge Retrieval",
+    "uniqueName": ""
+  },
+  {
+    "type": "textExtractionNodeState",
+    "name": "Text Extraction",
+    "uniqueName": ""
+  },
+  {
+    "type": "questionClassificationNodeCondition",
+    "name": "Question Classification",
     "uniqueName": ""
   },
   {

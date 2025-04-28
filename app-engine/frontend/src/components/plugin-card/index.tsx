@@ -25,11 +25,11 @@ import './style.scss';
  * @param cardType  卡片类型
  * @param getPluginList  获取插件列表
  * @param pluginId  插件ID
- * @param cardStatus  卡片状态
+ * @param pluginRoot  是否为父插件
  * @param readOnly  是否只读
  * @constructor
  */
-const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus, readOnly }: any) => {
+const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, pluginRoot, readOnly }: any) => {
   const { t } = useTranslation();
   const [isShow, setIsShow] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -45,9 +45,7 @@ const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus,
   ]
   // 插件点击详情
   const pluginCardClick = () => {
-    pluginData?.pluginToolDataList === null
-      ? navigate(`/plugin/detail/${pluginId}`)
-      : setIsShow(true);
+    pluginRoot ? navigate(`/plugin/detail/${pluginId}`) : setIsShow(true);
   };
   
   const confirm = () => {
@@ -66,7 +64,7 @@ const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus,
 
   const setPluginName = () => {
     let name = '';
-    name = pluginData?.pluginToolDataList === null ? pluginData.pluginName : pluginData?.name;
+    name = pluginRoot ? pluginData.pluginName : pluginData?.name;
     return name;
   }
   
@@ -83,7 +81,7 @@ const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus,
             </div>
             <div className='plugin-card-user'>
               <img width="18" height="18" src={userImg} alt="" />
-              <span style={{ marginRight: 8 }}>{pluginData.creator}</span>
+              <span className='creator'>{pluginData.creator}</span>
               {pluginData?.tags?.map((tag: string, index: number) => {
                  if (tag.trim().length > 0) {
                   return <Tag style={{ margin: 0 }} key={index}>{tag}</Tag>
@@ -93,9 +91,7 @@ const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus,
           </div>
         </div>
         <div className='card-content'>
-          {pluginData?.pluginToolDataList === null
-            ? pluginData.extension.description
-            : pluginData?.description}
+          {pluginRoot ? pluginData.extension.description : pluginData?.description}
         </div>
         {/* 卡片底部 */}
         <div className='card-footer' style={{ position: 'relative' }}>
@@ -122,7 +118,7 @@ const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus,
               </span>
             </div>
           </div>
-          { !readOnly && !(pluginData?.pluginToolDataList !== null || pluginData?.isBuiltin) && 
+          { !readOnly && !(!pluginRoot || pluginData?.isBuiltin) && 
             <div className='footer-icon' onClick={(e) => {e.stopPropagation()}}>
               <Dropdown menu={{ items }} trigger={['click']}>
                 <EllipsisOutlined className='footer-more' />
@@ -155,7 +151,7 @@ const PluginCard = ({ pluginData, cardType, getPluginList, pluginId, cardStatus,
         onCancel={() => setDeleteOpen(false)}
       >
         <div style={{ margin: '8px 0' }}>
-          <span>{t('deleteKnowledgeTips')}</span>
+          <span>{t('deletePluginTips')}</span>
         </div>
       </Modal>
     </>

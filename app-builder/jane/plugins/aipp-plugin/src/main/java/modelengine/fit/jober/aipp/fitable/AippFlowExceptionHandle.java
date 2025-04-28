@@ -6,13 +6,11 @@
 
 package modelengine.fit.jober.aipp.fitable;
 
-import modelengine.fit.waterflow.entity.FlowErrorInfo;
-import modelengine.fit.waterflow.spi.FlowExceptionService;
-import modelengine.jade.common.globalization.LocaleService;
-
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.meta.multiversion.MetaInstanceService;
+import modelengine.fit.jane.meta.multiversion.instance.Instance;
 import modelengine.fit.jane.meta.multiversion.instance.InstanceDeclarationInfo;
+import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.entity.AippInstLog;
 import modelengine.fit.jober.aipp.enums.AippInstLogType;
@@ -20,6 +18,9 @@ import modelengine.fit.jober.aipp.enums.MetaInstStatusEnum;
 import modelengine.fit.jober.aipp.service.AippLogService;
 import modelengine.fit.jober.aipp.service.AppChatSessionService;
 import modelengine.fit.jober.aipp.util.DataUtils;
+import modelengine.fit.jober.aipp.util.MetaInstanceUtils;
+import modelengine.fit.waterflow.entity.FlowErrorInfo;
+import modelengine.fit.waterflow.spi.FlowExceptionService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -29,11 +30,13 @@ import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.common.globalization.LocaleService;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 流程异常处理服务
@@ -72,9 +75,15 @@ public class AippFlowExceptionHandle implements FlowExceptionService {
         this.brokerClient = brokerClient;
     }
 
-    private void addErrorLog(String aippInstId, List<Map<String, Object>> contexts, boolean isDebug, Locale locale,
-            String errorMessage) {
-        List<AippInstLog> instLogs = aippLogService.queryInstanceLogSince(aippInstId, null);
+    private void addErrorLog(String aippInstId, List<Map<String, Object>> contexts, boolean enableErrorDetails,
+            Locale locale, String errorMessage) {
+        Instance instance = MetaInstanceUtils.getInstanceDetailByInstanceId(aippInstId, null, this.metaInstanceService);
+        String instanceStatus = instance.getInfo().get(AippConst.INST_STATUS_KEY);
+        if (MetaInstStatusEnum.TERMINATED.name().equals(instanceStatus)) {
+            log.debug("Aipp instance is already terminated. [aippInstId={}]", aippInstId);
+            return;
+        }
+        List<AippInstLog> instLogs = this.aippLogService.queryInstanceLogSince(aippInstId, null);
         if (!instLogs.isEmpty()) {
             if (AippInstLogType.ERROR.name().equals(instLogs.get(instLogs.size() - 1).getLogType())) {
                 log.warn("already add error log, aippInstId {}", aippInstId);
@@ -82,7 +91,7 @@ public class AippFlowExceptionHandle implements FlowExceptionService {
             }
         }
         String msg = this.localeService.localize(locale, UI_WORD_KEY);
-        if (isDebug) {
+        if (enableErrorDetails) {
             if (StringUtils.isNotEmpty(errorMessage)) {
                 msg += "\n" + this.localeService.localize(locale, UI_WORD_KEY_HINT) + ": " + errorMessage;
             }
@@ -114,7 +123,8 @@ public class AippFlowExceptionHandle implements FlowExceptionService {
         this.appChatSessionService.getSession(aippInstId).ifPresent(e -> {
             this.toolExceptionHandle.handleFitException(errorMessage);
             String finalErrorMsg = this.toolExceptionHandle.getFixErrorMsg(errorMessage, e.getLocale(), true);
-            addErrorLog(aippInstId, contexts, e.isDebug(), e.getLocale(), finalErrorMsg);
+            boolean enableErrorDetails = e.isDebug() || isModelError(errorMessage);
+            addErrorLog(aippInstId, contexts, enableErrorDetails, e.getLocale(), finalErrorMsg);
             log.error("handleException completed, aippInstId {}", aippInstId);
         });
 
@@ -133,5 +143,9 @@ public class AippFlowExceptionHandle implements FlowExceptionService {
                 log.error("exception: ", exception);
             }
         }
+    }
+
+    private boolean isModelError(FlowErrorInfo errorMessage) {
+        return Objects.equals(errorMessage.getErrorCode(), AippErrCode.MODEL_SERVICE_INVOKE_ERROR.getCode());
     }
 }

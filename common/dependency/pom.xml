@@ -251,11 +251,6 @@
                 <artifactId>telemetry-aop</artifactId>
                 <version>${carver.version}</version>
             </dependency>
-            <dependency>
-                <groupId>modelengine.fit.jade.caver</groupId>
-                <artifactId>tool-info</artifactId>
-                <version>${carver.version}</version>
-            </dependency>
             <!-- Store -->
             <dependency>
                 <groupId>modelengine.fit.jade.service</groupId>

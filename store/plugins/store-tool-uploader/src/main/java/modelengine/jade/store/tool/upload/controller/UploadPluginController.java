@@ -9,6 +9,7 @@ package modelengine.jade.store.tool.upload.controller;
 import static modelengine.fitframework.inspection.Validation.notBlank;
 import static modelengine.fitframework.inspection.Validation.notNull;
 
+import modelengine.fel.tool.info.entity.HttpJsonEntity;
 import modelengine.fit.http.annotation.DeleteMapping;
 import modelengine.fit.http.annotation.PathVariable;
 import modelengine.fit.http.annotation.PostMapping;
@@ -18,8 +19,6 @@ import modelengine.fit.http.annotation.RequestParam;
 import modelengine.fit.http.entity.NamedEntity;
 import modelengine.fit.http.entity.PartitionedEntity;
 import modelengine.fitframework.annotation.Component;
-import modelengine.jade.carver.tool.info.entity.HttpJsonEntity;
-import modelengine.jade.carver.tool.info.entity.ToolJsonEntity;
 import modelengine.jade.common.Result;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.service.annotations.CarverSpan;
@@ -89,7 +88,7 @@ public class UploadPluginController {
     /**
      * 表示保存上传工具文件的请求。
      *
-     * @param httpEntity 表示 Http 工具的消息体 {@link ToolJsonEntity}。
+     * @param httpEntity 表示 Http 工具的消息体 {@link HttpJsonEntity}。
      * @return 表示格式化之后的返回消息的 {@link Result}{@code <}{@link String}{@code >}。
      */
     @CarverSpan("operation.store.plugin.http")

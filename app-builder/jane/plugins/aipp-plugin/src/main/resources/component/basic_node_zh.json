@@ -25,8 +25,23 @@
     "uniqueName": ""
   },
   {
+    "type": "queryOptimizationNodeState",
+    "name": "问题优化",
+    "uniqueName": ""
+  },
+  {
     "type": "knowledgeRetrievalNodeState",
     "name": "知识检索",
+    "uniqueName": ""
+  },
+  {
+    "type": "textExtractionNodeState",
+    "name": "文本提取",
+    "uniqueName": ""
+  },
+  {
+    "type": "questionClassificationNodeCondition",
+    "name": "问题分类",
     "uniqueName": ""
   },
   {
@@ -55,8 +70,8 @@
     "uniqueName": ""
   },
   {
-  "type": "manualCheckNodeState",
-  "name": "人工表单",
-  "uniqueName": ""
+    "type": "manualCheckNodeState",
+    "name": "人工表单",
+    "uniqueName": ""
   }
 ]

@@ -131,15 +131,14 @@ public interface AppBuilderAppService {
      * 获取应用的列表信息。
      *
      * @param cond 表示获取条件的 {@link AppQueryCondition}。
-     * @param httpRequest 表示HTTP请求的 {@link HttpClassicServerRequest}。
-     * @param tenantId 表示租户唯一标识的 {@link String}。
+     * @param context 表示操作上下文的 {@link OperationContext}。
      * @param offset 表示偏移量的 {@code long}。
      * @param limit 表示获取数据的最大个数的 {@code int}。
      * @return 获取到的列表信息集合
      */
     @Genericable(id = "modelengine.fit.jober.aipp.service.app.list")
-    Rsp<RangedResultSet<AppBuilderAppMetadataDto>> list(AppQueryCondition cond, HttpClassicServerRequest httpRequest,
-            String tenantId, long offset, int limit);
+    Rsp<RangedResultSet<AppBuilderAppMetadataDto>> list(AppQueryCondition cond, OperationContext context, long offset,
+            int limit);
 
     /**
      * 删除应用。

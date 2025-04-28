@@ -6,14 +6,15 @@
 
 package modelengine.jade.store.tool.deploy.service.support;
 
+import static modelengine.fel.tool.info.schema.ToolsSchema.FIT;
+import static modelengine.fel.tool.info.schema.ToolsSchema.FITABLE_ID;
+import static modelengine.fel.tool.info.schema.ToolsSchema.GENERICABLE_ID;
 import static modelengine.fitframework.broker.GenericableMetadata.DEFAULT_VERSION;
 import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 import static modelengine.jade.carver.tool.ToolSchema.PROPERTIES_TYPE;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.FIT;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.FITABLE_ID;
-import static modelengine.jade.carver.tool.info.schema.ToolsSchema.GENERICABLE_ID;
 
+import modelengine.fel.tool.info.schema.PluginSchema;
 import modelengine.fit.service.RegistryService;
 import modelengine.fit.service.entity.FitableAddressInstance;
 import modelengine.fit.service.entity.FitableInfo;
@@ -24,7 +25,6 @@ import modelengine.fitframework.util.SecurityUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.fitframework.util.ThreadUtils;
 import modelengine.jade.carver.ListResult;
-import modelengine.jade.carver.tool.info.schema.PluginSchema;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.store.code.PluginRetCode;
@@ -186,8 +186,7 @@ public class DefaultDeployService implements DeployService {
         FitableInfo fitableInfo = new FitableInfo();
         fitableInfo.setFitableId(PluginDeployManagementUtils.requireStringInMapObject(runnable.get(FITABLE_ID)));
         fitableInfo.setFitableVersion(DEFAULT_VERSION);
-        fitableInfo.setGenericableId(
-                PluginDeployManagementUtils.requireStringInMapObject(runnable.get(GENERICABLE_ID)));
+        fitableInfo.setGenericableId(PluginDeployManagementUtils.requireStringInMapObject(runnable.get(GENERICABLE_ID)));
         fitableInfo.setGenericableVersion(DEFAULT_VERSION);
         return fitableInfo;
     }
