@@ -752,6 +752,11 @@ public enum AippErrCode implements ErrorCode, RetCode {
     MODEL_SERVICE_INVOKE_ERROR(90002139, "调用大模型服务失败，{0}。"),
 
     /**
+     * 默认大模型生成内容失败。
+     */
+    GENERATE_CONTENT_FAILED(90002140, "大模型生成{0}失败，请尝试更换默认模型，失败原因：{1}。"),
+
+    /**
      * 错误码截止值
      */
     ERROR_CODE_BUTT(99999999, "Error code butt.");

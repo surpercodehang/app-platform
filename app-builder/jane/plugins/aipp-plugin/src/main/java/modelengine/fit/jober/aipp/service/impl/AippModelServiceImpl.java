@@ -16,14 +16,19 @@ import modelengine.fel.core.template.support.DefaultStringTemplate;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jane.common.entity.OperationContext;
+import modelengine.fit.jober.aipp.common.exception.AippErrCode;
+import modelengine.fit.jober.aipp.common.exception.AippException;
+import modelengine.fit.jober.aipp.common.utils.ContentProcessUtils;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.dto.model.PromptGenerateDto;
 import modelengine.fit.jober.aipp.repository.AippSystemConfigRepository;
 import modelengine.fit.jober.aipp.service.AippModelService;
 import modelengine.fitframework.annotation.Component;
+import modelengine.fitframework.exception.ClientException;
 import modelengine.fitframework.flowable.Choir;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.fitframework.log.Logger;
 
 import java.util.Map;
 
@@ -35,6 +40,8 @@ import java.util.Map;
  */
 @Component
 public class AippModelServiceImpl implements AippModelService {
+    private static final Logger log = Logger.get(AippModelServiceImpl.class);
+
     private static final String INPUT = "input";
 
     private static final String TEMPLATE_GROUP = "template";
@@ -81,6 +88,15 @@ public class AippModelServiceImpl implements AippModelService {
                         StringUtils.format("Template not exist.type: {0}", param.getTemplateType())));
         String prompt = new DefaultStringTemplate(template).render(values);
         ModelAccessInfo modelAccessInfo = this.aippModelCenter.getDefaultModel(AippConst.CHAT_MODEL_TYPE, context);
-        return this.chat(modelAccessInfo.getServiceName(), modelAccessInfo.getTag(), 0.3, prompt);
+        try {
+            return ContentProcessUtils.filterReasoningContent(this.chat(modelAccessInfo.getServiceName(),
+                    modelAccessInfo.getTag(),
+                    0.3,
+                    prompt));
+        } catch (ClientException e) {
+            // 模型生成内容超时的情况下，提醒用户更换默认模型
+            log.error("Failed to generate prompt.", e);
+            throw new AippException(AippErrCode.GENERATE_CONTENT_FAILED, "prompt", e.getMessage());
+        }
     }
 }

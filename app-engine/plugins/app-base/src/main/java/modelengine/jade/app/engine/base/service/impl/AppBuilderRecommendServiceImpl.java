@@ -21,6 +21,7 @@ import modelengine.fel.engine.operators.prompts.Prompts;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jane.common.entity.OperationContext;
+import modelengine.fit.jober.aipp.common.utils.ContentProcessUtils;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.log.Logger;
@@ -89,7 +90,7 @@ public class AppBuilderRecommendServiceImpl implements AppBuilderRecommendServic
                 + '\n';
             String response = flow.converse().offer(Tip.from("history", chatHistory)).await();
 
-            res = JSONArray.parseArray(response, String.class);
+            res = JSONArray.parseArray(ContentProcessUtils.filterReasoningContent(response), String.class);
         } catch (SerializationException | JSONException | IllegalStateException e) {
             log.error("{}\nparse model {} response error", e.getMessage(), model);
             return new ArrayList<>();

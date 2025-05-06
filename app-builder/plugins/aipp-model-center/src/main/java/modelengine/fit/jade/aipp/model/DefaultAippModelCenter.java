@@ -89,6 +89,10 @@ public class DefaultAippModelCenter implements AippModelCenterExtension {
 
     @Override
     public ModelListDto fetchModelList(String type, String scene, OperationContext context) {
+        if (this.url == null) {
+            log.error("Failed to fetch model list. Model fetch url is null");
+            return ModelListDto.builder().models(new ArrayList<>()).total(0).build();
+        }
         String url = type == null ? this.url : this.url + "?type=" + type;
         HttpClassicClientRequest request = this.httpClient.get().createRequest(HttpRequestMethod.GET, url);
         try (HttpClassicClientResponse<?> response = request.exchange()) {
@@ -139,7 +143,7 @@ public class DefaultAippModelCenter implements AippModelCenterExtension {
     @Override
     public ModelAccessInfo getDefaultModel(String type, OperationContext context) {
         ModelAccessInfo firstModel = new ModelAccessInfo("", "", null, null);
-        ModelListDto modelList = fetchModelList(type, null, null);
+        ModelListDto modelList = fetchModelList(type, "fastTextProcess", null);
         if (modelList != null && modelList.getModels() != null && !modelList.getModels().isEmpty()) {
             List<ModelAccessInfo> modelInfoList = modelList.getModels();
             for (ModelAccessInfo info : modelInfoList) {

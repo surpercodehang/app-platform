@@ -19,11 +19,13 @@ import modelengine.fel.community.model.openai.entity.embed.OpenAiEmbeddingReques
 import modelengine.fel.community.model.openai.entity.embed.OpenAiEmbeddingResponse;
 import modelengine.fel.community.model.openai.entity.image.OpenAiImageRequest;
 import modelengine.fel.community.model.openai.entity.image.OpenAiImageResponse;
+import modelengine.fel.community.model.openai.enums.ModelProcessingState;
 import modelengine.fel.community.model.openai.util.HttpUtils;
 import modelengine.fel.core.chat.ChatMessage;
 import modelengine.fel.core.chat.ChatModel;
 import modelengine.fel.core.chat.ChatOption;
 import modelengine.fel.core.chat.Prompt;
+import modelengine.fel.core.chat.support.AiMessage;
 import modelengine.fel.core.embed.EmbedModel;
 import modelengine.fel.core.embed.EmbedOption;
 import modelengine.fel.core.embed.Embedding;
@@ -58,7 +60,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -78,6 +80,7 @@ public class OpenAiModel implements EmbedModel, ChatModel, ImageModel {
             .put("client.http.secure.key-store-file", Boolean.FALSE)
             .put("client.http.secure.key-store-password", Boolean.TRUE)
             .build();
+    private static final String RESPONSE_TEMPLATE = "<think>{0}<//think>{1}";
 
     private final HttpClassicClientFactory httpClientFactory;
     private final HttpClassicClientFactory.Config clientConfig;
@@ -167,11 +170,36 @@ public class OpenAiModel implements EmbedModel, ChatModel, ImageModel {
     }
 
     private Choir<ChatMessage> createChatStream(HttpClassicClientRequest request) {
+        AtomicReference<ModelProcessingState> modelProcessingState =
+                new AtomicReference<>(ModelProcessingState.INITIAL);
         return request.<String>exchangeStream(String.class)
                 .filter(str -> !StringUtils.equals(str, "[DONE]"))
                 .map(str -> this.serializer.<OpenAiChatCompletionResponse>deserialize(str,
                         OpenAiChatCompletionResponse.class))
-                .map(OpenAiChatCompletionResponse::message);
+                .map(response -> {
+                    return getChatMessage(response, modelProcessingState);
+                });
+    }
+
+    private ChatMessage getChatMessage(OpenAiChatCompletionResponse response,
+            AtomicReference<ModelProcessingState> state) {
+        // todo 确认toolcall是否会在推理完成之后出现
+        // 适配reasoning_content格式返回的模型推理内容，模型生成内容顺序为先reasoning_content后content
+        // 在第一个reasoning_content chunk之前增加<think>标签，并且在第一个content chunk之前增加</think>标签
+        if (state.get() == ModelProcessingState.INITIAL && StringUtils.isNotEmpty(response.reasoningContent().text())) {
+            String text = "<think>" + response.reasoningContent().text();
+            state.set(ModelProcessingState.THINKING);
+            return new AiMessage(text);
+        }
+        if (state.get() == ModelProcessingState.THINKING && StringUtils.isNotEmpty(response.message().text())) {
+            String text = "</think>" + response.message().text();
+            state.set(ModelProcessingState.RESPONDING);
+            return new AiMessage(text, response.message().toolCalls());
+        }
+        if (state.get() == ModelProcessingState.THINKING) {
+            return response.reasoningContent();
+        }
+        return response.message();
     }
 
     private Choir<ChatMessage> createChatCompletion(HttpClassicClientRequest request) {
@@ -180,7 +208,13 @@ public class OpenAiModel implements EmbedModel, ChatModel, ImageModel {
             OpenAiChatCompletionResponse chatCompletionResponse = response.objectEntity()
                     .map(ObjectEntity::object)
                     .orElseThrow(() -> new FitException("The response body is abnormal."));
-            return Choir.just(chatCompletionResponse.message());
+            String finalMessage = chatCompletionResponse.message().text();
+            if (StringUtils.isNotBlank(chatCompletionResponse.reasoningContent().text())) {
+                finalMessage = StringUtils.format(RESPONSE_TEMPLATE,
+                        chatCompletionResponse.reasoningContent().text(),
+                        finalMessage);
+            }
+            return Choir.just(new AiMessage(finalMessage, chatCompletionResponse.message().toolCalls()));
         } catch (IOException e) {
             throw new FitException(e);
         }

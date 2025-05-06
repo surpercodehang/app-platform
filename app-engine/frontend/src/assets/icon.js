@@ -63,6 +63,7 @@ const VariableAggregation = (props) => <Icon component={() => (<BaseIcons.Variab
 const TextToImageIcon = (props) => <Icon component={() => (<BaseIcons.TextToImage />)} {...props} />;
 const FileExtractionIcon = (props) => <Icon component={() => (<BaseIcons.FileExtraction />)} {...props} />;
 const LoopIcon = (props) => <Icon component={() => (<BaseIcons.Loop />)} {...props} />;
+const PairingIcon = (props) => <Icon component={() => (<BaseIcons.Pairing />)} {...props} />;
 
 export {
   LeftArrowIcon,
@@ -120,5 +121,6 @@ export {
   TextToImageIcon,
   FileExtractionIcon,
   LoopIcon,
+  PairingIcon
 }
 

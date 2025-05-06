@@ -45,11 +45,11 @@ public class TestUtils {
         // 设置问题类型.
         List<QuestionType> questionTypeList = new ArrayList<>();
         QuestionType questionType = new QuestionType();
-        questionType.setId("1");
+        questionType.setId("f47ac10b-58cc-4372-a567-0e02b2c3d479");
         questionType.setQuestionTypeDesc("a");
         questionTypeList.add(questionType);
         QuestionType questionType1 = new QuestionType();
-        questionType1.setId("2");
+        questionType1.setId("3fa4e1b2-7c6d-4a9f-8c3d-1b2e3f4a5b6c");
         questionType1.setQuestionTypeDesc("b");
         questionTypeList.add(questionType1);
         command.setQuestionTypes(questionTypeList);

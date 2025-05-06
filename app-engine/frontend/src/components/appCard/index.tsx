@@ -88,6 +88,10 @@ const AppCard = ({ cardInfo, clickMore, showOptions = true, isTemplate = false, 
     } else {
       setMenu([
         {
+          key: 'copy',
+          label: <div className='menu-items'>{t('copy')}</div>,
+        },
+        {
           key: 'export',
           label: <div className='menu-items'>{t('export')}</div>,
         },

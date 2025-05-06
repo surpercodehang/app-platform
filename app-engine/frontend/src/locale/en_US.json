@@ -942,5 +942,14 @@
   "openPermissionManagement": "Enable permission management",
   "inspirationPermissionTips": "Authentication is performed through the inspiration encyclopedia category tree. After the category tree is turned on, a new dialogue will be created when switching.",
   "retrievalIndexType": "Search Mode",
-  "formItemNameRule": "Can only contain letters, numbers, or underscores, and must start with a letter or underscore"
+  "formItemNameRule": "Can only contain letters, numbers, or underscores, and must start with a letter or underscore",
+  "copyApp": "Applicaton Replication",
+  "copyAppFailed": "Applicaton Replication Failed",
+  "CreatedFailed": "Created Failed",
+  "displayAllNodes": "Display all nodes",
+  "handMode": "Hand mode",
+  "reorganizeNodes": "Organize nodes",
+  "zoomOut": "Zoom Out",
+  "zoomIn": "Zoom In",
+  "formItemFieldTypeCannotBeEmpty": "Field type is required"
 }

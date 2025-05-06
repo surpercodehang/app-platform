@@ -53,11 +53,10 @@ export default function App() {
     <div className='layout' id="custom-smart-form">
       <DataContext.Provider value={{ ...receiveData, terminateClick, resumingClick, restartClick}}>
         <SmartForm
-            onSubmit={data => {
-              console.log("data: ", JSON.stringify({"params" : data}));
-              resumingClick({"params" : data});
-            }}
-            onCancel={terminateClick}
+          onSubmit={data => {
+            resumingClick({"params" : data});
+          }}
+          onCancel={terminateClick}
         />
       </DataContext.Provider>
     </div>

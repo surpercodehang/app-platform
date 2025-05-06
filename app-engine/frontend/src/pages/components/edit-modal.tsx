@@ -164,8 +164,14 @@ const EditModal = (props) => {
           description: formParams.description,
         };
         const res: any = await createAgent(tenantId, agentParam);
-        agentName = res.data?.name;
-        agentInfo.current = res.data;
+        if (res.code === 0) {
+          agentName = res.data?.name;
+          agentInfo.current = res.data;
+        } else {
+          setLoading(false);
+          Message({ type: 'error', content: res.msg || t('createdFailed') });
+          return;
+        }
       }
       const params = {
         name: applicationType === APP_BUILT_CLASSIFICATION.AGENT ? agentName : formParams.name,

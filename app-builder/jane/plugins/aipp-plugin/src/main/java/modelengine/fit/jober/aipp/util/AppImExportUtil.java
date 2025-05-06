@@ -162,6 +162,9 @@ public class AppImExportUtil {
      * @return 表示应用导出配置表单属性的 {@link AppExportFormProperty}。
      */
     public static AppExportFormProperty convertToAppExportFormProperty(AppBuilderFormProperty appBuilderFormProperty) {
+        if (appBuilderFormProperty == null) {
+            return null;
+        }
         return AppExportFormProperty.builder()
                 .name(appBuilderFormProperty.getName())
                 .dataType(appBuilderFormProperty.getDataType())

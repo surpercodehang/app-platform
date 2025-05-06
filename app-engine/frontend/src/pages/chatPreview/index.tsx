@@ -425,7 +425,7 @@ const ChatPreview = (props) => {
         }
         if (messageType.includes(log.type)) {
           let { msg, recieveChatItem } = messageProcessNormal(log, atAppInfo, messageData);
-          if (log.msgId !== null) {
+          if (log.msgId) {
             chatSplicing(log, msg, recieveChatItem, messageData.status);
           } else {
             chatStrInit(msg, recieveChatItem, messageData.status, messageData.log_id, messageData.extensions);

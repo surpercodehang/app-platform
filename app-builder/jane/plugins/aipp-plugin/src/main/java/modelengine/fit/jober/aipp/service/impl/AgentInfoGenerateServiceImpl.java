@@ -9,6 +9,7 @@ package modelengine.fit.jober.aipp.service.impl;
 import static modelengine.jade.carver.validation.ValidateTagMode.validateTagMode;
 
 import modelengine.fit.jane.common.entity.OperationContext;
+import modelengine.fit.jober.aipp.common.utils.ContentProcessUtils;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.repository.AppBuilderAppRepository;
@@ -24,7 +25,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import modelengine.fel.core.template.support.DefaultStringTemplate;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
-import modelengine.fit.jade.aipp.model.dto.ModelListDto;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
 import modelengine.fit.jober.aipp.common.exception.AippErrCode;
 import modelengine.fit.jober.aipp.common.exception.AippException;
@@ -50,7 +50,8 @@ import java.util.Map;
  */
 @Component
 public class AgentInfoGenerateServiceImpl implements AgentInfoGenerateService {
-    private static final Logger log = Logger.get(AppBuilderAppServiceImpl.class);
+    private static final Logger log = Logger.get(AgentInfoGenerateServiceImpl.class);
+
     private static final String UI_WORD_KEY = "aipp.service.impl.agent.agent";
 
     private final AippModelService aippModelService;
@@ -95,32 +96,17 @@ public class AgentInfoGenerateServiceImpl implements AgentInfoGenerateService {
 
     @Override
     public String generateGreeting(String desc, OperationContext context) {
-        try {
-            return this.generateByTemplate(desc, "prompt/promptGenerateGreeting.txt", context);
-        } catch (Exception e) {
-            log.error("Create agent generate greeting failed, reason:{}", e.getMessage());
-        }
-        return "";
+        return this.generateByTemplate(desc, "prompt/promptGenerateGreeting.txt", context);
     }
 
     @Override
     public String generatePrompt(String desc, OperationContext context) {
-        try {
-            return this.generateByTemplate(desc, "prompt/promptGeneratePrompt.txt", context);
-        } catch (Exception e) {
-            log.error("Create agent generate prompt failed, reason:{}", e.getMessage());
-        }
-        return StringUtils.EMPTY;
+        return this.generateByTemplate(desc, "prompt/promptGeneratePrompt.txt", context);
     }
 
     @Override
     public List<String> selectTools(String desc, String creator, OperationContext context) {
-        try {
-            return this.getToolsResult(desc, creator, context);
-        } catch (Exception e) {
-            log.error("Create agent select tools failed, reason:{}", e.getMessage());
-        }
-        return new ArrayList<>();
+        return this.getToolsResult(desc, creator, context);
     }
 
     private ArrayList<String> getToolsResult(String desc, String creator, OperationContext context) {
@@ -171,6 +157,7 @@ public class AgentInfoGenerateServiceImpl implements AgentInfoGenerateService {
         }
         ModelAccessInfo model = this.aippModelCenter.getDefaultModel(AippConst.CHAT_MODEL_TYPE, context);
         String prompt = new DefaultStringTemplate(template).render(values);
-        return aippModelService.chat(model.getServiceName(), model.getTag(), 0.0, prompt);
+        String rawContent = aippModelService.chat(model.getServiceName(), model.getTag(), 0.0, prompt);
+        return ContentProcessUtils.filterReasoningContent(rawContent);
     }
 }

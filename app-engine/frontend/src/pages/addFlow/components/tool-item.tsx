@@ -55,7 +55,7 @@ const ToolItem = () => {
         pageSize: 100,
         isPublished: true,
         name: searchName.current
-      }, 'excludeTags=App&excludeTags=WATERFLOW');
+      }, 'excludeTags=APP&excludeTags=WATERFLOW&excludeTags=BASIC');
     } else {
       res = await getMyPlugin(tenantId, {
         pageNum,

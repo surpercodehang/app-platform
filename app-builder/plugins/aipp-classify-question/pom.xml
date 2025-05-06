@@ -42,6 +42,10 @@
             <groupId>modelengine.jade.service</groupId>
             <artifactId>aipp-classify-question-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jane</groupId>
+            <artifactId>aipp-service</artifactId>
+        </dependency>
 
         <!-- Third-party -->
         <dependency>

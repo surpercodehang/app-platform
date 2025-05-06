@@ -19,6 +19,8 @@ export const TENANT_ID = '31f20efc7e0848deab6a6bc10fc3021e';
 export enum FileType {
   PDF = 'pdf',
   TXT = 'txt',
+  DOCX = 'docx',
+  XLSX = 'xlsx',
   MD = 'md',
   HTM = 'htm',
   HTML = 'html',

@@ -57,7 +57,7 @@ public class ClassifyQuestionCommandHandlerTest {
     @Test
     @DisplayName("测试执行问题分类命令成功")
     void shouldOkWhenHandleClassifyCommand() {
-        String expect = "1";
+        String expect = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
         String histories = "Q: q1\nA: a1";
         when(this.memoryFactory.create(any(), any())).thenReturn(new CacheMemory() {
             @Override
@@ -68,10 +68,10 @@ public class ClassifyQuestionCommandHandlerTest {
         when(this.aippModelCenter.getModelAccessInfo(any(), any(), any())).thenReturn(
                 ModelAccessInfo.builder().baseUrl("/model").tag("tag").build());
         when(this.modelService.generate(any(Prompt.class), any(ChatOption.class))).thenReturn(
-                Choir.just(new AiMessage("1")));
+                Choir.just(new AiMessage("f47ac10b-58cc-4372-a567-0e02b2c3d479")));
         ClassifyQuestionCommand command = TestUtils.getCommand();
         Assertions.assertEquals(this.commandService.handle(command), expect);
         Assertions.assertEquals(command.getTypeList(),
-                "{\"类型ID\":\"1\", \"问题类型\":\"a\"}" + "\n------\n" + "{\"类型ID\":\"2\", \"问题类型\":\"b\"}");
+                "{\"类型ID\":\"f47ac10b-58cc-4372-a567-0e02b2c3d479\", \"问题类型\":\"a\"}" + "\n------\n" + "{\"类型ID\":\"3fa4e1b2-7c6d-4a9f-8c3d-1b2e3f4a5b6c\", \"问题类型\":\"b\"}");
     }
 }

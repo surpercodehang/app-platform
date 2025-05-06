@@ -55,7 +55,7 @@ public class AippClassifyQuestionServiceTest {
         @Test
         @DisplayName("测试问题分类服务调用正常")
         void shouldOkWhenInvokeClassifyService() {
-            String expect = "1";
+            String expect = "f47ac10b-58cc-4372-a567-0e02b2c3d479";
             when(this.commandService.handle(any())).thenReturn(expect);
             ClassifyQuestionCommand command = TestUtils.getCommand();
             ClassifyQuestionParam param = new ClassifyQuestionParam();

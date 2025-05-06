@@ -22,6 +22,7 @@ import AppCard from '@/components/appCard';
 import EditModal from '../components/edit-modal';
 import Pagination from '@/components/pagination';
 import UploadApp from './components/upload-app';
+import CopyApp from './components/copy-app';
 import TemplateList from '@/pages/components/template-list';
 import WarningIcon from '@/assets/images/warning_icon.svg';
 import CreateImg from '@/assets/images/ai/create.png';
@@ -52,6 +53,7 @@ const AppDev: React.FC = () => {
   const [statusKey, setStatusKey] = useState(items[0].key);
   const [statusLabel, setStatusLabel] = useState(items[0].label);
   const uploadRef = useRef<any>();
+  const copyRef = useRef<any>();
   const currentApp = useRef<any>({});
   const tempalteListRef = useRef<any>(null);
   const readOnly = useAppSelector((state) => state.chatCommonStore.readOnly);
@@ -166,10 +168,17 @@ const AppDev: React.FC = () => {
   // 点击更多操作选项
   function clickMore(type: string, appInfo: string) {
     currentApp.current = appInfo;
-    if (type === 'delete') {
-      setOpen(true);
-    } else if (type === 'export') {
-      handleExportApp(cloneDeep(appInfo));
+    switch (type) {
+      case 'copy':
+        copyRef.current.openModal(appInfo);
+        break;
+      case 'delete':
+        setOpen(true);
+        break;
+      case 'export':
+        handleExportApp(cloneDeep(appInfo));
+        break;
+      default:
     }
   };
 
@@ -343,6 +352,8 @@ const AppDev: React.FC = () => {
       >
         <p>{t('deleteAppModalAlert')}</p>
       </Modal>
+      {/* 应用复制 */}
+      <CopyApp copyRef={copyRef} />
       {/* 应用导入 */}
       <UploadApp
         uploadRef={uploadRef}

@@ -86,6 +86,10 @@
             <groupId>modelengine.fit.jane</groupId>
             <artifactId>aipp-genericable</artifactId>
         </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jane</groupId>
+            <artifactId>aipp-service</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

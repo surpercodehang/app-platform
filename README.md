@@ -46,7 +46,11 @@ mvn clean install
 build/
 ```
 
-考虑到后端模块基于 FIT 框架。所以需要将输出目录与 FIT 框架的编译产物结合。将输出目录的 plugins 目录与 shared 目录分别与框架编译产物输出目录的 plugins 与 shared 目录相结合。
+**目录调整**
+
+需要将输出目录与 FIT 框架的编译产物结合。将输出目录的 `plugins` 目录下的所有文件复制到框架输出目录的 `plugins` 下，将 `shared` 目录下的所有文件复制到框架输出目录的 `shared` 下。
+
+> 后端模块基于 [FIT](https://ModelEngine-Group/fit-framework) 框架，启动方式采用了 [FIT 动态插件](https://github.com/ModelEngine-Group/fit-framework/blob/main/docs/framework/fit/java/quick-start-guide/03.%20%E4%BD%BF%E7%94%A8%E6%8F%92%E4%BB%B6%E7%9A%84%E7%83%AD%E6%8F%92%E6%8B%94%E8%83%BD%E5%8A%9B.md) 方式。
 
 **启动命令**
 
@@ -54,7 +58,9 @@ build/
 fit start -Dfit.profiles.active=prod
 ```
 
-> 这里直接使用了 `fit` 命令，该命令请参考 `fit-framework` 项目的指导手册。
+> 这里直接使用了 `fit` 命令，该命令请参考 `fit-framework` 项目的[指导手册](https://github.com/ModelEngine-Group/fit-framework/blob/main/docs/framework/fit/java/quick-start-guide/03.%20%E4%BD%BF%E7%94%A8%E6%8F%92%E4%BB%B6%E7%9A%84%E7%83%AD%E6%8F%92%E6%8B%94%E8%83%BD%E5%8A%9B.md)。
+> 
+> 当前，`app-platform` 使用了 `fit` 的 3.5.0-M2 版本，因此，如果采用手动编译，需要在 `fit-framework` 仓库中切换到 `v3.5.0-M2` 标签处进行编译构建操作。
 
 ---------
 

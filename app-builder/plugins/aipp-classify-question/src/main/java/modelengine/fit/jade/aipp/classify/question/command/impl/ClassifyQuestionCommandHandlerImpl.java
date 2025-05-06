@@ -23,6 +23,7 @@ import modelengine.fit.jade.aipp.classify.question.util.Constant;
 import modelengine.fit.jade.aipp.memory.AippMemoryFactory;
 import modelengine.fit.jade.aipp.model.dto.ModelAccessInfo;
 import modelengine.fit.jade.aipp.model.service.AippModelCenter;
+import modelengine.fit.jober.aipp.common.utils.ContentProcessUtils;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.flowable.Choir;
 import modelengine.fitframework.util.IoUtils;
@@ -31,6 +32,8 @@ import modelengine.fitframework.util.StringUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 表示 {@link ClassifyQuestionCommand} 的默认实现。
@@ -44,6 +47,8 @@ public class ClassifyQuestionCommandHandlerImpl implements ClassifyQuestionComma
     private final AippModelCenter aippModelCenter;
     private final String builtinPrompt;
     private final ChatModel modelService;
+
+    private static final String TYPE_REGEX = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
 
     /**
      * 创建 {@link ClassifyQuestionCommandHandlerImpl} 的实例。
@@ -84,8 +89,14 @@ public class ClassifyQuestionCommandHandlerImpl implements ClassifyQuestionComma
         ChatMessages chatMessages = new ChatMessages();
         chatMessages.add(new HumanMessage(prompt));
         Choir<ChatMessage> answer = this.modelService.generate(chatMessages, chatOption);
-        String textAnswer = answer.blockAll().get(0).text();
-        return command.getQuestionType(textAnswer)
+        String textAnswer = ContentProcessUtils.filterReasoningContent(answer.blockAll().get(0).text());
+        String extractedType = "";
+        Pattern pattern = Pattern.compile(TYPE_REGEX);
+        Matcher matcher = pattern.matcher(textAnswer);
+        if (matcher.find()) {
+            extractedType = matcher.group();
+        }
+        return command.getQuestionType(extractedType)
                 .map(QuestionType::getId)
                 .orElseGet(() -> command.getLastQuestionType().getId());
     }

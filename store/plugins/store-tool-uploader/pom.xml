@@ -48,7 +48,7 @@
         <dependency>
             <groupId>org.fitframework.fel</groupId>
             <artifactId>tool-info</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>3.5.0-M2</version>
         </dependency>
 
         <!-- Test -->
