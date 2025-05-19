@@ -26,10 +26,9 @@ public interface RetrieverService {
      * @param query 表示问题内容的 {@link Object}。
      * @param knowledgeRepos 表示知识库标识列表的 {@link List}{@link <}{@link KnowledgeRepoInfo}{@link >}。
      * @param option 表示检索配置的 {@link RetrieverServiceOption}。
-     * @param userId 表示用户id的 {@link String}。
      * @return 表示文档内容的 {@link List}{@code <}{@link KnowledgeDocument}{@code >}。
      */
     @Genericable("modelengine.jade.knowledge.service.retrieve")
     List<KnowledgeDocument> invoke(Object query, List<KnowledgeRepoInfo> knowledgeRepos,
-            RetrieverServiceOption option, String userId);
+            RetrieverServiceOption option);
 }

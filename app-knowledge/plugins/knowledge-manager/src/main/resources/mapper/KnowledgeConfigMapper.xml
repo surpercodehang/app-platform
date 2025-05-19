@@ -12,16 +12,18 @@
         <result property="createdBy" column="created_by"/>
         <result property="updatedAt" column="updated_at"/>
         <result property="updatedBy" column="updated_by"/>
+        <result property="knowledgeConfigId" column="knowledge_config_id" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, user_id, group_id, api_key, is_default, created_at, created_by, updated_at, updated_by
+        id, name, user_id, group_id, api_key, is_default, created_at, created_by, updated_at, updated_by, knowledge_config_id
     </sql>
 
     <insert id="insert" parameterType="modelengine.jade.knowledge.po.KnowledgeConfigPo">
         insert into t_app_engine_user_knowledge
-        (name, user_id, group_id, api_key, is_default, created_by, created_at, updated_by, updated_at)
-        values (#{name}, #{userId}, #{groupId}, #{apiKey}, #{isDefault}, #{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt})
+        (name, user_id, group_id, api_key, is_default, created_by, created_at, updated_by, updated_at, knowledge_config_id)
+        values (#{name}, #{userId}, #{groupId}, #{apiKey}, #{isDefault}, #{createdBy}, #{createdAt}, #{updatedBy},
+        #{updatedAt}, #{knowledgeConfigId})
     </insert>
 
     <update id="update" parameterType="modelengine.jade.knowledge.po.KnowledgeConfigPo">
@@ -55,6 +57,9 @@
         <if test="cond.apiKey != null">
             and api_key = #{cond.apiKey}
         </if>
+        <if test="cond.knowledgeConfigId != null">
+            and knowledge_config_id = #{cond.knowledgeConfigId}
+        </if>
         ORDER BY updated_at DESC, created_at DESC
     </select>
 
@@ -63,7 +68,10 @@
         <set>
             is_default = 0
         </set>
-        where id != #{id} and group_id = #{groupId} and user_id = #{userId}
+        where group_id = #{groupId} and user_id = #{userId}
+        <if test="id != null">
+            and id != #{id}
+        </if>
     </update>
 
     <update id="updateNewestIsDefaultTrue" parameterType="modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition">
@@ -75,6 +83,9 @@
             select id
             from t_app_engine_user_knowledge
             where group_id = #{groupId} and user_id = #{userId}
+            <if test="id !=null">
+                and id != #{id}
+            </if>
             order by updated_at desc
             limit 1
         )

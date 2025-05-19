@@ -6,9 +6,8 @@
 
 package modelengine.jade.carver.tool.repository.pgsql.repository;
 
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.model.entity.ToolIdentifier;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.model.entity.ToolIdentifier;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,25 +22,25 @@ public interface ToolRepository {
     /**
      * 添加工具。
      *
-     * @param info 表示待增加的工具信息的 {@link Tool.ToolInfo}。
+     * @param info 表示待增加的工具信息的 {@link Tool.Info}。
      */
-    void addTool(Tool.ToolInfo info);
+    void addTool(Tool.Info info);
 
     /**
      * 添加工具列表。
      *
-     * @param infos 表示待增加的工具列表的 {@link Tool.ToolInfo}。
+     * @param infos 表示待增加的工具列表的 {@link Tool.Info}。
      */
-    void addTools(List<Tool.ToolInfo> infos);
+    void addTools(List<Tool.Info> infos);
 
     /**
      * 按照组添加工具列表。
      *
      * @param definitionGroupName 表示待增加的工具定义组名字的 {@link String}。
      * @param groupName 表示待增加的工具组名字的 {@link String}。
-     * @param infos 表示待增加的工具列表的 {@link Tool.ToolInfo}。
+     * @param infos 表示待增加的工具列表的 {@link Tool.Info}。
      */
-    void addTools(String definitionGroupName, String groupName, List<Tool.ToolInfo> infos);
+    void addTools(String definitionGroupName, String groupName, List<Tool.Info> infos);
 
     /**
      * 删除工具。
@@ -93,26 +92,26 @@ public interface ToolRepository {
      * 基于工具的唯一标识查询某个工具。
      *
      * @param uniqueName 表示工具的唯一标识的 {@link String}。
-     * @return 表示工具详细信息的 {@link Optional}{@code <}{@link Tool}{@code >}。
+     * @return 表示工具详细信息的 {@link Optional}{@code <}{@link Tool.Info}{@code >}。
      */
-    Optional<Tool.ToolInfo> getTool(String uniqueName);
+    Optional<Tool.Info> getTool(String uniqueName);
 
     /**
      * 查询定义组下所有的工具。
      *
      * @param definitionGroupName 表示待注册工具定义组名的 {@link String}。
-     * @return 表示工具详细信息的 {@link List}{@code <}{@link ToolData}{@code >}。
+     * @return 表示工具详细信息的 {@link List}{@code <}{@link Tool.Info}{@code >}。
      */
-    List<Tool.ToolInfo> getTools(String definitionGroupName);
+    List<Tool.Info> getTools(String definitionGroupName);
 
     /**
      * 查询工具组下所有的工具数据。
      *
      * @param definitionGroupName 表示待增加的工具定义组名字的 {@link String}。
      * @param groupName 表示工具组名的 {@link String}。
-     * @return 表示工具详细信息的 {@link List}{@code <}{@link Tool.ToolInfo}{@code >}。
+     * @return 表示工具详细信息的 {@link List}{@code <}{@link Tool.Info}{@code >}。
      */
-    List<Tool.ToolInfo> getTools(String definitionGroupName, String groupName);
+    List<Tool.Info> getTools(String definitionGroupName, String groupName);
 
     /**
      * 将工具的最新版本设置为不是最新。
@@ -126,17 +125,17 @@ public interface ToolRepository {
      *
      * @param toolUniqueName 表示工具的唯一标识的 {@link String}。
      * @param version 表示工具的版本的 {@link String}。
-     * @return 表示工具详细信息的 {@link Optional}{@code <}{@link Tool.ToolInfo}{@code >}。
+     * @return 表示工具详细信息的 {@link Optional}{@code <}{@link Tool.Info}{@code >}。
      */
-    Optional<Tool.ToolInfo> getToolByVersion(String toolUniqueName, String version);
+    Optional<Tool.Info> getToolByVersion(String toolUniqueName, String version);
 
     /**
      * 查询一个工具的所有版本。
      *
      * @param toolUniqueName 表示工具的唯一标识的 {@link String}。
-     * @return 表示工具版本列表的 {@link List}{@code <}{@link Tool.ToolInfo}{@code >}。
+     * @return 表示工具版本列表的 {@link List}{@code <}{@link Tool.Info}{@code >}。
      */
-    List<Tool.ToolInfo> getAllToolVersions(String toolUniqueName);
+    List<Tool.Info> getAllToolVersions(String toolUniqueName);
 
     /**
      * 查询一个工具的所有版本的总数。
@@ -150,7 +149,7 @@ public interface ToolRepository {
      * 根据工具的唯一标识和版本列表查询工具列表。
      *
      * @param toolIdentifiers 表示工具的唯一标识和版本列表的 {@link List}{@code <}{@link ToolIdentifier}{@code >}。
-     * @return 表示工具详细信息列表的 {@link List}{@code <}{@link Tool.ToolInfo}{@code >}。
+     * @return 表示工具详细信息列表的 {@link List}{@code <}{@link Tool.Info}{@code >}。
      */
-    List<Tool.ToolInfo> getToolsByIdentifier(List<ToolIdentifier> toolIdentifiers);
+    List<Tool.Info> getToolsByIdentifier(List<ToolIdentifier> toolIdentifiers);
 }

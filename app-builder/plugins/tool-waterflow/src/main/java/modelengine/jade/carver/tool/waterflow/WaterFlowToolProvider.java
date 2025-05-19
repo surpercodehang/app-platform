@@ -6,27 +6,24 @@
 
 package modelengine.jade.carver.tool.waterflow;
 
-import modelengine.fit.jade.tool.SyncToolCall;
-import modelengine.fit.jober.aipp.constants.AippConst;
-import modelengine.fitframework.util.MapBuilder;
-import modelengine.fitframework.util.ObjectUtils;
-import modelengine.fitframework.log.Logger;
-import modelengine.fitframework.util.UuidUtils;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.service.ToolService;
-import modelengine.jade.carver.tool.waterflow.invoker.ToolInvoker;
-
 import modelengine.fel.core.chat.support.FlatChatMessage;
 import modelengine.fel.core.chat.support.ToolMessage;
 import modelengine.fel.core.tool.ToolCall;
 import modelengine.fel.core.tool.ToolInfo;
 import modelengine.fel.core.tool.ToolProvider;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.ToolService;
+import modelengine.fit.jade.tool.SyncToolCall;
+import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.inspection.Validation;
+import modelengine.fitframework.log.Logger;
+import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.fitframework.util.UuidUtils;
+import modelengine.jade.carver.tool.waterflow.invoker.ToolInvoker;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +44,7 @@ public class WaterFlowToolProvider implements ToolProvider, SyncToolCall {
     /**
      * 创建默认工具提供者。
      *
-     * @param toolService  表示查询服务的 {@link ToolService}。
+     * @param toolService 表示查询服务的 {@link ToolService}。
      * @param toolInvokers 表示执行能力列表的 {@link ToolInvoker}。
      */
     public WaterFlowToolProvider(ToolService toolService, List<ToolInvoker> toolInvokers) {
@@ -81,8 +78,10 @@ public class WaterFlowToolProvider implements ToolProvider, SyncToolCall {
     }
 
     private ToolInvoker getToolInvoker(ToolData toolData) {
-        return Validation.notNull(
-                this.toolInvokers.stream().filter(toolInvoker -> toolInvoker.match(toolData)).findAny().orElse(null),
+        return Validation.notNull(this.toolInvokers.stream()
+                        .filter(toolInvoker -> toolInvoker.match(toolData))
+                        .findAny()
+                        .orElse(null),
                 StringUtils.format("Cannot find tool invoker. [uniqueName={0}]", toolData.getUniqueName()));
     }
 
@@ -96,9 +95,8 @@ public class WaterFlowToolProvider implements ToolProvider, SyncToolCall {
                 .arguments(toolArgs)
                 .build();
         ToolInvoker toolInvoker = this.getToolInvoker(toolCall.name());
-        Map<String, Object> toolContext = MapBuilder.<String, Object>get()
-                .put(AippConst.CONTEXT_USER_ID, "jade")
-                .build();
+        Map<String, Object> toolContext =
+                MapBuilder.<String, Object>get().put(AippConst.CONTEXT_USER_ID, "jade").build();
         return toolInvoker.invoke(toolCall, toolContext);
     }
 }

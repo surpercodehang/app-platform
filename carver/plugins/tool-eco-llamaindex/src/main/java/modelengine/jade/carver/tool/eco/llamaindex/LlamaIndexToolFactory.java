@@ -8,13 +8,13 @@ package modelengine.jade.carver.tool.eco.llamaindex;
 
 import static modelengine.fitframework.inspection.Validation.notNull;
 
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.ToolFactory;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.inspection.Validation;
 import modelengine.fitframework.serialization.ObjectSerializer;
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.ToolFactory;
 
 /**
  * 表示 {@link ToolFactory} 的 LlamaIndex 的实现。
@@ -38,7 +38,7 @@ public class LlamaIndexToolFactory implements ToolFactory {
     }
 
     @Override
-    public Tool create(Tool.ToolInfo itemInfo, Tool.Metadata metadata) {
+    public Tool create(Tool.Info itemInfo, Tool.Metadata metadata) {
         return new LlamaIndexTool(this.brokerClient, this.serializer, itemInfo, metadata);
     }
 }

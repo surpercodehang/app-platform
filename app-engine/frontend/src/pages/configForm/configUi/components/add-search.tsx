@@ -7,7 +7,7 @@
 import React, { useImperativeHandle, useState, useRef } from 'react';
 import { Modal, Tabs, Radio, Switch, Tooltip, Spin } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { getSearchParams } from '@/shared/http/appBuilder';
+import { getSearchParams } from '@/shared/http/knowledge';
 import { useTranslation } from 'react-i18next';
 import { Message } from '@/shared/utils/message';
 import type { RadioChangeEvent } from 'antd';

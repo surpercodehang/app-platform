@@ -6,14 +6,14 @@
 
 package modelengine.jade.store.entity.transfer;
 
+import static modelengine.fel.tool.ToolSchema.DESCRIPTION;
 import static modelengine.fitframework.util.ObjectUtils.cast;
-import static modelengine.jade.carver.tool.ToolSchema.DESCRIPTION;
 
+import modelengine.fel.tool.ToolSchema;
+import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.jade.carver.tool.ToolSchema;
-import modelengine.jade.carver.tool.model.transfer.DefinitionData;
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
 
 import java.util.Arrays;
 import java.util.HashMap;

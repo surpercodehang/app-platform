@@ -71,7 +71,9 @@ public class DefaultOperationLogExporter implements OperationLogExporter {
 
     private void exportHandle(OperationLogFields fields) {
         log.info("Operation span. [operation = {}, result = {}, detail = {}]",
-                fields.getName(), fields.getOperationResult(), fields.getDetails());
+                fields.getName(),
+                fields.getOperationResult(),
+                fields.getDetails());
         if (StringUtils.isBlank(this.collectorUri)) {
             return;
         }

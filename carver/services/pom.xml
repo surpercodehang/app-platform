@@ -17,6 +17,5 @@
         <module>common-service</module>
         <module>operation-log-service</module>
         <module>telemetry-service</module>
-        <module>tool-service</module>
     </modules>
 </project>

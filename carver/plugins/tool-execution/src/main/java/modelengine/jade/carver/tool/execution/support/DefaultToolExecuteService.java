@@ -9,15 +9,14 @@ package modelengine.jade.carver.tool.execution.support;
 import static modelengine.fitframework.inspection.Validation.notBlank;
 import static modelengine.fitframework.inspection.Validation.notNull;
 
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.ToolFactory;
-import modelengine.jade.carver.tool.model.transfer.DefinitionData;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.repository.ToolFactoryRepository;
-import modelengine.jade.carver.tool.service.DefinitionService;
-import modelengine.jade.carver.tool.service.ToolExecuteService;
-import modelengine.jade.carver.tool.service.ToolService;
-
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.ToolFactory;
+import modelengine.fel.tool.ToolFactoryRepository;
+import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.DefinitionService;
+import modelengine.fel.tool.service.ToolExecuteService;
+import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.annotation.Fitable;
@@ -59,6 +58,22 @@ public class DefaultToolExecuteService implements ToolExecuteService {
 
     @Override
     @Fitable(id = "standard")
+    public String execute(String group, String toolName, String jsonArgs) {
+        Tool tool = this.getTool(toolName);
+        Object output = tool.executeWithJson(jsonArgs);
+        return this.convertOutput(tool.metadata().returnConverter(), output);
+    }
+
+    @Override
+    @Fitable(id = "standard")
+    public String execute(String group, String toolName, Map<String, Object> jsonObject) {
+        Tool tool = this.getTool(toolName);
+        Object output = tool.executeWithJsonObject(jsonObject);
+        return this.convertOutput(tool.metadata().returnConverter(), output);
+    }
+
+    @Override
+    @Fitable(id = "standard")
     public String execute(String uniqueName, String jsonArgs) {
         Tool tool = this.getTool(uniqueName);
         Object output = tool.executeWithJson(jsonArgs);
@@ -76,7 +91,7 @@ public class DefaultToolExecuteService implements ToolExecuteService {
     private Tool getTool(String uniqueName) {
         notBlank(uniqueName, "The tool unique name cannot be blank.");
         ToolData toolData = this.toolService.getTool(uniqueName);
-        Tool.ToolInfo info = notNull(ToolData.convertToInfo(toolData),
+        Tool.Info info = notNull(ToolData.convertToInfo(toolData),
                 StringUtils.format("No tool with specified unique name. [uniqueName={0}]", uniqueName));
         Set<String> runnables = info.runnables().keySet();
         Optional<ToolFactory> factory = this.toolFactoryRepository.match(runnables);
@@ -85,8 +100,7 @@ public class DefaultToolExecuteService implements ToolExecuteService {
                     runnables));
         }
 
-        DefinitionData definitionData =
-                this.definitionService.get(toolData.getDefGroupName(), toolData.getDefName());
+        DefinitionData definitionData = this.definitionService.get(toolData.getDefGroupName(), toolData.getDefName());
         Tool.Metadata metadata = Tool.Metadata.fromSchema(uniqueName, definitionData.getSchema());
         return factory.get().create(info, metadata);
     }

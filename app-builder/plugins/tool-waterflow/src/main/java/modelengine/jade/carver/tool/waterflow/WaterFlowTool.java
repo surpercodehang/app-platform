@@ -8,7 +8,7 @@ package modelengine.jade.carver.tool.waterflow;
 
 import static modelengine.fitframework.inspection.Validation.notNull;
 
-import modelengine.jade.carver.tool.Tool;
+import modelengine.fel.tool.Tool;
 
 import java.util.Map;
 
@@ -20,25 +20,25 @@ import java.util.Map;
  */
 public class WaterFlowTool implements Tool {
     private final Tool tool;
-    private final ToolInfo toolInfo;
+    private final Tool.Info toolInfo;
     private final Metadata metadata;
 
     /**
      * 通过 Json 处理工具和工具元数据来初始化 {@link WaterFlowTool} 的新实例。
      *
      * @param tool 表示工作流工具入口调用的真实工具的 {@link Tool}。
-     * @param info 表示工具的基本信息的 {@link ToolInfo}。
+     * @param info 表示工具的基本信息的 {@link Tool.Info}。
      * @param metadata 表示工作流工具的元数据信息的 {@link Metadata}。
      * @throws IllegalArgumentException 当 {@code argsTool} 或 {@code metadata} 为 {@code null} 时。
      */
-    public WaterFlowTool(Tool tool, ToolInfo info, Tool.Metadata metadata) {
+    public WaterFlowTool(Tool tool, Tool.Info info, Tool.Metadata metadata) {
         this.tool = notNull(tool, "The tool cannot be null.");
         this.toolInfo = new DefaultValueFilterToolInfo(info);
         this.metadata = notNull(metadata, "The tool metadata cannot be null.");
     }
 
     @Override
-    public ToolInfo info() {
+    public Tool.Info info() {
         return this.toolInfo;
     }
 

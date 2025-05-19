@@ -6,11 +6,11 @@
 
 package modelengine.jade.carver.tool.repository.pgsql;
 
-import modelengine.jade.carver.tool.ToolSchema;
-import modelengine.jade.carver.tool.model.transfer.DefinitionData;
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
+import modelengine.fel.tool.ToolSchema;
+import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
 
 import modelengine.fitframework.util.MapBuilder;
 
@@ -38,8 +38,10 @@ public class ToolDataBuilder {
         toolData.setDefName("defName");
         toolData.setDefGroupName("defGroupName");
         Map<String, Object> schema = new HashMap<String, Object>();
+        schema.put("namespace", "namespace");
         schema.put("name", "name");
         schema.put("description", "description");
+        schema.put("parameters", new HashMap<>());
         toolData.setSchema(schema);
         toolData.setRunnables(new HashMap<String, Object>());
         toolData.setExtensions(new HashMap<String, Object>());
@@ -123,8 +125,10 @@ public class ToolDataBuilder {
         toolData.setDefName("defName");
         toolData.setDefGroupName("defGroupName");
         Map<String, Object> schema = new HashMap<>();
+        schema.put("namespace", "namespace");
         schema.put("name", "name");
         schema.put("description", "description");
+        schema.put("parameters", new HashMap<>());
         toolData.setSchema(schema);
         toolData.setRunnables(new HashMap<>());
         toolData.setExtensions(new HashMap<>());

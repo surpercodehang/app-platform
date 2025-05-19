@@ -8,19 +8,18 @@ package modelengine.jade.carver.tool.repository.pgsql.service;
 
 import static modelengine.fitframework.inspection.Validation.notNull;
 
-import modelengine.jade.carver.ListResult;
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.model.entity.ToolIdentifier;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepository;
-import modelengine.jade.carver.tool.service.DefinitionService;
-import modelengine.jade.carver.tool.service.ToolService;
-
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.model.ListResult;
+import modelengine.fel.tool.model.entity.ToolIdentifier;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.DefinitionService;
+import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.transaction.Transactional;
+import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,7 +55,7 @@ public class DefaultToolService implements ToolService {
     @Transactional
     public String addTool(ToolData toolData) {
         ToolData.transform(toolData);
-        Tool.ToolInfo info = ToolData.convertToInfo(toolData);
+        Tool.Info info = ToolData.convertToInfo(toolData);
         this.toolRepo.addTool(info);
         return toolData.getUniqueName();
     }
@@ -65,7 +64,7 @@ public class DefaultToolService implements ToolService {
     @Fitable(id = FITABLE_ID)
     @Transactional
     public void addTools(List<ToolData> toolDataList) {
-        List<Tool.ToolInfo> infos = toolDataList.stream()
+        List<Tool.Info> infos = toolDataList.stream()
                 .map(ToolData::transform)
                 .map(ToolData::convertToInfo)
                 .collect(Collectors.toList());
@@ -76,7 +75,7 @@ public class DefaultToolService implements ToolService {
     @Fitable(id = FITABLE_ID)
     @Transactional
     public void addTools(String definitionGroupName, String groupName, List<ToolData> toolDataList) {
-        List<Tool.ToolInfo> infos = toolDataList.stream()
+        List<Tool.Info> infos = toolDataList.stream()
                 .map(ToolData::transform)
                 .map(ToolData::convertToInfo)
                 .collect(Collectors.toList());
@@ -131,7 +130,7 @@ public class DefaultToolService implements ToolService {
     @Override
     @Fitable(id = FITABLE_ID)
     public ToolData getTool(String toolUniqueName) {
-        Optional<Tool.ToolInfo> info = this.toolRepo.getTool(toolUniqueName);
+        Optional<Tool.Info> info = this.toolRepo.getTool(toolUniqueName);
         if (!info.isPresent()) {
             return null;
         }
@@ -155,7 +154,7 @@ public class DefaultToolService implements ToolService {
     @Override
     @Fitable(id = FITABLE_ID)
     public ToolData getToolByVersion(String toolUniqueName, String version) {
-        Optional<Tool.ToolInfo> info = this.toolRepo.getToolByVersion(toolUniqueName, version);
+        Optional<Tool.Info> info = this.toolRepo.getToolByVersion(toolUniqueName, version);
         if (!info.isPresent()) {
             return null;
         }
@@ -217,7 +216,7 @@ public class DefaultToolService implements ToolService {
         return ListResult.create(toolDataList, toolDataList.size());
     }
 
-    private List<ToolData> getToolDataList(List<Tool.ToolInfo> infos) {
+    private List<ToolData> getToolDataList(List<Tool.Info> infos) {
         return infos.stream().map(ToolData::from).map(ToolData::transform).collect(Collectors.toList());
     }
 }

@@ -9,9 +9,9 @@ package modelengine.fit.jade.fortune;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.annotation.Property;
-import modelengine.jade.carver.tool.annotation.Attribute;
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
+import modelengine.fel.tool.annotation.Attribute;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 
 import java.util.Map;
 

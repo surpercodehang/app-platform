@@ -1,8 +1,8 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) 2025 Huawei Technologies Co., Ltd. All rights reserved.
- *  This file is a part of the ModelEngine Project.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+/*
+ * Copyright (c) 2024-2025 Huawei Technologies Co., Ltd. All rights reserved.
+ * This file is a part of the ModelEngine Project.
+ * Licensed under the MIT License. See License.txt in the project root for license information.
+ */
 
 package modelengine.fel.core.tool;
 
@@ -15,7 +15,8 @@ import java.util.Map;
  * 表示可调用工具的实体。
  *
  * @author 易文渊
- * @since 2024-4-8
+ * @author 季聿阶
+ * @since 2024-04-08
  */
 public interface ToolInfo {
     /**
@@ -56,46 +57,46 @@ public interface ToolInfo {
     /**
      * {@link ToolInfo} 的构建器。
      */
-    interface Builder {
+    interface Builder<B extends Builder<B>> {
         /**
          * 设置工具的命名空间。
          *
          * @param namespace 表示工具命名空间的 {@link String}。
-         * @return 表示当前构建器的 {@link Builder}。
+         * @return 表示当前构建器的 {@link B}。
          */
-        Builder namespace(String namespace);
+        B namespace(String namespace);
 
         /**
          * 设置工具的名称。
          *
          * @param name 表示工具名称的 {@link String}。
-         * @return 表示当前构建器的 {@link Builder}。
+         * @return 表示当前构建器的 {@link B}。
          */
-        Builder name(String name);
+        B name(String name);
 
         /**
          * 设置工具的描述。
          *
          * @param description 表示工具参数描述的 {@link String}。
-         * @return 表示当前构建器的 {@link Builder}。
+         * @return 表示当前构建器的 {@link B}。
          */
-        Builder description(String description);
+        B description(String description);
 
         /**
          * 设置工具的参数描述。
          *
          * @param parameters 表示工具参数描述的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
-         * @return 表示当前构建器的 {@link Builder}。
+         * @return 表示当前构建器的 {@link B}。
          */
-        Builder parameters(Map<String, Object> parameters);
+        B parameters(Map<String, Object> parameters);
 
         /**
          * 设置工具的扩展属性。
          *
          * @param extensions 表示工具扩展属性的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
-         * @return 表示当前构建器的 {@link Builder}。
+         * @return 表示当前构建器的 {@link B}。
          */
-        Builder extensions(Map<String, Object> extensions);
+        B extensions(Map<String, Object> extensions);
 
         /**
          * 构建对象。
@@ -110,7 +111,7 @@ public interface ToolInfo {
      *
      * @return 表示 {@link ToolInfo} 的构建器的 {@link Builder}。
      */
-    static Builder custom() {
+    static Builder<?> custom() {
         return BuilderFactory.get(ToolInfo.class, Builder.class).create(null);
     }
 

@@ -27,17 +27,17 @@ public class KnowledgeConfigPo extends BasePo {
     private String name;
 
     /**
-     * 用户id。
+     * 用户 id。
      */
     private String userId;
 
     /**
-     * 知识库api key。
+     * 知识库 api key。
      */
     private String apiKey;
 
     /**
-     * 知识库平台groupId。
+     * 知识库平台 groupId。
      */
     private String groupId;
 
@@ -45,6 +45,11 @@ public class KnowledgeConfigPo extends BasePo {
      * 是否为默认使用。
      */
     private int isDefault;
+
+    /**
+     * 唯一 id。
+     */
+    private String knowledgeConfigId;
 
     /**
      * 用于构建 {@link KnowledgeConfigPo} 实例的构建器类。
@@ -159,6 +164,17 @@ public class KnowledgeConfigPo extends BasePo {
          */
         public Builder updatedBy(String updatedBy) {
             this.instance.setUpdatedBy(updatedBy);
+            return this;
+        }
+
+        /**
+         * 设置唯一id。
+         *
+         * @param knowledgeConfigId 表示唯一id的 {@link String}。
+         * @return {@link Builder} 构建器本身。
+         */
+        public Builder knowledgeConfigId(String knowledgeConfigId) {
+            this.instance.setKnowledgeConfigId(knowledgeConfigId);
             return this;
         }
 

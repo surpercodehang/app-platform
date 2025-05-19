@@ -6,21 +6,11 @@
 
 package modelengine.fit.jober.aipp.service.impl;
 
-import static modelengine.jade.common.Result.calculateOffset;
 import static modelengine.fit.jober.aipp.enums.ToolCategoryEnum.HUGGINGFACE;
 import static modelengine.fit.jober.aipp.init.serialization.AippComponentInitiator.COMPONENT_DATA;
+import static modelengine.jade.common.Result.calculateOffset;
 
-import modelengine.jade.common.locale.LocaleUtil;
-import modelengine.jade.store.entity.query.ModelQuery;
-import modelengine.jade.store.entity.query.PluginToolQuery;
-import modelengine.jade.store.entity.transfer.PluginToolData;
-import modelengine.jade.store.entity.transfer.TaskData;
-import modelengine.jade.store.service.EcoTaskService;
-import modelengine.jade.store.service.HuggingFaceModelService;
-import modelengine.jade.store.service.PluginToolService;
-
-import modelengine.jade.carver.ListResult;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
+import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.dto.AppBuilderWaterFlowInfoDto;
@@ -43,6 +33,15 @@ import modelengine.fitframework.util.LazyLoader;
 import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.carver.ListResult;
+import modelengine.jade.common.locale.LocaleUtil;
+import modelengine.jade.store.entity.query.ModelQuery;
+import modelengine.jade.store.entity.query.PluginToolQuery;
+import modelengine.jade.store.entity.transfer.PluginToolData;
+import modelengine.jade.store.entity.transfer.TaskData;
+import modelengine.jade.store.service.EcoTaskService;
+import modelengine.jade.store.service.HuggingFaceModelService;
+import modelengine.jade.store.service.PluginToolService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -136,9 +135,10 @@ public class StoreServiceImpl implements StoreService {
         return this.buildToolNodesConfig(tag, mode, pageNum, pageSize, version)
                 .getData()
                 .stream()
-                .map(toolData -> ToolModelDto.combine2ToolModelDto(toolData, tag.equalsIgnoreCase(HUGGINGFACE.getName())
-                        ? getDefaultModel(toolData, tag)
-                        : StringUtils.EMPTY))
+                .map(toolData -> ToolModelDto.combine2ToolModelDto(toolData,
+                        tag.equalsIgnoreCase(HUGGINGFACE.getName())
+                                ? getDefaultModel(toolData, tag)
+                                : StringUtils.EMPTY))
                 .collect(Collectors.toList());
     }
 
@@ -197,27 +197,28 @@ public class StoreServiceImpl implements StoreService {
     private void setUniqueName(List<StoreNodeInfoDto> nodeList) {
         nodeList.stream()
                 .filter(nodeInfoDto -> this.tags.containsValue(nodeInfoDto.getType()))
-                .forEach(nodeInfoDto -> nodeInfoDto.setUniqueName(
-                        uniqueNames.get().getOrDefault(nodeInfoDto.getType(), StringUtils.EMPTY)));
+                .forEach(nodeInfoDto -> nodeInfoDto.setUniqueName(uniqueNames.get()
+                        .getOrDefault(nodeInfoDto.getType(), StringUtils.EMPTY)));
     }
 
     @Override
     public List<AppBuilderWaterFlowInfoDto> getWaterFlowInfos(String mode, int pageNum, int pageSize, String version) {
-        List<PluginToolData> waterFlows = this.buildToolNodesConfig(AppCategory.WATER_FLOW.getTag(), mode, pageNum,
-                pageSize, version).getData();
+        List<PluginToolData> waterFlows =
+                this.buildToolNodesConfig(AppCategory.WATER_FLOW.getTag(), mode, pageNum, pageSize, version).getData();
         List<String> storeIds = waterFlows.stream().map(ToolData::getUniqueName).collect(Collectors.toList());
         if (storeIds.isEmpty()) {
             return Collections.emptyList();
         }
         List<AppBuilderAppPo> appInfos = appBuilderAppMapper.selectWithStoreId(storeIds);
         Map<String, StoreWaterFlowDto> appInfoMap = appInfos.stream()
-                .collect(
-                        Collectors.toMap(info -> JsonUtils.parseObject(info.getAttributes()).get("store_id").toString(),
-                                info -> StoreWaterFlowDto.builder()
-                                        .version(info.getVersion())
-                                        .id(info.getId())
-                                        .tenantId(info.getTenantId())
-                                        .build()));
+                .collect(Collectors.toMap(info -> JsonUtils.parseObject(info.getAttributes())
+                                .get("store_id")
+                                .toString(),
+                        info -> StoreWaterFlowDto.builder()
+                                .version(info.getVersion())
+                                .id(info.getId())
+                                .tenantId(info.getTenantId())
+                                .build()));
         return waterFlows.stream()
                 .map(waterFlow -> buildWaterFlowInfo(waterFlow, appInfoMap))
                 .collect(Collectors.toList());

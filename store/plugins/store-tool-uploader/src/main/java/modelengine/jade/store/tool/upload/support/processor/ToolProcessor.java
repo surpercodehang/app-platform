@@ -6,6 +6,11 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
+import static modelengine.fel.tool.ToolSchema.DESCRIPTION;
+import static modelengine.fel.tool.ToolSchema.EXTENSIONS;
+import static modelengine.fel.tool.ToolSchema.NAME;
+import static modelengine.fel.tool.ToolSchema.RUNNABLE;
+import static modelengine.fel.tool.ToolSchema.SCHEMA;
 import static modelengine.fel.tool.info.schema.PluginSchema.DOT;
 import static modelengine.fel.tool.info.schema.ToolsSchema.DEFINITION_GROUP_NAME_IN_TOOL;
 import static modelengine.fel.tool.info.schema.ToolsSchema.DEFINITION_NAME;
@@ -21,11 +26,6 @@ import static modelengine.fel.tool.info.schema.ToolsSchema.TOOL_GROUPS;
 import static modelengine.fitframework.inspection.Validation.notEmpty;
 import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.fitframework.util.ObjectUtils.cast;
-import static modelengine.jade.carver.tool.ToolSchema.DESCRIPTION;
-import static modelengine.jade.carver.tool.ToolSchema.EXTENSIONS;
-import static modelengine.jade.carver.tool.ToolSchema.NAME;
-import static modelengine.jade.carver.tool.ToolSchema.RUNNABLE;
-import static modelengine.jade.carver.tool.ToolSchema.SCHEMA;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildEmptyParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildNullParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildParserException;
@@ -36,6 +36,9 @@ import modelengine.fel.tool.info.entity.DefinitionEntity;
 import modelengine.fel.tool.info.entity.ToolEntity;
 import modelengine.fel.tool.info.entity.ToolGroupEntity;
 import modelengine.fel.tool.info.entity.ToolJsonEntity;
+import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.merge.ConflictResolverCollection;
@@ -45,9 +48,6 @@ import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.jade.carver.tool.model.transfer.DefinitionData;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.code.PluginRetCode;
 

@@ -6,11 +6,10 @@
 
 package modelengine.jade.carver.tool.repository.pgsql.model.entity;
 
-import modelengine.jade.carver.entity.CommonDo;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import modelengine.jade.carver.entity.CommonDo;
 
 /**
  * 基本组的实体类。

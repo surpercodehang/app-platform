@@ -16,7 +16,7 @@ import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.validation.Validated;
-import modelengine.jade.carver.tool.service.ToolGroupService;
+import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.jade.common.vo.PageVo;
 import modelengine.jade.knowledge.KnowledgeCenterService;
 import modelengine.jade.knowledge.KnowledgeI18nInfo;
@@ -89,11 +89,10 @@ public class KnowledgeController extends AbstractController {
     @GetMapping("/list/repos")
     public PageVo<KnowledgeRepo> getRepoList(HttpClassicServerRequest httpRequest,
             @RequestParam(value = "groupId", required = false) String groupId,
-            @RequestBean @Validated ListRepoQueryParam param) {
+            @RequestBean @Validated ListRepoQueryParam param,
+            @RequestParam(value = "knowledgeConfigId", required = false) String knowledgeConfigId) {
         OperationContext operationContext = this.contextOf(httpRequest, "");
-        String apiKey = this.knowledgeCenterService.getApiKey(operationContext.getOperator(),
-                groupId,
-                operationContext.getOperator());
+        String apiKey = this.knowledgeCenterService.getApiKey(knowledgeConfigId, operationContext.getOperator());
         return this.knowledgeServiceRouter.getInvoker(KnowledgeRepoService.class,
                 KnowledgeRepoService.GENERICABLE_LIST_REPOS,
                 groupId).invoke(apiKey, param);
@@ -133,5 +132,19 @@ public class KnowledgeController extends AbstractController {
                 property.indexType(),
                 property.filterConfig(),
                 property.rerankConfig());
+    }
+
+    /**
+     * 查询用户在知识库集的 config 配置的唯一 id。
+     *
+     * @param httpRequest 表示 http 请求的 {@link HttpClassicServerRequest}。
+     * @param groupId 表示调用的知识库服务的唯一标识的 {@link String}。
+     * @return 表示用户在知识库集的 config 配置的唯一 id 的 {@link String}。
+     */
+    @GetMapping("/configId")
+    public String getKnowledgeConfigId(HttpClassicServerRequest httpRequest,
+            @RequestParam(value = "groupId", required = false) String groupId) {
+        OperationContext operationContext = this.contextOf(httpRequest, "");
+        return this.knowledgeCenterService.getKnowledgeConfigId(operationContext.getOperator(), groupId);
     }
 }

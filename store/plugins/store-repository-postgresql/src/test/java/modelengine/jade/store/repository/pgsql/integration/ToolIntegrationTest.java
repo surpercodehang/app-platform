@@ -12,15 +12,15 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.when;
 
+import modelengine.fel.tool.model.ListResult;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.DefinitionGroupService;
+import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
 import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.test.annotation.Sql;
-import modelengine.jade.carver.ListResult;
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.service.DefinitionGroupService;
-import modelengine.jade.carver.tool.service.ToolService;
 import modelengine.jade.store.entity.query.ToolQuery;
 import modelengine.jade.store.entity.transfer.StoreToolData;
 import modelengine.jade.store.service.StoreToolService;
@@ -60,10 +60,10 @@ public class ToolIntegrationTest {
 
     @BeforeEach
     void setup() {
-        when(this.toolService.getToolsByIdentifier(anyList())).thenReturn(
-                ListResult.create(Arrays.asList(this.getToolDataResult()), 1));
-        when(this.toolService.getAllToolVersions(any())).thenReturn(
-                ListResult.create(Arrays.asList(this.getToolDataResult()), 1));
+        when(this.toolService.getToolsByIdentifier(anyList())).thenReturn(ListResult.create(Arrays.asList(this.getToolDataResult()),
+                1));
+        when(this.toolService.getAllToolVersions(any())).thenReturn(ListResult.create(Arrays.asList(this.getToolDataResult()),
+                1));
         when(this.toolService.getTool(any())).thenReturn(this.getToolDataResult());
         when(this.toolService.getToolByVersion(any(), any())).thenReturn(this.getToolDataResult());
         when(this.defGroupService.findExistDefGroups(anySet())).thenReturn(DEF_GROUP_LIST);

@@ -6,7 +6,7 @@
 
 package modelengine.jade.carver.tool.repository.pgsql.mapper;
 
-import modelengine.jade.carver.tool.model.entity.ToolIdentifier;
+import modelengine.fel.tool.model.entity.ToolIdentifier;
 import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
 
 import java.util.List;

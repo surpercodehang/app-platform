@@ -9,14 +9,13 @@ package modelengine.jade.carver.telemetry.aop.parsers;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-import modelengine.jade.carver.telemetry.aop.SpanAttrParser;
-import modelengine.jade.carver.telemetry.aop.stub.CarverSpanObjectParse;
-
 import com.alibaba.fastjson.JSONPathException;
 
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.util.MapBuilder;
+import modelengine.jade.carver.telemetry.aop.SpanAttrParser;
+import modelengine.jade.carver.telemetry.aop.stub.CarverSpanObjectParse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -90,8 +89,8 @@ public class ComplexSpanAttrParserTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings =
-            {"k1:v1.v2.v3,\tk2:$[1].v1", "k3:[0].v1.v2, k4:$.v1", "k5:$[10].v1,\nk6:$.v1.v2,k7:v1.v2.v3"})
+    @ValueSource(
+            strings = {"k1:v1.v2.v3,\tk2:$[1].v1", "k3:[0].v1.v2, k4:$.v1", "k5:$[10].v1,\nk6:$.v1.v2,k7:v1.v2.v3"})
     @DisplayName("匹配解析器，多组键值对带空白字符正常匹配")
     void shouldOkWhenMatchMultipleKVParserWithWhitespace(String expression) {
         assertThat(this.parser.match(expression)).isEqualTo(true);

@@ -6,6 +6,8 @@
 
 package modelengine.jade.knowledge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QianfanKnowledgeEntity {
     /**
      * 知识库id。
@@ -44,6 +47,7 @@ public class QianfanKnowledgeEntity {
     private QianfanKnowledgeConfigEntity config;
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class QianfanKnowledgeConfigEntity {
         /**
          * 知识库索引配置。
@@ -52,6 +56,7 @@ public class QianfanKnowledgeEntity {
     }
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class QianfanKnowledgeConfigIndexEntity {
         /**
          * 知识库索引存储配置 (public | bes | vdb)。

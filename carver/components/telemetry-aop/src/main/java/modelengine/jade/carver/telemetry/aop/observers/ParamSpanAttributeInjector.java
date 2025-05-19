@@ -6,15 +6,14 @@
 
 package modelengine.jade.carver.telemetry.aop.observers;
 
+import io.opentelemetry.api.trace.Span;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.util.ObjectUtils;
+import modelengine.jade.carver.telemetry.aop.SpanAttrObserver;
 import modelengine.jade.carver.telemetry.aop.SpanAttrParser;
 import modelengine.jade.carver.telemetry.aop.SpanAttrParserRepository;
-import modelengine.jade.carver.telemetry.aop.SpanAttrObserver;
 import modelengine.jade.carver.telemetry.aop.SpanEndObserver;
 import modelengine.jade.service.annotations.SpanAttr;
-
-import io.opentelemetry.api.trace.Span;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

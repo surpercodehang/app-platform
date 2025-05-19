@@ -15,7 +15,7 @@ import closeImg from '@/assets/images/close_btn.svg';
 
 const Knowledge = (props) => {
   const { t } = useTranslation();
-  const { knowledge, groupId, updateData, knowledgeRef } = props;
+  const { knowledge, groupId, updateData, knowledgeRef, knowledgeConfigId } = props;
   const [knows, setKnows] = useState([]);
   const [showOperateIndex, setShowOperateIndex] = useState(-1);
   const { tenantId } = useParams();
@@ -43,7 +43,7 @@ const Knowledge = (props) => {
   };
 
   const addKnowledge = () => {
-    modalRef.current.showModal(knows)
+    modalRef.current.showModal(knows, groupId, knowledgeConfigId);
   };
 
   // hover显示操作按钮

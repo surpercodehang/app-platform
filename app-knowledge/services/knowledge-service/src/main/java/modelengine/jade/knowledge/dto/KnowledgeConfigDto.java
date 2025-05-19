@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KnowledgeConfigDto {
     /**
-     * 知识库配置唯一id。
+     * 知识库配置主键。
      */
     private Long id;
 
@@ -33,19 +33,24 @@ public class KnowledgeConfigDto {
     private String name;
 
     /**
-     * 用户id。
+     * 用户 id。
      */
     private String userId;
 
     /**
-     * 知识库api key。
+     * 知识库 api key。
      */
     private String apiKey;
 
     /**
-     * 知识库平台groupId。
+     * 知识库平台 groupId。
      */
     private String groupId;
+
+    /**
+     * 知识库配置唯一 id。
+     */
+    private String knowledgeConfigId;
 
     /**
      * 是否为默认使用。

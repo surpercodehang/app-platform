@@ -104,8 +104,9 @@ public class AppStreamControllerTest {
         when(this.command.execute(any(), any())).then(invocationOnMock -> Choir.<Object>just("test route success"));
         this.appStreamController.onMessage(this.session, this.chatMsg, "123");
         assertThat(this.result).hasSize(2)
-                .contains("{\"code\":0,\"data\":\"test route success\",\"completed\":false}",
-                        "{\"code\":0,\"completed\":true}");
+                .contains("{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":\"test route success\","
+                                + "\"completed\":false}",
+                        "{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":null,\"completed\":true}");
     }
 
     @Test
@@ -134,7 +135,8 @@ public class AppStreamControllerTest {
                 }""";
         this.appStreamController.onMessage(this.session, message, "123");
         assertThat(this.result).hasSize(1)
-                .contains("{\"code\":90000001,\"msg\":\"资源不存在: nonexist。\",\"completed\":true}");
+                .contains("{\"requestId\":null,\"code\":90000001,\"msg\":\"资源不存在: nonexist。\",\"data\":null,"
+                        + "\"completed\":true}");
     }
 
     @Test
@@ -143,7 +145,8 @@ public class AppStreamControllerTest {
         when(this.command.execute(any(), any())).thenThrow(new AippException(AippErrCode.UNKNOWN));
         this.appStreamController.onMessage(this.session, this.chatMsg, "123");
         assertThat(this.result).hasSize(1)
-                .contains("{\"code\":90000002,\"msg\":\"服务器内部错误，请联系管理员。\",\"completed\":true}");
+                .contains("{\"requestId\":null,\"code\":90000002,\"msg\":\"服务器内部错误，请联系管理员。\",\"data\":null,"
+                        + "\"completed\":true}");
     }
 
     @Test
@@ -152,7 +155,8 @@ public class AppStreamControllerTest {
         when(this.command.execute(any(), any())).thenThrow(new RuntimeException("other exception"));
         this.appStreamController.onMessage(this.session, this.chatMsg, "123");
         assertThat(this.result).hasSize(1)
-                .contains("{\"code\":90000002,\"msg\":\"other exception\",\"completed\":true}");
+                .contains("{\"requestId\":null,\"code\":90000002,\"msg\":\"other exception\",\"data\":null,"
+                        + "\"completed\":true}");
     }
 
     @Test
@@ -164,7 +168,8 @@ public class AppStreamControllerTest {
         }));
         this.appStreamController.onMessage(this.session, this.chatMsg, "123");
         assertThat(this.result).hasSize(2)
-                .contains("{\"code\":0,\"data\":\"emit success\",\"completed\":false}",
-                        "{\"code\":90000002,\"msg\":\"emit fail\",\"completed\":true}");
+                .contains("{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":\"emit success\",\"completed\":false}",
+                        "{\"requestId\":null,\"code\":90000002,\"msg\":\"emit fail\",\"data\":null,"
+                                + "\"completed\":true}");
     }
 }

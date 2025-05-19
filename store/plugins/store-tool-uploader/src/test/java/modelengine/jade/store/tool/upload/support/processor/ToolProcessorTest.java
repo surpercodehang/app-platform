@@ -7,18 +7,18 @@
 package modelengine.jade.store.tool.upload.support.processor;
 
 import static java.util.prefs.Preferences.MAX_NAME_LENGTH;
+import static modelengine.fel.tool.ToolSchema.DEFAULT_PARAMETER;
+import static modelengine.fel.tool.ToolSchema.DESCRIPTION;
+import static modelengine.fel.tool.ToolSchema.NAME;
+import static modelengine.fel.tool.ToolSchema.PARAMETERS;
+import static modelengine.fel.tool.ToolSchema.PARAMETERS_PROPERTIES;
+import static modelengine.fel.tool.ToolSchema.PARAMETERS_REQUIRED;
+import static modelengine.fel.tool.ToolSchema.PROPERTIES_TYPE;
 import static modelengine.fel.tool.info.schema.ToolsSchema.FIT;
 import static modelengine.fel.tool.info.schema.ToolsSchema.FITABLE_ID;
 import static modelengine.fel.tool.info.schema.ToolsSchema.MAX_FIT_TAG_LENGTH;
 import static modelengine.fel.tool.info.schema.ToolsSchema.TAGS;
 import static modelengine.fitframework.util.ObjectUtils.cast;
-import static modelengine.jade.carver.tool.ToolSchema.DEFAULT_PARAMETER;
-import static modelengine.jade.carver.tool.ToolSchema.DESCRIPTION;
-import static modelengine.jade.carver.tool.ToolSchema.NAME;
-import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS;
-import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS_PROPERTIES;
-import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS_REQUIRED;
-import static modelengine.jade.carver.tool.ToolSchema.PROPERTIES_TYPE;
 import static modelengine.jade.store.code.PluginRetCode.LENGTH_EXCEEDED_LIMIT_FIELD;
 import static modelengine.jade.store.tool.upload.support.processor.ToolProcessor.enhanceSchema;
 import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.buildDefGroupMap;
@@ -27,7 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+import modelengine.fel.tool.ToolSchema;
 import modelengine.fel.tool.info.entity.ToolJsonEntity;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.merge.ConflictResolverCollection;
 import modelengine.fitframework.merge.list.ListRemoveDuplicationConflictResolver;
@@ -35,9 +38,6 @@ import modelengine.fitframework.merge.map.MapConflictResolver;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.ObjectUtils;
-import modelengine.jade.carver.tool.ToolSchema;
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
 import modelengine.jade.common.exception.ModelEngineException;
 
 import org.junit.jupiter.api.BeforeEach;

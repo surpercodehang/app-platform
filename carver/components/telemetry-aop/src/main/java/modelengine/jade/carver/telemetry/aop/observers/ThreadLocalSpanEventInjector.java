@@ -8,18 +8,14 @@ package modelengine.jade.carver.telemetry.aop.observers;
 
 import static modelengine.jade.carver.operation.enums.OperationLogConstant.SYSTEM_ATTRIBUTE_EVENT_NAME;
 
-import modelengine.fitframework.annotation.Component;
-import modelengine.jade.authentication.context.UserContext;
-import modelengine.jade.authentication.context.UserContextHolder;
-import modelengine.jade.carver.operation.enums.OperationLogConstant;
-import modelengine.jade.carver.telemetry.aop.SpanEndObserver;
-
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Span;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.authentication.context.UserContext;
 import modelengine.jade.authentication.context.UserContextHolder;
+import modelengine.jade.carver.operation.enums.OperationLogConstant;
+import modelengine.jade.carver.telemetry.aop.SpanEndObserver;
 
 import java.lang.reflect.Method;
 
@@ -46,10 +42,12 @@ public class ThreadLocalSpanEventInjector implements SpanEndObserver {
         }
         UserContext userContext = UserContextHolder.get();
         // 从threadLocal中获取
-        span.addEvent(SYSTEM_ATTRIBUTE_EVENT_NAME, Attributes.of(
-                AttributeKey.stringKey(OperationLogConstant.SYS_OP_LANGUAGE_KEY), userContext.getLanguage(),
-                AttributeKey.stringKey(OperationLogConstant.SYS_OP_OPERATOR_KEY), userContext.getName(),
-                AttributeKey.stringKey(OperationLogConstant.SYS_OP_IPADDR_KEY), userContext.getIp()
-        ));
+        span.addEvent(SYSTEM_ATTRIBUTE_EVENT_NAME,
+                Attributes.of(AttributeKey.stringKey(OperationLogConstant.SYS_OP_LANGUAGE_KEY),
+                        userContext.getLanguage(),
+                        AttributeKey.stringKey(OperationLogConstant.SYS_OP_OPERATOR_KEY),
+                        userContext.getName(),
+                        AttributeKey.stringKey(OperationLogConstant.SYS_OP_IPADDR_KEY),
+                        userContext.getIp()));
     }
 }

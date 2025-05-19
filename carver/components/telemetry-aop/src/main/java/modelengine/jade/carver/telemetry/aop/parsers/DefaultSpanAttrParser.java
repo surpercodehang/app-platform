@@ -8,11 +8,10 @@ package modelengine.jade.carver.telemetry.aop.parsers;
 
 import static modelengine.fitframework.annotation.Order.LOWEST;
 
-import modelengine.jade.carver.telemetry.aop.SpanAttrParser;
-
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Order;
 import modelengine.fitframework.util.StringUtils;
+import modelengine.jade.carver.telemetry.aop.SpanAttrParser;
 
 import java.util.Collections;
 import java.util.Map;

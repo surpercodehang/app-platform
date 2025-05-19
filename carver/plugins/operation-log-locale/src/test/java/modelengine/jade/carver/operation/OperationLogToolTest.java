@@ -16,10 +16,10 @@ import static org.mockito.Mockito.when;
 import modelengine.fitframework.globalization.StringResource;
 import modelengine.fitframework.plugin.Plugin;
 import modelengine.fitframework.util.MapBuilder;
+import modelengine.jade.carver.operation.enums.OperationLogConstant;
 import modelengine.jade.carver.operation.support.CompositParam;
 import modelengine.jade.carver.operation.support.OperationLogFields;
 
-import modelengine.jade.carver.operation.enums.OperationLogConstant;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,10 +43,8 @@ public class OperationLogToolTest {
 
     @BeforeAll
     static void setUpResource() {
-        Map<String, String> userAttribute = MapBuilder.<String, String>get()
-                .put("key", "hello")
-                .put("value", "world")
-                .build();
+        Map<String, String> userAttribute =
+                MapBuilder.<String, String>get().put("key", "hello").put("value", "world").build();
         Map<String, String> systemAttribute = MapBuilder.<String, String>get()
                 .put(OperationLogConstant.SYS_OP_RESULT_KEY, OperationLogConstant.SYS_OP_SUCCEED)
                 .put(OperationLogConstant.SYS_OP_IPADDR_KEY, "127.0.0.1")
@@ -81,8 +79,8 @@ public class OperationLogToolTest {
         OperationLogLocaleServiceImpl.MessageGetter messgaeGetter =
                 new OperationLogLocaleServiceImpl.MessageGetter(pluginMock, "base", locale);
         assertThat(messgaeGetter).extracting(obj -> obj.get(""),
-                obj -> obj.get("result"),
-                obj -> obj.get("succeed.detail", params.getUserAttribute()))
+                        obj -> obj.get("result"),
+                        obj -> obj.get("succeed.detail", params.getUserAttribute()))
                 .containsExactly("hello", "success", "hello : world");
     }
 
@@ -98,7 +96,12 @@ public class OperationLogToolTest {
                         OperationLogFields::getRequestUri,
                         OperationLogFields::getOperationResult,
                         OperationLogFields::getDetails)
-                .containsExactly("hello", "MINOR", "OperationLogToolTest", "testGetLocaleMessage",
-                        "/test", "SUCCESS", "hello : world");
+                .containsExactly("hello",
+                        "MINOR",
+                        "OperationLogToolTest",
+                        "testGetLocaleMessage",
+                        "/test",
+                        "SUCCESS",
+                        "hello : world");
     }
 }

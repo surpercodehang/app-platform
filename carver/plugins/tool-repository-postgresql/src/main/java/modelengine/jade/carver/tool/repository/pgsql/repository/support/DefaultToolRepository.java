@@ -8,17 +8,16 @@ package modelengine.jade.carver.tool.repository.pgsql.repository.support;
 
 import static modelengine.fitframework.inspection.Validation.notNull;
 
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.model.entity.ToolIdentifier;
-import modelengine.jade.carver.tool.repository.pgsql.mapper.ToolMapper;
-import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
-import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepository;
-
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.model.entity.ToolIdentifier;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.transaction.Transactional;
+import modelengine.jade.carver.tool.repository.pgsql.mapper.ToolMapper;
+import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
+import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,14 +49,14 @@ public class DefaultToolRepository implements ToolRepository {
 
     @Override
     @Transactional
-    public void addTool(Tool.ToolInfo info) {
+    public void addTool(Tool.Info info) {
         ToolDo toolDo = ToolDo.info2Do(info.definitionGroupName(), info.groupName(), info, this.serializer);
         this.toolMapper.addTool(toolDo);
     }
 
     @Override
     @Transactional
-    public void addTools(List<Tool.ToolInfo> infos) {
+    public void addTools(List<Tool.Info> infos) {
         List<ToolDo> toolDoList = infos.stream()
                 .map(info -> ToolDo.info2Do(info.definitionGroupName(), info.groupName(), info, this.serializer))
                 .collect(Collectors.toList());
@@ -66,7 +65,7 @@ public class DefaultToolRepository implements ToolRepository {
 
     @Override
     @Transactional
-    public void addTools(String definitionGroupName, String groupName, List<Tool.ToolInfo> infos) {
+    public void addTools(String definitionGroupName, String groupName, List<Tool.Info> infos) {
         List<ToolDo> toolDoList = infos.stream()
                 .map(info -> ToolDo.info2Do(definitionGroupName, groupName, info, this.serializer))
                 .collect(Collectors.toList());
@@ -117,7 +116,7 @@ public class DefaultToolRepository implements ToolRepository {
     }
 
     @Override
-    public Optional<Tool.ToolInfo> getTool(String uniqueName) {
+    public Optional<Tool.Info> getTool(String uniqueName) {
         ToolDo toolDo = this.toolMapper.getToolByUniqueName(uniqueName);
         if (toolDo != null) {
             return Optional.of(ToolDo.do2Info(toolDo, this.serializer));
@@ -126,27 +125,27 @@ public class DefaultToolRepository implements ToolRepository {
     }
 
     @Override
-    public List<Tool.ToolInfo> getTools(String definitionGroupName) {
+    public List<Tool.Info> getTools(String definitionGroupName) {
         return this.getToolInfos(this.toolMapper.getToolsByDefinitionGroupName(definitionGroupName));
     }
 
-    private List<Tool.ToolInfo> getToolInfos(List<ToolDo> toolDos) {
+    private List<Tool.Info> getToolInfos(List<ToolDo> toolDos) {
         return toolDos.stream().map(toolDo -> ToolDo.do2Info(toolDo, this.serializer)).collect(Collectors.toList());
     }
 
     @Override
-    public List<Tool.ToolInfo> getTools(String definitionGroupName, String groupName) {
+    public List<Tool.Info> getTools(String definitionGroupName, String groupName) {
         return this.getToolInfos(this.toolMapper.getToolsByGroupName(definitionGroupName, groupName));
     }
 
     @Override
-    public Optional<Tool.ToolInfo> getToolByVersion(String toolUniqueName, String version) {
+    public Optional<Tool.Info> getToolByVersion(String toolUniqueName, String version) {
         ToolDo toolDo = this.toolMapper.getToolByVersion(toolUniqueName, version);
         return Optional.ofNullable(toolDo).map(tool -> ToolDo.do2Info(tool, this.serializer));
     }
 
     @Override
-    public List<Tool.ToolInfo> getAllToolVersions(String toolUniqueName) {
+    public List<Tool.Info> getAllToolVersions(String toolUniqueName) {
         List<ToolDo> toolDos = this.toolMapper.getAllToolVersions(toolUniqueName);
         return toolDos.stream().map(toolDo -> ToolDo.do2Info(toolDo, this.serializer)).collect(Collectors.toList());
     }
@@ -157,7 +156,7 @@ public class DefaultToolRepository implements ToolRepository {
     }
 
     @Override
-    public List<Tool.ToolInfo> getToolsByIdentifier(List<ToolIdentifier> toolIdentifiers) {
+    public List<Tool.Info> getToolsByIdentifier(List<ToolIdentifier> toolIdentifiers) {
         List<ToolDo> toolDos = this.toolMapper.getToolsByIdentifier(toolIdentifiers);
         return toolDos.stream().map(toolDo -> ToolDo.do2Info(toolDo, this.serializer)).collect(Collectors.toList());
     }

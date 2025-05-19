@@ -6,13 +6,13 @@
 
 package modelengine.jade.carver.tool.waterflow;
 
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.ToolFactory;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.broker.client.BrokerClient;
 import modelengine.fitframework.inspection.Nonnull;
 import modelengine.fitframework.serialization.ObjectSerializer;
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.ToolFactory;
 
 /**
  * 表示自定义流式工具的工厂实现。
@@ -35,7 +35,7 @@ public class WaterFlowToolFactory implements ToolFactory {
     }
 
     @Override
-    public Tool create(Tool.ToolInfo toolInfo, Tool.Metadata metadata) {
+    public Tool create(Tool.Info toolInfo, Tool.Metadata metadata) {
         Tool tool = this.fitToolFactory.create(toolInfo, metadata);
         return new WaterFlowTool(tool, toolInfo, metadata);
     }

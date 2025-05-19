@@ -6,6 +6,7 @@
 
 package modelengine.jade.knowledge.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class QianfanKnowledgeListEntity {
     /**
      * 知识库查询的起始id。

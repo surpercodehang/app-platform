@@ -9,8 +9,8 @@ package modelengine.fit.jober.aipp.tool.cvAnalyzer.analyzer.entry;
 import modelengine.fit.jober.aipp.tool.cvAnalyzer.analyzer.dto.CvAnalyzerDto;
 import modelengine.fitframework.annotation.Genericable;
 import modelengine.fitframework.annotation.Property;
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 
 /**
  * 简历解析插件接口

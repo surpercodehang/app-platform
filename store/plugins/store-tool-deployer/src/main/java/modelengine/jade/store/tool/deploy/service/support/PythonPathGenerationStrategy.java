@@ -6,9 +6,9 @@
 
 package modelengine.jade.store.tool.deploy.service.support;
 
+import static modelengine.fel.tool.ToolSchema.NAME;
 import static modelengine.fel.tool.info.schema.PluginSchema.DOT;
 import static modelengine.fel.tool.info.schema.PluginSchema.UNIQUENESS;
-import static modelengine.jade.carver.tool.ToolSchema.NAME;
 
 import modelengine.fel.tool.info.schema.PluginSchema;
 import modelengine.jade.store.tool.deploy.service.PathGenerationStrategy;

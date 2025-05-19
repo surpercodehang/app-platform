@@ -116,8 +116,7 @@ public class PluginControllerTest {
     @DisplayName("当根据插件工具唯一标识列表获取插件工具列表时，返回正确结果。")
     void shouldReturnOkWhenGetPluginToolsByUniqueNames() {
         List<PluginToolData> pluginToolDataList = new ArrayList<>();
-        Mockito.when(this.pluginToolService.getPluginTools(Mockito.any(List.class)))
-                .thenReturn(pluginToolDataList);
+        Mockito.when(this.pluginToolService.getPluginTools(Mockito.any(List.class))).thenReturn(pluginToolDataList);
         MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/store/plugins/tools")
                 .param("uniqueNames", "123")
                 .param("uniqueNames", "456")

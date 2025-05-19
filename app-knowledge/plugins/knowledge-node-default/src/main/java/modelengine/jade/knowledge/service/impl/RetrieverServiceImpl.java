@@ -66,7 +66,7 @@ public class RetrieverServiceImpl implements RetrieverService {
     @Fitable("knowledge.service.invoke")
     @Override
     public List<KnowledgeDocument> invoke(Object query, List<KnowledgeRepoInfo> knowledgeRepos,
-            RetrieverServiceOption option, String userId) {
+            RetrieverServiceOption option) {
         if (CollectionUtils.isEmpty(knowledgeRepos)) {
             return Collections.emptyList();
         }
@@ -74,7 +74,7 @@ public class RetrieverServiceImpl implements RetrieverService {
         Validation.lessThanOrEquals(knowledgeRepos.size(), 5, "The knowledge repository cannot greater than 5.");
         this.retrieverServiceOptionValidation(option);
         List<String> normalizeQuery = this.normalizeQuery(query);
-        RetrieverOption retrieverOption = this.getRetrieverOption(knowledgeRepos, option, userId);
+        RetrieverOption retrieverOption = this.getRetrieverOption(knowledgeRepos, option);
         List<MeasurableDocument> documents = this.retrieverHandler.handle(normalizeQuery, retrieverOption);
         FactoryOption factoryOption = this.buildFactoryOption(normalizeQuery, option.getRerankParam());
         List<DocumentPostProcessor> postProcessors = this.postProcessorFactory.create(factoryOption);
@@ -90,9 +90,8 @@ public class RetrieverServiceImpl implements RetrieverService {
                 .collect(Collectors.toList());
     }
 
-    private RetrieverOption getRetrieverOption(List<KnowledgeRepoInfo> knowledgeRepos, RetrieverServiceOption option,
-            String userId) {
-        String apiKey = this.knowledgeCenterService.getApiKey(userId, option.getGroupId(), StringUtils.EMPTY);
+    private RetrieverOption getRetrieverOption(List<KnowledgeRepoInfo> knowledgeRepos, RetrieverServiceOption option) {
+        String apiKey = this.knowledgeCenterService.getApiKey(option.getKnowledgeConfigId(), StringUtils.EMPTY);
         RetrieverOption retrieverOption = RetrieverOptionConvertor.INSTANCE.fromRetrieverServiceOption(option, apiKey);
         retrieverOption.setRepoIds(knowledgeRepos.stream().map(KnowledgeRepoInfo::id).collect(Collectors.toList()));
         return retrieverOption;

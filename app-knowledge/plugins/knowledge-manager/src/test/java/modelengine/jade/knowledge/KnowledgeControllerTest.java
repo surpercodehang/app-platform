@@ -6,6 +6,14 @@
 
 package modelengine.jade.knowledge;
 
+import static modelengine.jade.knowledge.enums.FilterType.REFERENCE_TOP_K;
+import static modelengine.jade.knowledge.enums.FilterType.SIMILARITY_THRESHOLD;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.fit.http.client.HttpClassicClientResponse;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fitframework.annotation.Fit;
@@ -18,7 +26,6 @@ import modelengine.fitframework.test.domain.mvc.request.MockRequestBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.fitframework.util.TypeUtils;
 import modelengine.jade.authentication.AuthenticationService;
-import modelengine.jade.carver.tool.service.ToolGroupService;
 import modelengine.jade.common.filter.support.LoginFilter;
 import modelengine.jade.common.vo.PageVo;
 import modelengine.jade.knowledge.config.KnowledgeConfig;
@@ -43,13 +50,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static modelengine.jade.knowledge.enums.FilterType.REFERENCE_TOP_K;
-import static modelengine.jade.knowledge.enums.FilterType.SIMILARITY_THRESHOLD;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 /**
  * 表示 {@link KnowledgeController} 的测试用例。
@@ -99,7 +99,7 @@ public class KnowledgeControllerTest {
     void setUp() {
         // 切换线程后，UserContextHolder Mock 失败。
         when(this.authenticationServiceMock.getUserName(any())).thenReturn("Jane");
-        when(this.knowledgeCenterService.getApiKey(anyString(), anyString(), anyString())).thenReturn("");
+        when(this.knowledgeCenterService.getApiKey(anyString(), anyString())).thenReturn("");
     }
 
     @AfterEach
@@ -206,6 +206,19 @@ public class KnowledgeControllerTest {
                 .contains(IndexType.HYBRID.value(), IndexType.FULL_TEXT.value());
         assertThat(property.getFilterConfig()).hasSize(2);
         assertThat(property.getRerankConfig()).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("查询知识库config配置成功")
+    public void shouldOkWhenGetKnowledgeConfigId() {
+        when(this.knowledgeCenterService.getKnowledgeConfigId(any(), anyString())).thenReturn("id1");
+        MockRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/knowledge-manager/configId")
+                .param("groupId", this.buildMockGroupId())
+                .responseType(String.class);
+        this.response = this.mockMvc.perform(requestBuilder);
+        Assertions.assertThat(this.response.statusCode()).isEqualTo(200);
+        Assertions.assertThat(this.response.objectEntity()).isPresent();
+        assertThat(this.response.textEntity().get().content()).isEqualTo("id1");
     }
 
     private KnowledgeProperty getExpectProperty() {

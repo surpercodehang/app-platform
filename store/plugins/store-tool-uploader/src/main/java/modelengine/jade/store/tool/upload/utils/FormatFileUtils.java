@@ -23,8 +23,8 @@ import modelengine.fitframework.serialization.SerializationException;
 import modelengine.fitframework.util.FileUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.fitframework.util.UuidUtils;
-import modelengine.jade.carver.tool.model.transfer.DefinitionData;
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.code.PluginRetCode;
 

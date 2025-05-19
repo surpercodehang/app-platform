@@ -8,7 +8,7 @@ package modelengine.jade.carver.tool.repository.pgsql.model.entity;
 
 import static modelengine.jade.carver.util.SerializeUtils.json2obj;
 
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

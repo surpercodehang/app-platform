@@ -8,7 +8,7 @@ package modelengine.jade.carver.tool.repository.pgsql.support;
 
 import static org.mockito.Mockito.verify;
 
-import modelengine.jade.carver.tool.Tool;
+import modelengine.fel.tool.Tool;
 import modelengine.jade.carver.tool.repository.pgsql.repository.support.DefaultToolRepository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,7 +40,14 @@ public class DefaultToolRepositoryTest {
     @Test
     @DisplayName("验证插入工具列表成功")
     void shouldSuccessWhenAddTool() {
-        Tool.ToolInfo info = Tool.ToolInfo.custom().uniqueName("testUniqueName").build();
+        Tool.Info info = Tool.Info.custom()
+                .namespace("namespace")
+                .name("name")
+                .description("description")
+                .parameters(new HashMap<>())
+                .uniqueName("testUniqueName")
+                .extensions(new HashMap<>())
+                .build();
         this.toolRepository.addTool(info);
         verify(toolRepository).addTool(info);
     }

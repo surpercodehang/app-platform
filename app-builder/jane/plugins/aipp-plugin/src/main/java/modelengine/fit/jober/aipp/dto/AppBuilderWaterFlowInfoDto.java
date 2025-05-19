@@ -6,7 +6,7 @@
 
 package modelengine.fit.jober.aipp.dto;
 
-import modelengine.jade.carver.tool.model.transfer.ToolData;
+import modelengine.fel.tool.model.transfer.ToolData;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

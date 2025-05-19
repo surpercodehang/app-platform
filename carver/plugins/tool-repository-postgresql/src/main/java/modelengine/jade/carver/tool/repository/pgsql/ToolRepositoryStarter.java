@@ -8,9 +8,8 @@ package modelengine.jade.carver.tool.repository.pgsql;
 
 import static modelengine.fitframework.inspection.Validation.notNull;
 
-import modelengine.jade.carver.tool.ToolFactory;
-import modelengine.jade.carver.tool.repository.ToolFactoryRepository;
-
+import modelengine.fel.tool.ToolFactory;
+import modelengine.fel.tool.ToolFactoryRepository;
 import modelengine.fit.http.client.HttpClassicClientFactory;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;

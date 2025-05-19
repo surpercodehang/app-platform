@@ -21,20 +21,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import modelengine.jade.authentication.context.UserContext;
-import modelengine.jade.authentication.context.UserContextHolder;
-import modelengine.jade.carver.telemetry.aop.observers.ParamSpanAttributeInjector;
-import modelengine.jade.carver.telemetry.aop.observers.ThreadLocalSpanEventInjector;
-import modelengine.jade.carver.telemetry.aop.parsers.ComplexSpanAttrParser;
-import modelengine.jade.carver.telemetry.aop.parsers.DefaultSpanAttrParser;
-import modelengine.jade.carver.telemetry.aop.stub.CarverSpanObjectParse;
-import modelengine.jade.carver.telemetry.aop.stub.CarverSpanParserDemo;
-import modelengine.jade.carver.telemetry.aop.stub.NestedSpanTestService;
-import modelengine.jade.carver.telemetry.aop.stub.NestedSpanTestServiceImpl;
-import modelengine.jade.carver.telemetry.aop.stub.SpanDemo;
-import modelengine.jade.common.localemessage.ExceptionLocaleService;
-import modelengine.jade.service.CarverGlobalOpenTelemetry;
-
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
@@ -49,6 +35,17 @@ import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.ObjectUtils;
 import modelengine.jade.authentication.context.UserContext;
 import modelengine.jade.authentication.context.UserContextHolder;
+import modelengine.jade.carver.telemetry.aop.observers.ParamSpanAttributeInjector;
+import modelengine.jade.carver.telemetry.aop.observers.ThreadLocalSpanEventInjector;
+import modelengine.jade.carver.telemetry.aop.parsers.ComplexSpanAttrParser;
+import modelengine.jade.carver.telemetry.aop.parsers.DefaultSpanAttrParser;
+import modelengine.jade.carver.telemetry.aop.stub.CarverSpanObjectParse;
+import modelengine.jade.carver.telemetry.aop.stub.CarverSpanParserDemo;
+import modelengine.jade.carver.telemetry.aop.stub.NestedSpanTestService;
+import modelengine.jade.carver.telemetry.aop.stub.NestedSpanTestServiceImpl;
+import modelengine.jade.carver.telemetry.aop.stub.SpanDemo;
+import modelengine.jade.common.localemessage.ExceptionLocaleService;
+import modelengine.jade.service.CarverGlobalOpenTelemetry;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -104,8 +101,8 @@ public class CarverSpanAspectTest {
         when(this.mockOpenTelemetry.getTracer(any())).thenReturn(this.mockTrace);
         when(this.mockTrace.spanBuilder(any())).thenReturn(this.mockSpanBuilder);
         when(this.mockSpanBuilder.startSpan()).thenReturn(this.mockSpan);
-        doAnswer(args -> ObjectUtils.<Throwable>cast(args.getArgument(0)).getMessage())
-                .when(this.exceptionLocaleService).localizeMessage(any());
+        doAnswer(args -> ObjectUtils.<Throwable>cast(args.getArgument(0))
+                .getMessage()).when(this.exceptionLocaleService).localizeMessage(any());
     }
 
     @AfterEach

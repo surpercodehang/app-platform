@@ -12,13 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import modelengine.jade.store.entity.query.PluginToolQuery;
-import modelengine.jade.store.entity.transfer.PluginToolData;
-import modelengine.jade.store.service.EcoTaskService;
-import modelengine.jade.store.service.HuggingFaceModelService;
-import modelengine.jade.store.service.PluginToolService;
-
-import modelengine.jade.carver.ListResult;
 import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fit.jober.aipp.dto.PluginToolDto;
@@ -27,6 +20,12 @@ import modelengine.fit.jober.aipp.mapper.AppBuilderAppMapper;
 import modelengine.fit.jober.aipp.service.impl.StoreServiceImpl;
 import modelengine.fitframework.util.IoUtils;
 import modelengine.fitframework.util.MapBuilder;
+import modelengine.jade.carver.ListResult;
+import modelengine.jade.store.entity.query.PluginToolQuery;
+import modelengine.jade.store.entity.transfer.PluginToolData;
+import modelengine.jade.store.service.EcoTaskService;
+import modelengine.jade.store.service.HuggingFaceModelService;
+import modelengine.jade.store.service.PluginToolService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -72,8 +71,11 @@ public class StoreServiceImplTest {
         EcoTaskService ecoTaskService = mock(EcoTaskService.class);
         HuggingFaceModelService huggingFaceModelService = mock(HuggingFaceModelService.class);
         AppBuilderAppMapper appBuilderAppMapper = mock(AppBuilderAppMapper.class);
-        this.storeService = new StoreServiceImpl(pluginToolService, ecoTaskService, huggingFaceModelService,
-                appBuilderAppMapper, TAGS);
+        this.storeService = new StoreServiceImpl(pluginToolService,
+                ecoTaskService,
+                huggingFaceModelService,
+                appBuilderAppMapper,
+                TAGS);
         ClassLoader classLoader = StoreServiceImplTest.class.getClassLoader();
         COMPONENT_DATA.put(AippConst.BASIC_NODE_COMPONENT_DATA_ZH_KEY,
                 IoUtils.content(classLoader, RESOURCE_PATH + BASIC_NODE_ZH_PATH));

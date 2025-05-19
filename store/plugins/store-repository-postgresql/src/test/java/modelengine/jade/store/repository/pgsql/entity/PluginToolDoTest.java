@@ -8,7 +8,7 @@ package modelengine.jade.store.repository.pgsql.entity;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import modelengine.jade.carver.tool.model.transfer.ToolData;
+import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 
 import org.junit.jupiter.api.DisplayName;

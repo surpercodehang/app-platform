@@ -10,9 +10,9 @@ import static modelengine.fitframework.inspection.Validation.isInstanceOf;
 import static modelengine.fitframework.inspection.Validation.isTrue;
 import static modelengine.fitframework.inspection.Validation.notNull;
 
-import modelengine.jade.carver.tool.eco.AbstractTaskTool;
-
 import modelengine.fel.service.pipeline.HuggingFacePipelineService;
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.eco.AbstractTaskTool;
 import modelengine.fitframework.serialization.ObjectSerializer;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * 表示 {@link modelengine.jade.carver.tool.Tool} 的 <a href="https://huggingface.co/">HuggingFace</a> 的实现。
+ * 表示 {@link Tool} 的 <a href="https://huggingface.co/">HuggingFace</a> 的实现。
  *
  * @author 季聿阶
  * @since 2024-06-04
@@ -34,11 +34,11 @@ public class HuggingFaceTool extends AbstractTaskTool {
      *
      * @param serializer 表示 Json 序列化器的 {@link ObjectSerializer}。
      * @param pipelineService 表示 HuggingFace 提供的流水线服务的 {@link HuggingFacePipelineService}。
-     * @param itemInfo 表示工具的基本信息的 {@link ToolInfo}。
+     * @param itemInfo 表示工具的基本信息的 {@link Info}。
      * @param metadata 表示工具的元数据的 {@link Metadata}。
      */
     protected HuggingFaceTool(ObjectSerializer serializer, HuggingFacePipelineService pipelineService,
-            ToolInfo itemInfo, Metadata metadata) {
+            Tool.Info itemInfo, Metadata metadata) {
         super(serializer, itemInfo, metadata);
         this.pipelineService = notNull(pipelineService, "The hugging face pipeline service cannot be null.");
     }

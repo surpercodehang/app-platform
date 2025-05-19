@@ -6,8 +6,8 @@
 
 package modelengine.jade.store.repository.pgsql.repository;
 
-import modelengine.jade.carver.tool.model.entity.ToolIdentifier;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
+import modelengine.fel.tool.model.entity.ToolIdentifier;
+import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.jade.store.entity.query.ToolQuery;
 
 import java.util.List;

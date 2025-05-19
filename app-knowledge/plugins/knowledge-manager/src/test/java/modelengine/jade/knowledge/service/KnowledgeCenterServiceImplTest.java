@@ -8,6 +8,7 @@ package modelengine.jade.knowledge.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import modelengine.fit.security.Decryptor;
 import modelengine.fit.security.Encryptor;
@@ -142,7 +143,7 @@ public class KnowledgeCenterServiceImplTest {
 
         Mockito.when(knowledgeCenterRepo.listKnowledgeConfigByCondition(ArgumentMatchers.any()))
                 .thenReturn(Collections.singletonList(configPo));
-        Mockito.when(encryptor.encrypt(apiKey)).thenReturn("encrypted_key");
+        Mockito.when(decryptor.decrypt(apiKey)).thenReturn("encrypted_key");
 
         List<KnowledgeConfigDto> result = knowledgeCenterService.list(userId);
         assertEquals(1, result.size());
@@ -167,28 +168,29 @@ public class KnowledgeCenterServiceImplTest {
         String groupId = "group1";
         String apiKey = "key";
         String defaultValue = "default";
+        String knowledgeConfigId = "id";
 
         KnowledgeConfigPo configPo =
                 KnowledgeConfigPo.builder().userId(userId).groupId(groupId).apiKey(apiKey).isDefault(1).build();
 
         Mockito.when(knowledgeCenterRepo.listKnowledgeConfigByCondition(ArgumentMatchers.any()))
                 .thenReturn(Collections.singletonList(configPo));
+        Mockito.when(decryptor.decrypt(anyString())).thenReturn(apiKey);
 
-        String result = knowledgeCenterService.getApiKey(userId, groupId, defaultValue);
+        String result = knowledgeCenterService.getApiKey(knowledgeConfigId, defaultValue);
         assertEquals(apiKey, result);
     }
 
     @Test
     @DisplayName("当没有找到API Key时返回默认值")
     void shouldReturnDefaultValueWhenNoApiKeyFound() {
-        String userId = "user1";
-        String groupId = "group1";
         String defaultValue = "default";
+        String knowledgeConfigId = "id";
 
         Mockito.when(knowledgeCenterRepo.listKnowledgeConfigByCondition(ArgumentMatchers.any()))
                 .thenReturn(Collections.emptyList());
 
-        String result = knowledgeCenterService.getApiKey(userId, groupId, defaultValue);
+        String result = knowledgeCenterService.getApiKey(knowledgeConfigId, defaultValue);
         assertEquals(defaultValue, result);
     }
 

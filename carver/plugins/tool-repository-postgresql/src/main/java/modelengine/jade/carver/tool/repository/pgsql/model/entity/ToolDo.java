@@ -8,16 +8,16 @@ package modelengine.jade.carver.tool.repository.pgsql.model.entity;
 
 import static modelengine.jade.carver.util.SerializeUtils.json2obj;
 
-import modelengine.jade.carver.tool.Tool;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import modelengine.fel.tool.Tool;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.StringUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -87,10 +87,10 @@ public class ToolDo {
      * @param definitionGroupName 表示待注册工具定义组名的 {@link String}。
      * @param groupName 表示工具组名称的 {@link String}。
      * @param serializer 表示序列化对象的 {@link ObjectSerializer}。
-     * @param info 表示领域类的 {@link Tool.ToolInfo}。
+     * @param info 表示领域类的 {@link Tool.Info}。
      * @return 工具实体类的 {@link ToolDo}。
      */
-    public static ToolDo info2Do(String definitionGroupName, String groupName, Tool.ToolInfo info,
+    public static ToolDo info2Do(String definitionGroupName, String groupName, Tool.Info info,
             ObjectSerializer serializer) {
         ToolDo toolDo = new ToolDo();
         toolDo.setName(info.name());
@@ -111,13 +111,16 @@ public class ToolDo {
      *
      * @param toolDo 表示工具实体类的 {@link ToolDo}。
      * @param serializer 表示序列化对象的 {@link ObjectSerializer}。
-     * @return 领域类的 {@link Tool.ToolInfo}。
+     * @return 领域类的 {@link Tool.Info}。
      */
-    public static Tool.ToolInfo do2Info(ToolDo toolDo, ObjectSerializer serializer) {
-        return Tool.ToolInfo.custom()
+    public static Tool.Info do2Info(ToolDo toolDo, ObjectSerializer serializer) {
+        return Tool.Info.custom()
+                .namespace("")
                 .name(toolDo.getName())
+                .description("")
                 .schema(json2obj(toolDo.getSchema(), serializer))
                 .runnables(upperKeys(json2obj(toolDo.getRunnables(), serializer)))
+                .parameters(new HashMap<>())
                 .extensions(json2obj(toolDo.getExtensions(), serializer))
                 .uniqueName(toolDo.getUniqueName())
                 .version(toolDo.getVersion())

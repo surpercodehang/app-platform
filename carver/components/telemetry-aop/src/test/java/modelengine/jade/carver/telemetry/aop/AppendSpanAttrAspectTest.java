@@ -16,14 +16,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import modelengine.jade.carver.telemetry.aop.observers.ParamSpanAttributeInjector;
-import modelengine.jade.carver.telemetry.aop.parsers.DefaultSpanAttrParser;
-import modelengine.jade.carver.telemetry.aop.stub.NestedAppendSpanTestImpl;
-import modelengine.jade.carver.telemetry.aop.stub.NestedSpanTestService;
-import modelengine.jade.carver.telemetry.aop.stub.SpanDemo;
-import modelengine.jade.common.localemessage.ExceptionLocaleService;
-import modelengine.jade.service.CarverGlobalOpenTelemetry;
-
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
@@ -33,6 +25,13 @@ import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.test.annotation.Mock;
 import modelengine.fitframework.util.ObjectUtils;
+import modelengine.jade.carver.telemetry.aop.observers.ParamSpanAttributeInjector;
+import modelengine.jade.carver.telemetry.aop.parsers.DefaultSpanAttrParser;
+import modelengine.jade.carver.telemetry.aop.stub.NestedAppendSpanTestImpl;
+import modelengine.jade.carver.telemetry.aop.stub.NestedSpanTestService;
+import modelengine.jade.carver.telemetry.aop.stub.SpanDemo;
+import modelengine.jade.common.localemessage.ExceptionLocaleService;
+import modelengine.jade.service.CarverGlobalOpenTelemetry;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,9 +46,9 @@ import org.mockito.MockedStatic;
  * @since 2024-08-05
  */
 @FitTestWithJunit(includeClasses = {
-        SpanDemo.class, AppendSpanAttrAspect.class, NestedAppendSpanTestImpl.class,
-        NestedAppendSpanTestImpl.class, CarverSpanAspect.class, SpanAttrParserRepository.class,
-        DefaultSpanAttrParser.class, SpanEndObserverRepository.class, ParamSpanAttributeInjector.class
+        SpanDemo.class, AppendSpanAttrAspect.class, NestedAppendSpanTestImpl.class, NestedAppendSpanTestImpl.class,
+        CarverSpanAspect.class, SpanAttrParserRepository.class, DefaultSpanAttrParser.class,
+        SpanEndObserverRepository.class, ParamSpanAttributeInjector.class
 })
 public class AppendSpanAttrAspectTest {
     @Mock
@@ -76,8 +75,8 @@ public class AppendSpanAttrAspectTest {
         when(this.mockTrace.spanBuilder(any())).thenReturn(this.mockSpanBuilder);
         when(this.mockSpanBuilder.startSpan()).thenReturn(this.mockSpan);
         this.mockCurrent.when(Span::current).thenReturn(this.mockSpan);
-        doAnswer(args -> ObjectUtils.<Throwable>cast(args.getArgument(0)).getMessage())
-                .when(this.exceptionLocaleService).localizeMessage(any());
+        doAnswer(args -> ObjectUtils.<Throwable>cast(args.getArgument(0))
+                .getMessage()).when(this.exceptionLocaleService).localizeMessage(any());
     }
 
     @AfterEach

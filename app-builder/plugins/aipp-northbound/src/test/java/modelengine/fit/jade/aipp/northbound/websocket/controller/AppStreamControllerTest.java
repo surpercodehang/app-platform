@@ -105,8 +105,9 @@ public class AppStreamControllerTest {
         appStreamController.onMessage(session, chatMsg);
 
         assertThat(result).hasSize(2)
-                .contains("{\"code\":0,\"data\":\"test route success\",\"completed\":false}",
-                        "{\"code\":0,\"completed\":true}");
+                .contains("{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":\"test route success\","
+                                + "\"completed\":false}",
+                        "{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":null,\"completed\":true}");
     }
 
     @Test
@@ -117,7 +118,8 @@ public class AppStreamControllerTest {
         appStreamController.onMessage(session, chatMsg);
 
         assertThat(result).hasSize(1)
-                .contains("{\"code\":90000002,\"msg\":\"服务器内部错误，请联系管理员。\",\"completed\":true}");
+                .contains("{\"requestId\":null,\"code\":90000002,\"msg\":\"服务器内部错误，请联系管理员。\",\"data\":null,"
+                        + "\"completed\":true}");
     }
 
     @Test
@@ -130,7 +132,8 @@ public class AppStreamControllerTest {
 
         appStreamController.onMessage(session, chatMsg);
         assertThat(result).hasSize(2)
-                .contains("{\"code\":0,\"data\":\"emit success\",\"completed\":false}",
-                        "{\"code\":90000002,\"msg\":\"emit fail\",\"completed\":true}");
+                .contains("{\"requestId\":null,\"code\":0,\"msg\":null,\"data\":\"emit success\",\"completed\":false}",
+                        "{\"requestId\":null,\"code\":90000002,\"msg\":\"emit fail\",\"data\":null,"
+                                + "\"completed\":true}");
     }
 }

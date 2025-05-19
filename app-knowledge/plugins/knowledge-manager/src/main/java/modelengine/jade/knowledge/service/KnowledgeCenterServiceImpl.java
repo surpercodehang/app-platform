@@ -6,6 +6,10 @@
 
 package modelengine.jade.knowledge.service;
 
+import modelengine.fel.tool.annotation.Attribute;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
+import modelengine.fit.jane.task.util.Entities;
 import modelengine.fit.security.Decryptor;
 import modelengine.fit.security.Encryptor;
 import modelengine.fitframework.annotation.Component;
@@ -15,9 +19,6 @@ import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.LongUtils;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.jade.carver.tool.annotation.Attribute;
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
 import modelengine.jade.knowledge.KnowledgeCenterService;
 import modelengine.jade.knowledge.code.KnowledgeManagerRetCode;
 import modelengine.jade.knowledge.condition.KnowledgeConfigQueryCondition;
@@ -68,8 +69,24 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "增加用户的知识库配置信息")
     public void add(KnowledgeConfigDto knowledgeConfigDto) {
-        log.info("Start add user knowledge config.[userId={}]", knowledgeConfigDto.getUserId());
+        log.info("Start add user knowledge config. [userId={}]", knowledgeConfigDto.getUserId());
         this.isConfigUnique(knowledgeConfigDto);
+        List<KnowledgeConfigPo> result =
+                this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
+                        .userId(knowledgeConfigDto.getUserId())
+                        .groupId(knowledgeConfigDto.getGroupId())
+                        .build());
+        if (result.stream().noneMatch(config -> config.getIsDefault() == 1)) {
+            knowledgeConfigDto.setIsDefault(true);
+        } else if (knowledgeConfigDto.getIsDefault()) {
+            // 需要保证一个知识库平台只能有一个默认使用的API key
+            KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
+                    .userId(knowledgeConfigDto.getUserId())
+                    .groupId(knowledgeConfigDto.getGroupId())
+                    .build();
+            this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
+        }
+        knowledgeConfigDto.setKnowledgeConfigId(Entities.generateId());
         this.knowledgeCenterRepo.insertKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
     }
 
@@ -79,24 +96,39 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "修改用户的知识库配置信息")
     public void edit(KnowledgeConfigDto knowledgeConfigDto) {
-        log.info("Start edit user knowledge config.[userId={}]", knowledgeConfigDto.getUserId());
-        this.isConfigUnique(knowledgeConfigDto);
-        this.knowledgeCenterRepo.updateKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
-        if (!this.isUpdateOthersDefault(knowledgeConfigDto)) {
+        log.info("Start edit user knowledge config. [userId={}]", knowledgeConfigDto.getUserId());
+        if (!this.isUpdateValidate(knowledgeConfigDto)) {
+            log.error("Edit user knowledge config failed. [id={}, groupId={}, userId={}]",
+                    knowledgeConfigDto.getId(),
+                    knowledgeConfigDto.getGroupId(),
+                    knowledgeConfigDto.getUserId());
             return;
         }
+        this.isConfigUnique(knowledgeConfigDto);
+        List<KnowledgeConfigPo> result =
+                this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
+                        .userId(knowledgeConfigDto.getUserId())
+                        .groupId(knowledgeConfigDto.getGroupId())
+                        .build());
+        if (result.size() == 1 && !knowledgeConfigDto.getIsDefault()) {
+            throw new KnowledgeException(KnowledgeManagerRetCode.SHOULD_HAS_AT_LEAST_ONE_DEFAULT);
+        }
+        this.knowledgeCenterRepo.updateKnowledgeConfig(this.getKnowledgeConfigPo(knowledgeConfigDto));
         KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
                 .id(knowledgeConfigDto.getId())
                 .userId(knowledgeConfigDto.getUserId())
                 .groupId(knowledgeConfigDto.getGroupId())
                 .build();
-        this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
+        if (knowledgeConfigDto.getIsDefault()) {
+            this.knowledgeCenterRepo.updateOthersIsDefaultFalse(condition);
+        } else {
+            this.knowledgeCenterRepo.updateNewestIsDefaultTrue(condition);
+        }
     }
 
-    private boolean isUpdateOthersDefault(KnowledgeConfigDto knowledgeConfigDto) {
-        return knowledgeConfigDto.getIsDefault() && LongUtils.between(knowledgeConfigDto.getId(), 1, Long.MAX_VALUE)
-                && StringUtils.isNotBlank(knowledgeConfigDto.getUserId())
-                && StringUtils.isNotBlank(knowledgeConfigDto.getGroupId());
+    private boolean isUpdateValidate(KnowledgeConfigDto knowledgeConfigDto) {
+        return LongUtils.between(knowledgeConfigDto.getId(), 1, Long.MAX_VALUE) && StringUtils.isNotBlank(
+                knowledgeConfigDto.getUserId()) && StringUtils.isNotBlank(knowledgeConfigDto.getGroupId());
     }
 
     @Override
@@ -105,7 +137,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "删除用户的知识库配置信息")
     public void delete(Long id) {
-        log.info("Start delete user knowledge config.[id={}]", id);
+        log.info("Start delete user knowledge config. [id={}]", id);
         List<KnowledgeConfigPo> configPoList =
                 this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
                         .id(id)
@@ -116,7 +148,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
         }
         KnowledgeConfigPo configPo = configPoList.get(0);
         KnowledgeConfigDto knowledgeConfigDto = this.getKnowledgeConfigDto(configPo);
-        if (this.isUpdateOthersDefault(knowledgeConfigDto)) {
+        if (knowledgeConfigDto.getIsDefault()) {
             KnowledgeConfigQueryCondition condition = KnowledgeConfigQueryCondition.builder()
                     .userId(knowledgeConfigDto.getUserId())
                     .groupId(knowledgeConfigDto.getGroupId())
@@ -131,7 +163,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
             extensions = {@Attribute(key = "tags", value = "FIT"), @Attribute(key = "tags", value = "KNOWLEDGE")})
     @Property(description = "查询用户的知识库配置信息")
     public List<KnowledgeConfigDto> list(String userId) {
-        log.info("Start get user knowledge configs.[userId={}]", userId);
+        log.info("Start get user knowledge configs. [userId={}]", userId);
         return this.knowledgeCenterRepo.listKnowledgeConfigByCondition(KnowledgeConfigQueryCondition.builder()
                 .userId(userId)
                 .build()).stream().map(this::getKnowledgeConfigDto).toList();
@@ -148,16 +180,31 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
 
     @Override
     @Fitable(id = FITABLE_ID)
-    public String getApiKey(String userId, String groupId, String defaultValue) {
+    public String getApiKey(String knowledgeConfigId, String defaultValue) {
+        if (StringUtils.isEmpty(knowledgeConfigId)) {
+            return defaultValue;
+        }
+        KnowledgeConfigQueryCondition cond =
+                KnowledgeConfigQueryCondition.builder().knowledgeConfigId(knowledgeConfigId).build();
+        List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(cond);
+        if (result.isEmpty()) {
+            return defaultValue;
+        }
+        this.validateConfigNum(result);
+        return this.decryptor.decrypt(result.get(0).getApiKey());
+    }
+
+    @Override
+    @Fitable(id = FITABLE_ID)
+    public String getKnowledgeConfigId(String userId, String groupId) {
         KnowledgeConfigQueryCondition cond =
                 KnowledgeConfigQueryCondition.builder().userId(userId).groupId(groupId).isDefault(1).build();
         List<KnowledgeConfigPo> result = this.knowledgeCenterRepo.listKnowledgeConfigByCondition(cond);
         if (result.isEmpty()) {
-            log.info("No available api key.[knowledge groupId={}, userId={}]", groupId, userId);
-            return defaultValue;
+            return "";
         }
         this.validateConfigNum(result);
-        return result.get(0).getApiKey();
+        return result.get(0).getKnowledgeConfigId();
     }
 
     private void validateConfigNum(List<KnowledgeConfigPo> result) {
@@ -185,12 +232,13 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 .name(knowledgeConfigDto.getName())
                 .userId(knowledgeConfigDto.getUserId())
                 .groupId(knowledgeConfigDto.getGroupId())
-                .apiKey(this.decryptor.decrypt(knowledgeConfigDto.getApiKey()))
+                .apiKey(this.encryptor.encrypt(knowledgeConfigDto.getApiKey()))
                 .isDefault(Boolean.compare(knowledgeConfigDto.getIsDefault(), false))
                 .createdBy(knowledgeConfigDto.getUserId())
                 .createdAt(LocalDateTime.now())
                 .updatedBy(knowledgeConfigDto.getUserId())
                 .updatedAt(LocalDateTime.now())
+                .knowledgeConfigId(knowledgeConfigDto.getKnowledgeConfigId())
                 .build();
     }
 
@@ -200,7 +248,7 @@ public class KnowledgeCenterServiceImpl implements KnowledgeCenterService {
                 .name(knowledgeConfigPo.getName())
                 .groupId(knowledgeConfigPo.getGroupId())
                 .userId(knowledgeConfigPo.getUserId())
-                .apiKey(this.encryptor.encrypt(knowledgeConfigPo.getApiKey()))
+                .apiKey(this.decryptor.decrypt(knowledgeConfigPo.getApiKey()))
                 .isDefault(knowledgeConfigPo.getIsDefault() == 1)
                 .build();
     }

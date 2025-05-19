@@ -12,8 +12,8 @@ import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.inspection.Nonnull;
 import modelengine.fitframework.serialization.ObjectSerializer;
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.ToolFactory;
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.ToolFactory;
 import modelengine.fel.service.pipeline.HuggingFacePipelineService;
 
 /**
@@ -40,7 +40,7 @@ public class HuggingFaceToolFactory implements ToolFactory {
     }
 
     @Override
-    public Tool create(Tool.ToolInfo itemInfo, Tool.Metadata metadata) {
+    public Tool create(Tool.Info itemInfo, Tool.Metadata metadata) {
         return new HuggingFaceTool(this.serializer, this.pipelineService, itemInfo, metadata);
     }
 }

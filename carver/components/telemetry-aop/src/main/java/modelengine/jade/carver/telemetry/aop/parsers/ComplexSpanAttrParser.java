@@ -8,12 +8,11 @@ package modelengine.jade.carver.telemetry.aop.parsers;
 
 import static modelengine.fitframework.annotation.Order.LOW;
 
-import modelengine.jade.carver.telemetry.aop.SpanAttrParser;
-
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Order;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.value.ValueFetcher;
+import modelengine.jade.carver.telemetry.aop.SpanAttrParser;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +33,8 @@ public class ComplexSpanAttrParser implements SpanAttrParser {
      * 模式匹配格式：k:v1 或 k:v1,kk:v1.v2 或 k1:$.v1.v2 或 k1:[0].v1 或 k1:$[0].v1.v2
      */
     private static final Pattern FULL_PARSER_REG = Pattern.compile(
-"^\\s*\\w+:(\\$\\.|\\$?\\[\\d+\\]\\.|\\w+\\.)*\\w+\\s*(,\\s*\\w+:(\\$\\.|\\$?\\[\\d+\\]\\.|\\w+\\.)*\\w+\\s*)*$");
+            "^\\s*\\w+:(\\$\\.|\\$?\\[\\d+\\]\\.|\\w+\\.)*\\w+\\s*(,\\s*\\w+:(\\$\\.|\\$?\\[\\d+\\]\\.|\\w+\\.)"
+                    + "*\\w+\\s*)*$");
     private static final Logger LOGGER = Logger.get(ComplexSpanAttrParser.class);
 
     private final ValueFetcher fetcher;

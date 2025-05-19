@@ -19,8 +19,8 @@ import modelengine.fitframework.broker.client.Invoker;
 import modelengine.fitframework.broker.client.Router;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.MapBuilder;
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.model.transfer.ToolData;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,7 +48,7 @@ public class WaterFlowToolTest {
     @BeforeEach
     void setup() {
         this.client = mock(BrokerClient.class);
-        Tool.ToolInfo toolInfo = this.buildToolInfo();
+        Tool.Info toolInfo = this.buildToolInfo();
         Tool.Metadata toolMetadata = Tool.Metadata.fromSchema(DEFINITION_GROUP_NAME, toolInfo.schema());
         this.serializer = new JacksonObjectSerializer(null, null, null);
 
@@ -88,9 +88,9 @@ public class WaterFlowToolTest {
         assertThat(result).isEqualTo(expectedResult);
     }
 
-    private Tool.ToolInfo buildToolInfo() {
+    private Tool.Info buildToolInfo() {
         Map<String, Object> schema = this.buildSchema();
-        return Tool.ToolInfo.custom()
+        return Tool.Info.custom()
                 .name("test_schema_default_implementation_name")
                 .uniqueName("customize-water-flow-uuid")
                 .schema(schema)

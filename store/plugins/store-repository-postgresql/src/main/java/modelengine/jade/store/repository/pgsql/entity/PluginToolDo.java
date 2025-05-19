@@ -9,8 +9,8 @@ package modelengine.jade.store.repository.pgsql.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.jade.carver.entity.CommonDo;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
 import modelengine.jade.store.entity.transfer.PluginToolData;
 
 import java.util.Set;

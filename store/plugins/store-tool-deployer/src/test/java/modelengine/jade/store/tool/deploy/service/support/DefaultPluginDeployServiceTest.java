@@ -83,12 +83,14 @@ class DefaultPluginDeployServiceTest {
         registryQueryPoolConfig.setCorePoolSize(20);
         registryQueryPoolConfig.setMaximumPoolSize(20);
         registryQueryPoolConfig.setWorkQueueCapacity(10);
-        DeployService deployService =
-                new DefaultDeployService(this.mockPluginService, this.mockRegistryService, this.mockPluginToolService,
-                        pluginDeployQueryConfig);
-        this.pluginDeployService =
-                new DefaultPluginDeployService(this.mockPluginService, registryQueryPoolConfig, pluginDeployQueryConfig,
-                        deployService);
+        DeployService deployService = new DefaultDeployService(this.mockPluginService,
+                this.mockRegistryService,
+                this.mockPluginToolService,
+                pluginDeployQueryConfig);
+        this.pluginDeployService = new DefaultPluginDeployService(this.mockPluginService,
+                registryQueryPoolConfig,
+                pluginDeployQueryConfig,
+                deployService);
     }
 
     @AfterEach
@@ -138,8 +140,8 @@ class DefaultPluginDeployServiceTest {
     @DisplayName("部署文件符合预期")
     void testDeployPlugins() {
         when(this.mockPluginService.getPlugin(Mockito.anyString())).thenReturn(mockPluginData());
-        when(this.mockPluginService.getPlugins(DeployStatus.DEPLOYED)).thenReturn(
-                Collections.singletonList(mockPluginData()));
+        when(this.mockPluginService.getPlugins(DeployStatus.DEPLOYED)).thenReturn(Collections.singletonList(
+                mockPluginData()));
         this.pluginDeployService.deployPlugins(Collections.singletonList("value"));
         verify(this.mockPluginService).updateDeployStatus(Collections.singletonList("value"), DeployStatus.DEPLOYING);
     }
@@ -222,8 +224,8 @@ class DefaultPluginDeployServiceTest {
     @Test
     @DisplayName("测试初始化插件状态功能正常")
     void testInitDeployStatus() {
-        when(this.mockPluginService.getPlugins(any(DeployStatus.class))).thenReturn(
-                Collections.singletonList(mockPluginData()));
+        when(this.mockPluginService.getPlugins(any(DeployStatus.class))).thenReturn(Collections.singletonList(
+                mockPluginData()));
         when(this.mockPluginService.getPlugins(any(PluginQuery.class))).thenReturn(mockPluginDataResult());
         when(this.mockPluginService.getPlugin(Mockito.anyString())).thenReturn(mockPluginData());
         this.pluginDeployService.onRuntimeStarted(fitRuntime);

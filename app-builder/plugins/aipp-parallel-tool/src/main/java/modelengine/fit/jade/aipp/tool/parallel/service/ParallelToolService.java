@@ -10,8 +10,8 @@ import modelengine.fit.jade.aipp.tool.parallel.entities.Config;
 import modelengine.fit.jade.aipp.tool.parallel.entities.ToolCall;
 import modelengine.fitframework.annotation.Genericable;
 import modelengine.fitframework.annotation.Property;
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 
 import java.util.List;
 import java.util.Map;

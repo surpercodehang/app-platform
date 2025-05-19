@@ -6,8 +6,8 @@
 
 package modelengine.jade.store.entity.transfer;
 
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
 
 import java.util.List;
 import java.util.Map;

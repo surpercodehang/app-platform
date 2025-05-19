@@ -6,7 +6,7 @@
 
 package modelengine.jade.carver.tool.repository.pgsql.repository;
 
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
 
 import java.util.Optional;
 

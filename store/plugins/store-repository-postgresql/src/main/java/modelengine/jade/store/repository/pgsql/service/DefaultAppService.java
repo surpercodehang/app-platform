@@ -10,6 +10,11 @@ import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.jade.store.entity.transfer.AppData.toDefGroup;
 import static modelengine.jade.store.entity.transfer.AppData.toToolGroup;
 
+import modelengine.fel.tool.ToolSchema;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.DefinitionGroupService;
+import modelengine.fel.tool.service.ToolGroupService;
+import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
 import modelengine.fitframework.exception.FitException;
@@ -18,11 +23,6 @@ import modelengine.fitframework.transaction.Transactional;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.carver.ListResult;
-import modelengine.jade.carver.tool.ToolSchema;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.service.DefinitionGroupService;
-import modelengine.jade.carver.tool.service.ToolGroupService;
-import modelengine.jade.carver.tool.service.ToolService;
 import modelengine.jade.store.entity.query.AppQuery;
 import modelengine.jade.store.entity.query.QueryUtils;
 import modelengine.jade.store.entity.transfer.AppData;
@@ -206,9 +206,7 @@ public class DefaultAppService implements AppService {
     }
 
     private void updateAppTag(AppPublishData appData) {
-        Optional<String> filteredTag = appData.getTags().stream()
-                .filter(tag -> tag.startsWith(APP_TYPE))
-                .findFirst();
+        Optional<String> filteredTag = appData.getTags().stream().filter(tag -> tag.startsWith(APP_TYPE)).findFirst();
         String targetTag = filteredTag.orElse(APP);
         this.tagService.updateAppTag(targetTag, appData.getUniqueName());
     }

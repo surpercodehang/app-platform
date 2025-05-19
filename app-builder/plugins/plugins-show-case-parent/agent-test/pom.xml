@@ -45,6 +45,7 @@
         <dependency>
             <groupId>org.fitframework.plugin</groupId>
             <artifactId>fit-message-serializer-json-jackson</artifactId>
+            <version>3.5.0-M2.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -60,8 +61,9 @@
             <artifactId>mockito-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jade.service</groupId>
+            <groupId>org.fitframework.fel</groupId>
             <artifactId>tool-service</artifactId>
+            <version>3.5.0-M2.1</version>
         </dependency>
     </dependencies>
 

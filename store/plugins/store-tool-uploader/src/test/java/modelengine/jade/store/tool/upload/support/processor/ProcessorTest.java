@@ -6,11 +6,11 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
+import static modelengine.fel.tool.ToolSchema.PARAMETERS_PROPERTIES;
+import static modelengine.fel.tool.ToolSchema.PROPERTIES_TYPE;
 import static modelengine.fel.tool.info.schema.ToolsSchema.ARRAY;
 import static modelengine.fel.tool.info.schema.ToolsSchema.ITEMS;
 import static modelengine.fel.tool.info.schema.ToolsSchema.OBJECT;
-import static modelengine.jade.carver.tool.ToolSchema.PARAMETERS_PROPERTIES;
-import static modelengine.jade.carver.tool.ToolSchema.PROPERTIES_TYPE;
 import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.getFileInfo;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;

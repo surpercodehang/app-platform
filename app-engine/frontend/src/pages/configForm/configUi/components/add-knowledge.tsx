@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import { Button, Input, Dropdown, Modal, Checkbox, Tooltip } from 'antd';
 import { SearchOutlined, DownOutlined } from '@ant-design/icons';
 import { setSpaClassName } from '@/shared/utils/common';
-import { getKnowledgesCard } from '@/shared/http/appBuilder';
+import { getKnowledgesCard } from '@/shared/http/knowledge';
 import { Message } from '@/shared/utils/message';
 import { deepClone } from '@/pages/chatPreview/utils/chat-process';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +37,6 @@ const AddKnowledge = (props) => {
   const [cachedKnowledgeList, setCachedKnowledgeList] = useState<any>([]);
   const searchName = useRef('');
   const checkData = useRef<any>([]);
-  const navigate = useHistory().push;
   const typeMap: any = {
     VECTOR: t('unstructuredData'),
     RDB: t('structuredData'),
@@ -47,18 +46,18 @@ const AddKnowledge = (props) => {
   const cancel = () => {
     setOpen(false);
   };
-  const showModal = (list = [], groupId: String) => {
+  const showModal = (list = [], groupId: String, knowledgeConfigId: String) => {
     setTotal(0);
     checkData.current = deepClone(list);
     setOpen(true);
-    setCheck(groupId);
+    setCheck(groupId, knowledgeConfigId);
   };
   // 设置选中列表
-  const setCheck = (groupId: String) => {
+  const setCheck = (groupId: String, knowledgeConfigId: String) => {
     setListPage(1);
     setPageSize(12);
     setKnowledgeList(checkData.current);
-    handleGetKnowledgeOptions(groupId);
+    handleGetKnowledgeOptions(knowledgeConfigId, groupId);
   };
 
   // 过滤Id
@@ -67,13 +66,14 @@ const AddKnowledge = (props) => {
   };
 
   // 获取知识库列表
-  const handleGetKnowledgeOptions = async (grpahGroupId?:String) => {
+  const handleGetKnowledgeOptions = async (knowledgeConfigId: String, graphGroupId?:String) => {
     const params = {
       tenantId,
       pageIndex: listPage,
       pageSize: pageSize,
       repoName: encodeURIComponent(searchName.current.trim()),
-      groupId: grpahGroupId || groupId,
+      groupId: graphGroupId || groupId,
+      knowledgeConfigId
     };
     try {
       const res: any = await getKnowledgesCard(params);

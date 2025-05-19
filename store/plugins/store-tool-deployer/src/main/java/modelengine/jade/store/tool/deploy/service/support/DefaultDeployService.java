@@ -6,13 +6,13 @@
 
 package modelengine.jade.store.tool.deploy.service.support;
 
+import static modelengine.fel.tool.ToolSchema.PROPERTIES_TYPE;
 import static modelengine.fel.tool.info.schema.ToolsSchema.FIT;
 import static modelengine.fel.tool.info.schema.ToolsSchema.FITABLE_ID;
 import static modelengine.fel.tool.info.schema.ToolsSchema.GENERICABLE_ID;
 import static modelengine.fitframework.broker.GenericableMetadata.DEFAULT_VERSION;
 import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.fitframework.util.ObjectUtils.cast;
-import static modelengine.jade.carver.tool.ToolSchema.PROPERTIES_TYPE;
 
 import modelengine.fel.tool.info.schema.PluginSchema;
 import modelengine.fit.service.RegistryService;

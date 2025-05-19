@@ -6,7 +6,7 @@
 
 package modelengine.jade.carver.tool.repository.pgsql.repository;
 
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
 
 import java.util.List;
 import java.util.Optional;

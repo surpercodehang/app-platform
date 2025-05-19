@@ -12,14 +12,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.ToolFactory;
-import modelengine.jade.carver.tool.model.transfer.DefinitionData;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.repository.ToolFactoryRepository;
-import modelengine.jade.carver.tool.service.DefinitionService;
-import modelengine.jade.carver.tool.service.ToolService;
-
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.ToolFactory;
+import modelengine.fel.tool.ToolFactoryRepository;
+import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.DefinitionService;
+import modelengine.fel.tool.service.ToolService;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.util.MapBuilder;
 
@@ -61,7 +60,7 @@ public class DefaultToolExecuteServiceTest {
         when(tool.executeWithJsonObject(any())).thenReturn("OK");
         Tool.Metadata metadata = mock(Tool.Metadata.class);
         when(tool.metadata()).thenReturn(metadata);
-        Tool.ToolInfo toolInfo = mock(Tool.ToolInfo.class);
+        Tool.Info toolInfo = mock(Tool.Info.class);
         when(tool.info()).thenReturn(toolInfo);
         when(tool.info().returnConverter()).thenReturn("");
     }
@@ -84,6 +83,7 @@ public class DefaultToolExecuteServiceTest {
 
     private Map<String, Object> buildSchema() {
         return MapBuilder.<String, Object>get()
+                .put("namespace", "test_namespace")
                 .put("name", "test_schema_default_implementation_name")
                 .put("index", "test_schema_index")
                 .put("description", "This is a demo FIT function.")
@@ -100,6 +100,7 @@ public class DefaultToolExecuteServiceTest {
                                                 .build())
                                 .put("required", Collections.singletonList("p1"))
                                 .build())
+                .put("extensions", MapBuilder.get().build())
                 .put("order", Collections.singletonList("p1"))
                 .put("return", MapBuilder.<String, Object>get().put("type", "string").build())
                 .build();
@@ -114,8 +115,12 @@ public class DefaultToolExecuteServiceTest {
 
     private ToolData buildToolData() {
         ToolData toolData = new ToolData();
+        toolData.setName("test_schema_default_implementation_name");
+        toolData.setDescription("This is a demo FIT function.");
         toolData.setSchema(this.buildSchema());
+        toolData.setExtensions(new HashMap<>());
         toolData.setRunnables(this.buildRunnables());
+        toolData.setLatest(true);
         return toolData;
     }
 

@@ -24,8 +24,9 @@
 
         <!-- Services -->
         <dependency>
-            <groupId>modelengine.fit.jade.service</groupId>
+            <groupId>org.fitframework.fel</groupId>
             <artifactId>tool-service</artifactId>
+            <version>3.5.0-M2.1</version>
         </dependency>
 
         <!-- Test -->

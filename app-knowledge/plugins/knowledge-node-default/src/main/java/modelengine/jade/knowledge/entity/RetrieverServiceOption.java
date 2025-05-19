@@ -47,6 +47,11 @@ public class RetrieverServiceOption {
     private String groupId;
 
     /**
+     * 知识库配置唯一id。
+     */
+    private String knowledgeConfigId;
+
+    /**
      * 重排模型参数实体。
      */
     @Data

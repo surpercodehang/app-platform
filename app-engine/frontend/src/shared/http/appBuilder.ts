@@ -4,9 +4,9 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { get, put } from "./http";
+import { get } from "./http";
 import serviceConfig from './httpConfig';
-const { TOOL_URL, AIPP_URL, PLUGIN_URL } = serviceConfig;
+const { TOOL_URL, AIPP_URL } = serviceConfig;
 
 // 获取模型列表接口
 const getModels = () => {
@@ -58,46 +58,7 @@ const getWaterFlows = (params) => {
     });
   });
 }
-// 获取知识库
-const getKnowledges = (params) => {
-  return new Promise((resolve, reject) => {
-    get(`${AIPP_URL}/${params.tenantId}/knowledge/repos?pageNum=${params.pageNum}&pageSize=${params.pageSize}&name=${params.name}`).then((res) => {
-      resolve(res);
-    }, (error) => {
-      reject(error);
-    });
-  });
-}
-// 获取知识库卡片列表
-const getKnowledgesCard = (params) =>{
-  return new Promise((resolve, reject) => {
-    get(`${PLUGIN_URL}/knowledge-manager/list/repos?groupId=${params.groupId}&repoName=${params.repoName}&pageSize=${params.pageSize}&pageIndex=${params.pageIndex}`).then((res) => {
-      resolve(res);
-    }, (error) => {
-      reject(error);
-    });
-  });
-}
-// 获取知识库卡片列表
-const getSearchParams= (params) =>{
-  return new Promise((resolve, reject) => {
-    get(`${PLUGIN_URL}/knowledge-manager/properties?groupId=${params.groupId}`).then((res) => {
-      resolve(res);
-    }, (error) => {
-      reject(error);
-    });
-  });
-}
-// 获取知识库
-const getKnowledgesList = (params) => {
-  return new Promise((resolve, reject) => {
-    get(`${AIPP_URL}/${params.tenantId}/knowledge/repos/${params.repoId}/tables?pageNum=${params.pageNum}&pageSize=${params.pageSize}`).then((res) => {
-      resolve(res);
-    }, (error) => {
-      reject(error);
-    });
-  });
-}
+
 // 获取灵感大全fitable列表
 const getFitables = () => {
   return new Promise((resolve, reject) => {
@@ -139,28 +100,14 @@ const getHuggingFaceList = (tenant_Id, params) => {
     });
   });
 }
-// 获取连接知识库列表
-const getConnectKnowledgeList = () =>{
-  return new Promise((resolve, reject) => {
-    get(`${PLUGIN_URL}/knowledge-manager/list/groups`).then((res) => {
-      resolve(res);
-    }, (error) => {
-      reject(error);
-    });
-  });
-}
+
 export {
-  getModels, 
-  getTools, 
-  getKnowledges, 
-  getFitables, 
+  getModels,
+  getTools,
+  getFitables,
   getAddFlowConfig,
-  getWaterFlows, 
-  getKnowledgesList,
+  getWaterFlows,
   getHuggingFaceList,
   getPersonPluginData,
   getEvaluateConfig,
-  getKnowledgesCard,
-  getSearchParams,
-  getConnectKnowledgeList
 };

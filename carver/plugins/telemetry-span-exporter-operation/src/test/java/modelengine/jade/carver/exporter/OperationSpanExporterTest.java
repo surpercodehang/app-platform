@@ -14,15 +14,14 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
-import modelengine.fitframework.annotation.Fit;
-import modelengine.fitframework.test.annotation.FitTestWithJunit;
-import modelengine.fitframework.test.annotation.Mock;
-
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.data.EventData;
 import io.opentelemetry.sdk.trace.data.SpanData;
+import modelengine.fitframework.annotation.Fit;
+import modelengine.fitframework.test.annotation.FitTestWithJunit;
+import modelengine.fitframework.test.annotation.Mock;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -120,7 +119,6 @@ public class OperationSpanExporterTest {
         doAnswer(invocation -> {
             throw new IllegalStateException("test illegal state exception");
         }).when(this.logExporter).export(any(), any());
-        assertThat(this.spanExporter.export(Collections.singletonList(this.spanData))).isEqualTo(
-            CompletableResultCode.ofFailure());
+        assertThat(this.spanExporter.export(Collections.singletonList(this.spanData))).isEqualTo(CompletableResultCode.ofFailure());
     }
 }

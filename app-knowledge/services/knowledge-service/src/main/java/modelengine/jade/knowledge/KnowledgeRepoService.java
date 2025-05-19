@@ -6,8 +6,8 @@
 
 package modelengine.jade.knowledge;
 
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 import modelengine.jade.common.vo.PageVo;
 import modelengine.jade.knowledge.document.KnowledgeDocument;
 import modelengine.jade.knowledge.support.FlatKnowledgeOption;

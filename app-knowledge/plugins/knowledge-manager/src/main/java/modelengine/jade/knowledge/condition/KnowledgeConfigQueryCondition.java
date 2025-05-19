@@ -26,5 +26,7 @@ public class KnowledgeConfigQueryCondition {
 
     private String apiKey;
 
+    private String knowledgeConfigId;
+
     private Integer isDefault;
 }

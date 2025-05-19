@@ -12,9 +12,9 @@ import modelengine.fit.jober.aipp.tool.FileTool;
 import modelengine.fit.jober.aipp.util.AippStringUtils;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fitable;
-import modelengine.jade.carver.tool.annotation.Attribute;
-import modelengine.jade.carver.tool.annotation.Group;
-import modelengine.jade.carver.tool.annotation.ToolMethod;
+import modelengine.fel.tool.annotation.Attribute;
+import modelengine.fel.tool.annotation.Group;
+import modelengine.fel.tool.annotation.ToolMethod;
 
 /**
  * 文件工具类实现。

@@ -39,7 +39,7 @@ public class FlowStoreJober extends FlowJober {
     /**
      * {@link modelengine.jade.carver.tool.service.ToolExecuteService#executeTool(String, String)} 的服务唯一标识。
      */
-    public static final String TOOL_EXECUTE_GENERICABLE_ID = "modelengine.jade.carver.tool.execute.json";
+    public static final String TOOL_EXECUTE_GENERICABLE_ID = "modelengine.fel.tool.execute.uniquename.json";
 
     private static final Logger LOG = Logger.get(FlowStoreJober.class);
 

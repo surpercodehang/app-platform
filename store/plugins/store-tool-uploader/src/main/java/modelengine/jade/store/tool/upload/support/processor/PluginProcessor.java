@@ -6,6 +6,7 @@
 
 package modelengine.jade.store.tool.upload.support.processor;
 
+import static modelengine.fel.tool.ToolSchema.NAME;
 import static modelengine.fel.tool.info.schema.PluginSchema.ARTIFACT_ID;
 import static modelengine.fel.tool.info.schema.PluginSchema.CHECKSUM;
 import static modelengine.fel.tool.info.schema.PluginSchema.DESCRIPTION;
@@ -27,7 +28,6 @@ import static modelengine.fel.tool.info.schema.ToolsSchema.TAGS;
 import static modelengine.fitframework.inspection.Validation.notBlank;
 import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.fitframework.util.ObjectUtils.cast;
-import static modelengine.jade.carver.tool.ToolSchema.NAME;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildBlankParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildEmptyParserException;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.buildNullParserException;
@@ -38,6 +38,10 @@ import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.renameFil
 
 import modelengine.fel.tool.info.entity.HttpJsonEntity;
 import modelengine.fel.tool.info.entity.PluginJsonEntity;
+import modelengine.fel.tool.model.transfer.DefinitionData;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.log.Logger;
@@ -45,10 +49,6 @@ import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.MapBuilder;
 import modelengine.fitframework.util.MapUtils;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.jade.carver.tool.model.transfer.DefinitionData;
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.code.PluginRetCode;
 import modelengine.jade.store.entity.transfer.PluginData;

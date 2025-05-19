@@ -6,15 +6,14 @@
 
 package modelengine.jade.carver.tool.waterflow;
 
-import modelengine.jade.carver.tool.Tool;
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.service.ToolService;
-import modelengine.jade.carver.tool.waterflow.invoker.ToolInvoker;
-
 import modelengine.fel.core.chat.support.FlatChatMessage;
 import modelengine.fel.core.tool.ToolCall;
 import modelengine.fel.core.tool.ToolInfo;
+import modelengine.fel.tool.Tool;
+import modelengine.fel.tool.model.transfer.ToolData;
+import modelengine.fel.tool.service.ToolService;
 import modelengine.fitframework.util.MapBuilder;
+import modelengine.jade.carver.tool.waterflow.invoker.ToolInvoker;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,21 +46,18 @@ class WaterFlowToolProviderTest {
 
     @BeforeEach
     void setUp() {
-        this.waterFlowToolProvider = new WaterFlowToolProvider(this.toolService,
-                Collections.singletonList(this.toolInvoker));
+        this.waterFlowToolProvider =
+                new WaterFlowToolProvider(this.toolService, Collections.singletonList(this.toolInvoker));
     }
 
     @Test
     void shouldReturnCorrectToolWhenGetToolGivenNormalTool() {
         final String toolUniqueName = "toolUniqueName";
-        final Map<String, Object> schema = MapBuilder.<String, Object>get()
-                .put("name", toolUniqueName)
-                .put("k1", "v1")
-                .put("k2", "v2")
-                .build();
+        final Map<String, Object> schema =
+                MapBuilder.<String, Object>get().put("name", toolUniqueName).put("k1", "v1").put("k2", "v2").build();
         final Map<String, Object> runnables = MapBuilder.<String, Object>get().put("r1", "v1").put("r2", "v2").build();
         final String desc = "desc";
-        final ToolData toolData = ToolData.from(Tool.ToolInfo.custom()
+        final ToolData toolData = ToolData.from(Tool.Info.custom()
                 .name("toolName")
                 .uniqueName(toolUniqueName)
                 .schema(schema)
@@ -91,13 +87,10 @@ class WaterFlowToolProviderTest {
     @Test
     void shouldReturnResultOfInvokerWhenCallGivenInvoker() {
         String toolUniqueName = "toolUniqueName";
-        ToolData toolData = ToolData.from(
-                Tool.ToolInfo.custom().name(toolUniqueName).uniqueName(toolUniqueName).build());
-        ToolCall toolCall = ToolCall.custom()
-                .id("toolCallId1")
-                .name(toolUniqueName)
-                .arguments("{\"inputParams\":{}")
-                .build();
+        ToolData toolData =
+                ToolData.from(Tool.Info.custom().name(toolUniqueName).uniqueName(toolUniqueName).build());
+        ToolCall toolCall =
+                ToolCall.custom().id("toolCallId1").name(toolUniqueName).arguments("{\"inputParams\":{}").build();
         HashMap<String, Object> toolContext = new HashMap<>();
         Mockito.when(this.toolService.getTool(toolUniqueName)).thenReturn(toolData);
         Mockito.when(this.toolInvoker.match(Mockito.same(toolData))).thenReturn(true);

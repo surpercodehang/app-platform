@@ -9,13 +9,12 @@ package modelengine.jade.carver.exporter.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import modelengine.jade.carver.exporter.repository.stub.SpanExporterSub;
-import modelengine.jade.service.SpanExporterRepository;
-
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.plugin.Plugin;
 import modelengine.fitframework.test.annotation.FitTestWithJunit;
 import modelengine.fitframework.util.ObjectUtils;
+import modelengine.jade.carver.exporter.repository.stub.SpanExporterSub;
+import modelengine.jade.service.SpanExporterRepository;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,8 +37,10 @@ public class SpanExporterRepositoryStarterTest {
         return ObjectUtils.cast(exportersContainer.get(repositoryStarter));
     }
 
-    @FitTestWithJunit(includeClasses = {SpanExporterRepositoryStarter.class, DefaultSpanExporterRepository.class,
-            SpanExporterSub.class, SpanProcessorConfig.class})
+    @FitTestWithJunit(includeClasses = {
+            SpanExporterRepositoryStarter.class, DefaultSpanExporterRepository.class, SpanExporterSub.class,
+            SpanProcessorConfig.class
+    })
     @Nested
     @DisplayName("测试插件带有 SpanExporter 的场景")
     class ContainerStarterWithExporterTest {
@@ -55,8 +56,7 @@ public class SpanExporterRepositoryStarterTest {
 
         @Test
         @DisplayName("注册/注销 exporter 成功。")
-        public void shouldOkWhenRegisterExporterAfterRegistering()
-                throws NoSuchFieldException, IllegalAccessException {
+        public void shouldOkWhenRegisterExporterAfterRegistering() throws NoSuchFieldException, IllegalAccessException {
             // 插件启动，自动触发一次 onPluginStarted
             SpanExporterRepository exporterContainer = getExporterContainer(this.repositoryStarter);
             assertThat(exporterContainer.get(exporter -> true).size()).isEqualTo(1);
@@ -70,8 +70,7 @@ public class SpanExporterRepositoryStarterTest {
 
         @Test
         @DisplayName("超过最大限制，注册 exporter 失败。")
-        public void shouldFailWhenRegisterExporterOverMaxSize()
-                throws NoSuchFieldException, IllegalAccessException {
+        public void shouldFailWhenRegisterExporterOverMaxSize() throws NoSuchFieldException, IllegalAccessException {
             this.repositoryStarter.onPluginStopping(this.plugin);
             SpanExporterRepository exporterContainer = getExporterContainer(this.repositoryStarter);
             assertThat(exporterContainer.get(exporter -> true).size()).isEqualTo(0);
@@ -80,13 +79,14 @@ public class SpanExporterRepositoryStarterTest {
                 exporterContainer.register(new SpanExporterSub());
             }
             assertThat(exporterContainer.get(exporter -> true).size()).isEqualTo(10);
-            assertThatThrownBy(() -> this.repositoryStarter.onPluginStarting(this.plugin))
-                    .isInstanceOf(IllegalStateException.class).hasMessage("The exporters cannot greater than 10.");
+            assertThatThrownBy(() -> this.repositoryStarter.onPluginStarting(this.plugin)).isInstanceOf(
+                    IllegalStateException.class).hasMessage("The exporters cannot greater than 10.");
         }
     }
 
-    @FitTestWithJunit(includeClasses = {SpanExporterRepositoryStarter.class, DefaultSpanExporterRepository.class,
-            SpanProcessorConfig.class})
+    @FitTestWithJunit(includeClasses = {
+            SpanExporterRepositoryStarter.class, DefaultSpanExporterRepository.class, SpanProcessorConfig.class
+    })
     @Nested
     @DisplayName("测试插件无 SpanExporter 的场景")
     class ContainerStarterWithoutExporterTest {
@@ -95,8 +95,7 @@ public class SpanExporterRepositoryStarterTest {
 
         @Test
         @DisplayName("插件初始化，无 exporter，手动注册 exporter 成功。")
-        public void shouldOkWhenPluginInitWithoutExporter()
-                throws NoSuchFieldException, IllegalAccessException {
+        public void shouldOkWhenPluginInitWithoutExporter() throws NoSuchFieldException, IllegalAccessException {
             SpanExporterRepository exporterContainer = getExporterContainer(this.containerStarter);
             assertThat(exporterContainer.get(exporter -> true).size()).isEqualTo(0);
 

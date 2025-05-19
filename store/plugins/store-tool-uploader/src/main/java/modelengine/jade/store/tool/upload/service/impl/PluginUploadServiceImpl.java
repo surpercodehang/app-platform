@@ -6,6 +6,8 @@
 
 package modelengine.jade.store.tool.upload.service.impl;
 
+import static modelengine.fel.tool.ToolSchema.NAME;
+import static modelengine.fel.tool.ToolSchema.PROPERTIES_TYPE;
 import static modelengine.fel.tool.info.schema.PluginSchema.ARTIFACT_ID;
 import static modelengine.fel.tool.info.schema.PluginSchema.DOT;
 import static modelengine.fel.tool.info.schema.PluginSchema.GROUP_ID;
@@ -24,8 +26,6 @@ import static modelengine.fel.tool.info.schema.ToolsSchema.TOOLS;
 import static modelengine.fel.tool.info.schema.ToolsSchema.TOOLS_JSON;
 import static modelengine.fitframework.inspection.Validation.notNull;
 import static modelengine.fitframework.util.ObjectUtils.cast;
-import static modelengine.jade.carver.tool.ToolSchema.NAME;
-import static modelengine.jade.carver.tool.ToolSchema.PROPERTIES_TYPE;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.validateCompleteness;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.validateDefAndToolRepeat;
 import static modelengine.jade.store.tool.upload.support.BasicValidator.validateNecessaryFiles;
@@ -44,6 +44,10 @@ import static modelengine.jade.store.tool.upload.utils.FormatFileUtils.objToStri
 import modelengine.fel.tool.info.entity.HttpJsonEntity;
 import modelengine.fel.tool.info.entity.PluginJsonEntity;
 import modelengine.fel.tool.info.entity.ToolJsonEntity;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.ToolGroupData;
+import modelengine.fel.tool.service.DefinitionGroupService;
+import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.fit.http.entity.NamedEntity;
 import modelengine.fitframework.annotation.Component;
 import modelengine.fitframework.annotation.Fit;
@@ -51,10 +55,6 @@ import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.FileUtils;
 import modelengine.fitframework.util.StringUtils;
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
-import modelengine.jade.carver.tool.model.transfer.ToolGroupData;
-import modelengine.jade.carver.tool.service.DefinitionGroupService;
-import modelengine.jade.carver.tool.service.ToolGroupService;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.code.PluginRetCode;
 import modelengine.jade.store.entity.transfer.PluginData;

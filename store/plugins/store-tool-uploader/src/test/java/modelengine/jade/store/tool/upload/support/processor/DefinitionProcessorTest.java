@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import modelengine.fel.tool.info.entity.DefinitionGroupEntity;
 import modelengine.fel.tool.info.entity.ToolJsonEntity;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
-import modelengine.jade.carver.tool.model.transfer.DefinitionGroupData;
+import modelengine.fel.tool.model.transfer.DefinitionGroupData;
 import modelengine.jade.common.exception.ModelEngineException;
 
 import org.junit.jupiter.api.BeforeEach;

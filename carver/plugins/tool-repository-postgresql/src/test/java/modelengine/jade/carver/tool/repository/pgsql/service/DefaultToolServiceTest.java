@@ -11,12 +11,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
-import modelengine.jade.carver.tool.model.transfer.ToolData;
-import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
-import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepository;
-
+import modelengine.fel.tool.model.transfer.ToolData;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.serialization.ObjectSerializer;
+import modelengine.jade.carver.tool.repository.pgsql.model.entity.ToolDo;
+import modelengine.jade.carver.tool.repository.pgsql.repository.ToolRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -57,8 +56,10 @@ public class DefaultToolServiceTest {
     private ToolData mockToolData() {
         ToolData toolData = new ToolData();
         Map<String, Object> schema = new HashMap<>();
+        schema.put("namespace", "namespace");
         schema.put("name", "name");
         schema.put("description", "description");
+        schema.put("parameters", new HashMap<>());
         toolData.setSchema(schema);
         toolData.setLatest(true);
         toolData.setRunnables(new HashMap<>());
@@ -73,10 +74,13 @@ public class DefaultToolServiceTest {
         Map<String, Object> schema = new HashMap<>();
         schema.put("name", "name");
         schema.put("description", "description");
+        schema.put("parameters", new HashMap<>());
         toolDo.setSchema(this.serializer.serialize(schema));
+        toolDo.setExtensions("{}");
         toolDo.setUniqueName("testUniqueName");
         toolDo.setVersion("version");
         toolDo.setName("name");
+        toolDo.setIsLatest(true);
         return toolDo;
     }
 

@@ -8,7 +8,7 @@ package modelengine.jade.store.entity.transfer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import modelengine.jade.carver.tool.model.transfer.ToolData;
+import modelengine.fel.tool.model.transfer.ToolData;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

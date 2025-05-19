@@ -13,6 +13,7 @@ import static modelengine.fitframework.util.ObjectUtils.cast;
 import static modelengine.jade.carver.validation.ValidateTagMode.validateTagMode;
 import static modelengine.jade.common.Result.calculateOffset;
 
+import modelengine.fel.tool.ToolSchema;
 import modelengine.fit.http.annotation.DeleteMapping;
 import modelengine.fit.http.annotation.GetMapping;
 import modelengine.fit.http.annotation.PathVariable;
@@ -22,7 +23,6 @@ import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.annotation.RequestQuery;
 import modelengine.fitframework.annotation.Component;
 import modelengine.jade.carver.ListResult;
-import modelengine.jade.carver.tool.ToolSchema;
 import modelengine.jade.common.Result;
 import modelengine.jade.service.annotations.CarverSpan;
 import modelengine.jade.service.annotations.SpanAttr;
