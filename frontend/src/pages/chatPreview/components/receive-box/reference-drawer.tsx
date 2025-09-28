@@ -61,8 +61,9 @@ const MessageRefence = (props: any) => {
   return (
     <Drawer destroyOnClose title={t('source')} width={800} open={isOpen} onClose={onClose}>
       {text.map((item, index) => {
-        const sourceText = item?.metadata.url || '';
+        const sourceText = item?.source || item?.metadata?.url || '';
         const txtContent = item?.txt || item?.text || item || '';
+        const title = item?.metadata?.title || sourceText || '未知来源';
         const isSourceUrl = isUrl(sourceText);
         
         return (
@@ -83,10 +84,10 @@ const MessageRefence = (props: any) => {
                     rel='noopener noreferrer'
                     className='reference-url'
                   >
-                    {sourceText}
+                    {title}
                   </a>
                 ) : (
-                  <span className='reference-doc-name'>{sourceText}</span>
+                  <span className='reference-doc-name'>{title}</span>
                 )}
               </div>
             )}

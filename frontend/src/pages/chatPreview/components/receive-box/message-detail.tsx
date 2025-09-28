@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { markedProcess } from '../../utils/marked-process';
 import { useTranslation } from 'react-i18next';
 import ReferenceDrawer from './reference-drawer';
+import ReferenceOverviewModal from './reference-overview-modal';
 import { Message } from '@/shared/utils/message';
 import { isChatRunning } from '@/shared/utils/chat';
 import { useAppSelector } from '@/store/hook';
@@ -41,8 +42,21 @@ const MessageBox = (props: any) => {
   const [stepContent, setStepContent] = useState('');
   const [showStep, setShowStep] = useState(false);
   const [replacedText, setReplacedText] = useState<any>(null);
+  const [showReferenceOverview, setShowReferenceOverview] = useState(false);
   const chatReference = useAppSelector((state) => state.chatCommonStore.chatReference);
   const referenceList = useAppSelector((state) => state.chatCommonStore.referenceList);
+  
+  // 计算实际引用数量
+  const getReferenceCount = () => {
+    if (!reference || !Array.isArray(reference)) return 0;
+    let count = 0;
+    reference.forEach((refGroup) => {
+      if (refGroup && typeof refGroup === 'object') {
+        count += Object.keys(refGroup).length;
+      }
+    });
+    return count;
+  };
   
   // 正则替换
   const regExpReplace = (content: string, index: any) => {
@@ -226,6 +240,18 @@ const MessageBox = (props: any) => {
             refreshFeedbackStatus={props.refreshFeedbackStatus}
           />
         </div> }
+        {/* 引用总览按钮 */}
+        {reference?.length > 0 && (
+          <div className='reference-overview-section'>
+            <button 
+              className='reference-overview-btn'
+              onClick={() => setShowReferenceOverview(true)}
+            >
+              <span className='reference-overview-icon'>📚</span>
+              <span className='reference-overview-text'>查看引用 ({getReferenceCount()} 个引用)</span>
+            </button>
+          </div>
+        )}
         {reference?.length > 0 && (
           <ReferenceDrawer
             isOpen={isOpen}
@@ -233,6 +259,14 @@ const MessageBox = (props: any) => {
             reference={reference}
             referenceStr={referenceStr}
             referenceIndex={referenceIndex}
+          />
+        )}
+        {/* 引用总览模态框 */}
+        {reference?.length > 0 && (
+          <ReferenceOverviewModal
+            isOpen={showReferenceOverview}
+            setIsOpen={setShowReferenceOverview}
+            reference={reference}
           />
         )}
       </div>
