@@ -30,7 +30,8 @@ const MessageRefence = (props: any) => {
       let arr = [];
       let referenceList = reference[referenceIndex] || [];
       Object.keys(referenceList).forEach((item)=>{
-        obj[item] = referenceList[item].text;
+        // 保存完整的reference对象，包含source和txt信息
+        obj[item] = referenceList[item];
       })
       arr = referenceStr.split('_').map((item: any) => {
         return obj[item];
@@ -47,12 +48,48 @@ const MessageRefence = (props: any) => {
     });
   };
 
+  // 判断是否为URL
+  const isUrl = (str) => {
+    try {
+      new URL(str);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   return (
     <Drawer destroyOnClose title={t('source')} width={800} open={isOpen} onClose={onClose}>
       {text.map((item, index) => {
+        const sourceText = item?.metadata.url || '';
+        const txtContent = item?.txt || item?.text || item || '';
+        const isSourceUrl = isUrl(sourceText);
+        
         return (
-          <div key={index} className='source-drawer'>
-            <span>{item}</span>
+          <div key={index} className='reference-item'>
+            <div className='reference-content'>
+              <span className='reference-text'>{txtContent}</span>
+            </div>
+            {sourceText && (
+              <div className='reference-source'>
+                <div className='reference-source-header'>
+                  <span className='reference-number'>[{index + 1}]</span>
+                  <span className='reference-source-label'>来源：</span>
+                </div>
+                {isSourceUrl ? (
+                  <a 
+                    href={sourceText} 
+                    target='_blank' 
+                    rel='noopener noreferrer'
+                    className='reference-url'
+                  >
+                    {sourceText}
+                  </a>
+                ) : (
+                  <span className='reference-doc-name'>{sourceText}</span>
+                )}
+              </div>
+            )}
           </div>
         );
       })}
