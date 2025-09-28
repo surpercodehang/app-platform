@@ -68,6 +68,70 @@ public class LoginFilter implements HttpServerFilter {
     @Override
     public void doFilter(HttpClassicServerRequest request, HttpClassicServerResponse response,
             HttpServerFilterChain chain) {
+        response.headers().add("Access-Control-Allow-Origin", "*");
+        // 设置允许的方法
+        response.headers().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        // 设置允许的头部
+        response.headers().add("Access-Control-Allow-Headers", "authorization, " +
+                "content-type, " +
+                "x-requested-with, " +
+                "x-xsrf-token, " +
+                "x-csrf-token, " +
+                "x-auth-token, " +
+                "cache-control, " +
+                "pragma, " +
+                "expires, " +
+                "if-modified-since, " +
+                "if-none-match, " +
+                "accept, " +
+                "accept-encoding, " +
+                "accept-language, " +
+                "user-agent, " +
+                "referer, " +
+                "origin, " +
+                "access-control-request-method, " +
+                "access-control-request-headers, " +
+                "content-disposition, " +
+                "content-length, " +
+                "x-forwarded-for, " +
+                "x-forwarded-proto, " +
+                "x-real-ip, " +
+                "range, " +
+                "if-range, " +
+                "last-event-id, " +
+                "x-http-method-override");
+        response.headers().add("Access-Control-Expose-Headers", "authorization, " +
+                "x-xsrf-token, " +
+                "x-csrf-token, " +
+                "x-auth-token, " +
+                "content-disposition, " +
+                "content-length, " +
+                "content-range, " +
+                "etag, " +
+                "last-modified, " +
+                "location, " +
+                "x-total-count, " +
+                "x-rate-limit-limit, " +
+                "x-rate-limit-remaining, " +
+                "x-rate-limit-reset, " +
+                "x-pagination-total, " +
+                "x-pagination-page, " +
+                "x-pagination-per-page, " +
+                "x-powered-by, " +
+                "server");
+        // 设置是否允许凭证
+        response.headers().add("Access-Control-Allow-Credentials", "true");
+        // 设置预检请求缓存时间
+        // 6. 预检请求的缓存时间（秒）
+        response.headers().add("Access-Control-Max-Age", "86400"); // 24小时
+
+        // 7. 允许自定义头部
+        response.headers().add("Access-Control-Allow-Private-Network", "true");
+
+        // 8. 其他安全相关的 CORS 头部
+        response.headers().add("Access-Control-Request-Method", "GET, POST, PUT, DELETE, OPTIONS");
+        response.headers().add("Access-Control-Request-Headers", "*");
+
         if (isExcludeUrl(request)) {
             chain.doFilter(request, response);
         }

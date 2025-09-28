@@ -1,15 +1,11 @@
 {
   "/api": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "secure": false,
-    "changeOrigin": true,
-    "pathRewrite": {
-      "^/api/jober": "",
-      "^/api": ""
-    }
+    "changeOrigin": true
   },
   "/aiApi": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "pathRewrite": {
       "^/aiApi": "/tzaip/api/hisp"
     },
@@ -17,13 +13,13 @@
     "changeOrigin": true
   },
   "/aippApi": {
-    "target": "http://{ip}:{port}",
-    "pathRewrite": { "^/aippApi": "/v1/api" },
+    "target": "http://localhost:8001",
+    "pathRewrite": { "^/aippApi": "/api/jober/v1/api" },
     "secure": false,
     "changeOrigin": true
   },
   "/modelApi": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "pathRewrite": {
       "^/modelApi": "/"
     },
@@ -31,7 +27,7 @@
     "changeOrigin": true
   },
   "/knowledge": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "pathRewrite": {
       "^/knowledge": ""
     },
@@ -39,13 +35,13 @@
     "changeOrigin": true
   },
   "/v1": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "pathRewrite": { "^/v1": "/v1" },
     "secure": false,
     "changeOrigin": true
   },
   "/elsaApi": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "pathRewrite": {
       "^/elsaApi": ""
     },
@@ -53,7 +49,7 @@
     "changeOrigin": true
   },
   "/llmApi": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "pathRewrite": {
       "^/llmApi": ""
     },
@@ -61,7 +57,7 @@
     "changeOrigin": true
   },
   "/modelbase": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "pathRewrite": {
       "^/modelbase": "/api/model_manage"
     },
@@ -69,7 +65,7 @@
     "changeOrigin": true
   },
   "/modeltrain": {
-    "target": "http://{ip}:{port}",
+    "target": "http://localhost:8001",
     "pathRewrite": {
       "^/modeltrain": "/api/model_finetune"
     },

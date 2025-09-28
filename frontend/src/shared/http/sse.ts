@@ -37,7 +37,8 @@ export function workflowDebug(tenantId: string, params: any) {
  * @throws {Error} 如果请求失败，Promise对象将被拒绝。
  */
 export function sseChat(tenantId: string, params: any, isDebug: boolean, isAuto: boolean = false) {
-  let url = `${AIPP_URL}/${tenantId}/${isDebug ? 'app_chat_debug' : 'app_chat'}`
+//   let url = `${AIPP_URL}/${tenantId}/${isDebug ? 'app_chat_debug' : 'app_chat'}`
+  let url = 'http://localhost:8001/api/jober/v1/api/31f20efc7e0848deab6a6bc10fc3021e/app_chat_debug'
   return new Promise((resolve, reject) => {
     fetch(url, {
       method: 'POST',
