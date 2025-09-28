@@ -99,7 +99,7 @@ public class LoginFilter implements HttpServerFilter {
                 "range, " +
                 "if-range, " +
                 "last-event-id, " +
-                "x-http-method-override");
+                "x-http-method-override, auto-chat-on-upload");
         response.headers().add("Access-Control-Expose-Headers", "authorization, " +
                 "x-xsrf-token, " +
                 "x-csrf-token, " +
