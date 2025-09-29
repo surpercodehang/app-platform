@@ -17,6 +17,7 @@ import './styles/message-detail.scss';
  * @reference 溯源数据
  * @usedReferences 使用的引用数据
  */
+// 修改 ReferenceOverviewDrawer 组件中的数据使用方式
 const ReferenceOverviewDrawer = (props: any) => {
   const { t } = useTranslation();
   const { isOpen, setIsOpen, usedReferences } = props;
@@ -55,14 +56,15 @@ const ReferenceOverviewDrawer = (props: any) => {
             <span>暂无引用数据</span>
           </div>
         ) : (
-          usedReferences.map((ref, index) => {
-            const title = ref.metadata?.title || ref.source || '未知来源';
-            const sourceUrl = ref.metadata?.url || ref.source;
+          usedReferences.map((ref) => {
+            const item = ref.data; // 从 data 字段获取引用数据
+            const title = item?.metadata?.title || item?.source || '未知来源';
+            const sourceUrl = item?.metadata?.url || item?.source;
             const url = sourceUrl && isUrl(sourceUrl) ? sourceUrl : null;
-            const txtContent = ref.txt || ref.text || '无文本内容';
+            const txtContent = item?.txt || item?.text || '无文本内容';
 
             return (
-              <div key={index} className='reference-overview-item'>
+              <div key={ref.id} className='reference-overview-item'>
                 <div className='reference-overview-item-number-circle'>
                   {ref.number}
                 </div>

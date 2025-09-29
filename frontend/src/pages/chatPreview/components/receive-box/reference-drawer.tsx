@@ -24,19 +24,41 @@ const MessageRefence = (props: any) => {
   const { isOpen, setIsOpen, reference, referenceStr, referenceIndex } = props;
   const [text, setText] = useState([]);
 
+  // 在 MessageRefence 组件的 useEffect 中
   useEffect(() => {
     if (isOpen && referenceStr) {
-      // 新的逻辑：处理数字编号的引用
       let referenceList = reference[referenceIndex] || [];
-
-      // 获取所有引用键的数组
       const allRefKeys = Object.keys(referenceList);
 
-      // 如果 referenceStr 是单个数字
+      // 收集所有使用的引用键（按出现顺序） - 与MessageBox组件相同的逻辑
+      const usedRefKeysInOrder = [];
+      const tempUsedKeys = new Set();
+
+      if (props.content) {
+        const refMatches = props.content.match(/<ref>(.*?)<\/ref>/g) || [];
+        refMatches.forEach(match => {
+          const keyContent = match.replace(/<ref>|<\/ref>/g, '');
+          const keys = keyContent.split('_');
+          keys.forEach(key => {
+            if (allRefKeys.includes(key) && !tempUsedKeys.has(key)) {
+              tempUsedKeys.add(key);
+              usedRefKeysInOrder.push(key);
+            }
+          });
+        });
+      }
+
+      // 建立新编号到引用键的映射
+      const newNumberToRefKey = new Map();
+      usedRefKeysInOrder.forEach((key, index) => {
+        newNumberToRefKey.set(index + 1, key);
+      });
+
+      // 如果 referenceStr 是单个数字（新编号）
       if (!isNaN(referenceStr)) {
-        const refNumber = parseInt(referenceStr);
-        if (refNumber > 0 && refNumber <= allRefKeys.length) {
-          const refKey = allRefKeys[refNumber - 1];
+        const newNumber = parseInt(referenceStr);
+        if (newNumber > 0 && newNumber <= usedRefKeysInOrder.length) {
+          const refKey = newNumberToRefKey.get(newNumber);
           setText([referenceList[refKey]]);
         }
       }
@@ -52,7 +74,7 @@ const MessageRefence = (props: any) => {
         setText(arr);
       }
     }
-  }, [isOpen, referenceStr, reference, referenceIndex]);
+  }, [isOpen, referenceStr, reference, referenceIndex, props.content]);
 
   // 关闭抽屉回调
   const onClose = () => {

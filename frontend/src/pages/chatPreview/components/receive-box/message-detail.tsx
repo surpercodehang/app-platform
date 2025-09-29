@@ -21,6 +21,7 @@ import 'highlight.js/styles/monokai-sublime.min.css';
 import './styles/message-detail.scss';
 import store from '@/store/store';
 import {setCurrentAnswer} from "@/store/chatStore/chatStore";
+import {useMemo } from 'react';
 
 /**
  * 消息详情
@@ -59,15 +60,14 @@ const MessageBox = (props: any) => {
     return count;
   };
 
-  // 在 MessageBox 组件中添加以下函数和修改
-
   // 计算当前消息实际使用的引用数量
   const getUsedReferenceCount = () => {
     if (!reference || !Array.isArray(reference) || reference.length === 0) return 0;
 
-    let usedRefKeys = new Set();
     const referenceList = reference[0] || {};
     const allRefKeys = Object.keys(referenceList);
+
+    const usedKeys = new Set();
 
     // 从内容中提取使用的引用键
     if (content) {
@@ -77,94 +77,99 @@ const MessageBox = (props: any) => {
         const keys = keyContent.split('_');
         keys.forEach(key => {
           if (allRefKeys.includes(key)) {
-            usedRefKeys.add(key);
+            usedKeys.add(key);
           }
         });
       });
     }
 
-    return usedRefKeys.size;
+    return usedKeys.size;
   };
 
-  // 获取当前消息使用的所有引用数据
+  // 获取当前消息使用的所有引用数据（按新编号排序）
   const getUsedReferences = () => {
     if (!reference || !Array.isArray(reference) || reference.length === 0) return [];
 
-    const usedRefs = [];
     const referenceList = reference[0] || {};
     const allRefKeys = Object.keys(referenceList);
 
-    // 建立引用键到数字编号的映射
-    const refKeyMap = new Map();
-    allRefKeys.forEach((key, index) => {
-      refKeyMap.set(key, index + 1);
-    });
+    // 收集所有使用的引用键（按出现顺序）
+    const usedRefKeysInOrder = [];
+    const tempUsedKeys = new Set();
 
-    // 从内容中提取使用的引用
+    // 从内容中提取使用的引用键（保持出现顺序）
     if (content) {
       const refMatches = content.match(/<ref>(.*?)<\/ref>/g) || [];
-      const usedKeys = new Set();
-
       refMatches.forEach(match => {
         const keyContent = match.replace(/<ref>|<\/ref>/g, '');
         const keys = keyContent.split('_');
         keys.forEach(key => {
-          if (allRefKeys.includes(key) && !usedKeys.has(key)) {
-            usedKeys.add(key);
-            usedRefs.push({
-              id: key,
-              number: refKeyMap.get(key),
-              ...referenceList[key]
-            });
+          if (allRefKeys.includes(key) && !tempUsedKeys.has(key)) {
+            tempUsedKeys.add(key);
+            usedRefKeysInOrder.push(key);
           }
         });
       });
     }
 
-    // 按数字编号排序
-    return usedRefs.sort((a, b) => a.number - b.number);
+    // 按出现顺序创建引用数据（重新编号从1开始）
+    const usedRefs = usedRefKeysInOrder.map((key, index) => ({
+      id: key,
+      number: index + 1, // 重新编号：1,2,3,4,5,6
+      data: referenceList[key] // 将引用数据放在 data 字段中
+    }));
+
+    return usedRefs;
   };
 
+  const usedReferences = useMemo(() => {
+    return getUsedReferences();
+  }, [reference, content]); // 当 reference 或 content 变化时重新计算
+
+  const usedReferenceCount = useMemo(() => {
+    return getUsedReferenceCount();
+  }, [reference, content]);
+
   // 在 MessageBox 组件中修改 regExpReplace 函数
-  // 新的正则替换逻辑 - 使用独立的圆形数字编号
+  // 新的正则替换逻辑 - 按使用顺序重新编号
   const regExpReplace = (content: string, index: any) => {
     let strs = content;
     let replacedStrs = strs.replace(/<\/ref><ref>/g, '_');
 
-    // 收集所有引用键
-    const refKeys = [];
-    let refIndex = 1;
-    const refKeyMap = new Map(); // 存储引用键到数字编号的映射
-
     // 获取可用的引用键
-    const refenrenceStr = Array.isArray(reference)
-      ? Object.keys(reference[0] || {})
-      : referenceList
-        ? Object.keys(referenceList)
-        : [];
+    const referenceList = Array.isArray(reference) ? (reference[0] || {}) : (referenceList || {});
+    const allRefKeys = Object.keys(referenceList);
 
-    // 第一次遍历：收集所有引用键并建立映射
+    // 收集所有使用的引用键（按出现顺序）
+    const usedRefKeysInOrder = [];
+    const tempUsedKeys = new Set();
+
+    // 第一次遍历：收集所有使用的引用键（保持出现顺序）
     replacedStrs.replace(/<ref>(.*?)<\/ref>/g, (match, key) => {
       const splitStr = key.split('_');
-      const validRefs = splitStr.filter((item: any) => refenrenceStr.includes(item));
-
-      validRefs.forEach(refKey => {
-        if (!refKeyMap.has(refKey)) {
-          refKeyMap.set(refKey, refIndex++);
+      splitStr.forEach(refKey => {
+        if (allRefKeys.includes(refKey) && !tempUsedKeys.has(refKey)) {
+          tempUsedKeys.add(refKey);
+          usedRefKeysInOrder.push(refKey);
         }
       });
-
       return '';
     });
 
-    // 第二次遍历：替换为独立的圆形数字
+    // 建立使用引用键到新编号的映射（从1开始重新编号）
+    const refKeyToNewNumber = new Map();
+    usedRefKeysInOrder.forEach((key, index) => {
+      refKeyToNewNumber.set(key, index + 1);
+    });
+
+    // 第二次遍历：替换为重新编号的圆形数字
     const replacedStr = replacedStrs.replace(/<ref>(.*?)<\/ref>/g, (match, key) => {
       const splitStr = key.split('_');
-      const validRefs = splitStr.filter((item: any) => refenrenceStr.includes(item));
+      const validRefs = splitStr.filter((item: any) => allRefKeys.includes(item));
 
       if (validRefs.length > 0) {
-        // 获取对应的数字编号并排序
-        const refNumbers = validRefs.map(refKey => refKeyMap.get(refKey)).sort((a, b) => a - b);
+        // 获取对应的新编号并排序
+        const refNumbers = validRefs.map(refKey => refKeyToNewNumber.get(refKey)).sort((a, b) => a - b);
 
         // 为每个数字创建独立的圆形元素
         const circleElements = refNumbers.map(num =>
@@ -349,7 +354,7 @@ const MessageBox = (props: any) => {
           />
         </div> }
 
-        {/* 引用总览按钮 - 显示实际使用的引用数量 */}
+        {/* 引用总览按钮 - 使用缓存的引用数量 */}
         {reference?.length > 0 && (
           <div className='reference-overview-section'>
             <button
@@ -358,7 +363,7 @@ const MessageBox = (props: any) => {
             >
               <span className='reference-overview-icon'>📚</span>
               <span className='reference-overview-text'>
-                查看来源 ({getUsedReferenceCount()} 个来源)
+                查看引用 ({usedReferenceCount} 个引用)
               </span>
             </button>
           </div>
@@ -372,15 +377,16 @@ const MessageBox = (props: any) => {
             reference={reference}
             referenceStr={referenceStr}
             referenceIndex={referenceIndex}
+            content={content}
           />
         )}
 
-        {/* 引用总览抽屉 */}
+        {/* 引用总览抽屉 - 传递缓存的引用数据 */}
         {reference?.length > 0 && (
           <ReferenceOverviewDrawer
             isOpen={showReferenceOverview}
             setIsOpen={setShowReferenceOverview}
-            usedReferences={getUsedReferences()}
+            usedReferences={usedReferences}
           />
         )}
       </div>
