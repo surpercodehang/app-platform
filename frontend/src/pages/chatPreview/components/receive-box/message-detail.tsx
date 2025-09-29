@@ -9,6 +9,7 @@ import { markedProcess } from '../../utils/marked-process';
 import { useTranslation } from 'react-i18next';
 import ReferenceDrawer from './reference-drawer';
 import ReferenceOverviewModal from './reference-overview-modal';
+import ReferenceOverviewDrawer from './reference-overview-drawer';
 import { Message } from '@/shared/utils/message';
 import { isChatRunning } from '@/shared/utils/chat';
 import { useAppSelector } from '@/store/hook';
@@ -56,6 +57,72 @@ const MessageBox = (props: any) => {
       }
     });
     return count;
+  };
+
+  // 在 MessageBox 组件中添加以下函数和修改
+
+  // 计算当前消息实际使用的引用数量
+  const getUsedReferenceCount = () => {
+    if (!reference || !Array.isArray(reference) || reference.length === 0) return 0;
+
+    let usedRefKeys = new Set();
+    const referenceList = reference[0] || {};
+    const allRefKeys = Object.keys(referenceList);
+
+    // 从内容中提取使用的引用键
+    if (content) {
+      const refMatches = content.match(/<ref>(.*?)<\/ref>/g) || [];
+      refMatches.forEach(match => {
+        const keyContent = match.replace(/<ref>|<\/ref>/g, '');
+        const keys = keyContent.split('_');
+        keys.forEach(key => {
+          if (allRefKeys.includes(key)) {
+            usedRefKeys.add(key);
+          }
+        });
+      });
+    }
+
+    return usedRefKeys.size;
+  };
+
+  // 获取当前消息使用的所有引用数据
+  const getUsedReferences = () => {
+    if (!reference || !Array.isArray(reference) || reference.length === 0) return [];
+
+    const usedRefs = [];
+    const referenceList = reference[0] || {};
+    const allRefKeys = Object.keys(referenceList);
+
+    // 建立引用键到数字编号的映射
+    const refKeyMap = new Map();
+    allRefKeys.forEach((key, index) => {
+      refKeyMap.set(key, index + 1);
+    });
+
+    // 从内容中提取使用的引用
+    if (content) {
+      const refMatches = content.match(/<ref>(.*?)<\/ref>/g) || [];
+      const usedKeys = new Set();
+
+      refMatches.forEach(match => {
+        const keyContent = match.replace(/<ref>|<\/ref>/g, '');
+        const keys = keyContent.split('_');
+        keys.forEach(key => {
+          if (allRefKeys.includes(key) && !usedKeys.has(key)) {
+            usedKeys.add(key);
+            usedRefs.push({
+              id: key,
+              number: refKeyMap.get(key),
+              ...referenceList[key]
+            });
+          }
+        });
+      });
+    }
+
+    // 按数字编号排序
+    return usedRefs.sort((a, b) => a.number - b.number);
   };
 
   // 在 MessageBox 组件中修改 regExpReplace 函数
@@ -265,6 +332,7 @@ const MessageBox = (props: any) => {
     store.dispatch(setCurrentAnswer(replacedText));
   }, [replacedText]);
 
+  // 在 MessageBox 组件的返回部分修改
   return (
     <>
       <div className='receive-info'>
@@ -279,7 +347,8 @@ const MessageBox = (props: any) => {
             refreshFeedbackStatus={props.refreshFeedbackStatus}
           />
         </div> }
-        {/* 引用总览按钮 */}
+
+        {/* 引用总览按钮 - 显示实际使用的引用数量 */}
         {reference?.length > 0 && (
           <div className='reference-overview-section'>
             <button
@@ -287,10 +356,14 @@ const MessageBox = (props: any) => {
               onClick={() => setShowReferenceOverview(true)}
             >
               <span className='reference-overview-icon'>📚</span>
-              <span className='reference-overview-text'>查看引用 ({getReferenceCount()} 个引用)</span>
+              <span className='reference-overview-text'>
+                查看来源 ({getUsedReferenceCount()} 个来源)
+              </span>
             </button>
           </div>
         )}
+
+        {/* 单个引用抽屉 */}
         {reference?.length > 0 && (
           <ReferenceDrawer
             isOpen={isOpen}
@@ -300,12 +373,13 @@ const MessageBox = (props: any) => {
             referenceIndex={referenceIndex}
           />
         )}
-        {/* 引用总览模态框 */}
+
+        {/* 引用总览抽屉 */}
         {reference?.length > 0 && (
-          <ReferenceOverviewModal
+          <ReferenceOverviewDrawer
             isOpen={showReferenceOverview}
             setIsOpen={setShowReferenceOverview}
-            reference={reference}
+            usedReferences={getUsedReferences()}
           />
         )}
       </div>
