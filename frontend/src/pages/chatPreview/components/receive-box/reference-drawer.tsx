@@ -24,27 +24,47 @@ const MessageRefence = (props: any) => {
   const { isOpen, setIsOpen, reference, referenceStr, referenceIndex } = props;
   const [text, setText] = useState([]);
 
+  // 在 MessageRefence 组件的 useEffect 中
   useEffect(() => {
     if (isOpen && referenceStr) {
-      let obj: any = {};
-      let arr = [];
       let referenceList = reference[referenceIndex] || [];
-      Object.keys(referenceList).forEach((item)=>{
-        // 保存完整的reference对象，包含source和txt信息
-        obj[item] = referenceList[item];
-      })
-      arr = referenceStr.split('_').map((item: any) => {
-        return obj[item];
+      const allRefKeys = Object.keys(referenceList);
+
+      // 获取所有引用键的数组
+      const refKeysInOrder = [];
+      const tempMap = new Map();
+
+      // 建立引用键到数字的映射
+      allRefKeys.forEach((key, index) => {
+        tempMap.set(index + 1, key);
       });
-      setText(arr);
+
+      // 如果 referenceStr 是单个数字，只显示该引用
+      if (!isNaN(referenceStr)) {
+        const refNumber = parseInt(referenceStr);
+        if (refNumber > 0 && refNumber <= allRefKeys.length) {
+          const refKey = tempMap.get(refNumber);
+          setText([referenceList[refKey]]);
+        }
+      } else {
+        // 保持对旧格式的兼容
+        let obj = {};
+        Object.keys(referenceList).forEach((item) => {
+          obj[item] = referenceList[item];
+        });
+        const arr = referenceStr.split('_')
+          .filter(item => item)
+          .map((item) => obj[item]);
+        setText(arr);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, referenceStr, reference, referenceIndex]);
 
   // 关闭抽屉回调
   const onClose = () => {
     setIsOpen(false);
-    document.querySelectorAll('.source-word').forEach((item) => {
-      item.classList.remove('source-word-click');
+    document.querySelectorAll('.reference-number-inline').forEach((item) => {
+      item.classList.remove('reference-number-active');
     });
   };
 
@@ -65,7 +85,7 @@ const MessageRefence = (props: any) => {
         const txtContent = item?.txt || item?.text || item || '';
         const title = item?.metadata?.title || sourceText || '未知来源';
         const isSourceUrl = isUrl(sourceText);
-        
+
         return (
           <div key={index} className='reference-item'>
             <div className='reference-content'>
@@ -78,9 +98,9 @@ const MessageRefence = (props: any) => {
                   <span className='reference-source-label'>来源：</span>
                 </div>
                 {isSourceUrl ? (
-                  <a 
-                    href={sourceText} 
-                    target='_blank' 
+                  <a
+                    href={sourceText}
+                    target='_blank'
                     rel='noopener noreferrer'
                     className='reference-url'
                   >

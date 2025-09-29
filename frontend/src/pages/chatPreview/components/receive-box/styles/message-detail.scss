@@ -281,3 +281,74 @@
   color: #333;
   display: block;
 }
+
+/* 行内引用数字样式 */
+.reference-number-inline {
+  background: #1890ff;
+  color: white;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  margin: 0 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  vertical-align: baseline;
+  line-height: 1;
+
+  &:hover {
+    background: #40a9ff;
+    transform: scale(1.05);
+  }
+}
+
+.reference-number-active {
+  background: #096dd9;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+// 移除旧的 source-word 样式或添加新的
+.source-word {
+  // 可以保留或移除，根据是否需要向后兼容
+}
+
+/* 独立的圆形引用数字样式 */
+.reference-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background-color: #f0f0f0; /* 灰色背景 */
+  color: #666; /* 深灰色文字 */
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 500;
+  margin: 0 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  vertical-align: middle;
+  line-height: 1;
+  border: 1px solid #d9d9d9;
+
+  &:hover {
+    background-color: #e6e6e6;
+    border-color: #bfbfbf;
+    transform: scale(1.1);
+  }
+}
+
+.reference-circle-active {
+  background-color: #d9d9d9;
+  border-color: #8c8c8c;
+  box-shadow: 0 0 0 2px rgba(140, 140, 140, 0.1);
+}
+
+/* 确保引用数字之间没有额外的空格 */
+.receive-info-html {
+  .reference-circle {
+    & + .reference-circle {
+      margin-left: 2px;
+    }
+  }
+}

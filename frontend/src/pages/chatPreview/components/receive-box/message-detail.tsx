@@ -57,24 +57,58 @@ const MessageBox = (props: any) => {
     });
     return count;
   };
-  
-  // 正则替换
+
+  // 在 MessageBox 组件中修改 regExpReplace 函数
+  // 新的正则替换逻辑 - 使用独立的圆形数字编号
   const regExpReplace = (content: string, index: any) => {
     let strs = content;
     let replacedStrs = strs.replace(/<\/ref><ref>/g, '_');
-    let replacedStr = replacedStrs.replace(/<ref>(.*?)<\/ref>/g, (match, key) => {
-      let splitStr = key.split('_');
-      let refenrenceStr = Array.isArray(reference)
-        ? Object.keys(reference[0] || {})
-        : referenceList
-          ? Object.keys(referenceList)
-          : [];
-      let isReference = splitStr.filter((item: any) => refenrenceStr.includes(item));
-      if (isReference.length) {
-        return `<span data-reference=${index}-${key} class=source-word></span>`;
+
+    // 收集所有引用键
+    const refKeys = [];
+    let refIndex = 1;
+    const refKeyMap = new Map(); // 存储引用键到数字编号的映射
+
+    // 获取可用的引用键
+    const refenrenceStr = Array.isArray(reference)
+      ? Object.keys(reference[0] || {})
+      : referenceList
+        ? Object.keys(referenceList)
+        : [];
+
+    // 第一次遍历：收集所有引用键并建立映射
+    replacedStrs.replace(/<ref>(.*?)<\/ref>/g, (match, key) => {
+      const splitStr = key.split('_');
+      const validRefs = splitStr.filter((item: any) => refenrenceStr.includes(item));
+
+      validRefs.forEach(refKey => {
+        if (!refKeyMap.has(refKey)) {
+          refKeyMap.set(refKey, refIndex++);
+        }
+      });
+
+      return '';
+    });
+
+    // 第二次遍历：替换为独立的圆形数字
+    const replacedStr = replacedStrs.replace(/<ref>(.*?)<\/ref>/g, (match, key) => {
+      const splitStr = key.split('_');
+      const validRefs = splitStr.filter((item: any) => refenrenceStr.includes(item));
+
+      if (validRefs.length > 0) {
+        // 获取对应的数字编号并排序
+        const refNumbers = validRefs.map(refKey => refKeyMap.get(refKey)).sort((a, b) => a - b);
+
+        // 为每个数字创建独立的圆形元素
+        const circleElements = refNumbers.map(num =>
+          `<span data-reference="${index}-${num}" class="reference-circle">${num}</span>`
+        ).join('');
+
+        return circleElements;
       }
       return '';
     });
+
     return replacedStr;
   };
 
@@ -87,25 +121,27 @@ const MessageBox = (props: any) => {
     type ? setThinkContent(mataStr.join('')) : setReplacedText(mataStr.join(''));
   };
 
-  // 点击弹出溯源的抽屉回调
-  const onClickHTML = (e: any) => {
-    if (e.target.classList.contains('source-word')) {
+  // 点击引用数字的回调
+  const onClickReference = (e: any) => {
+    if (e.target.classList.contains('reference-circle')) {
       if (isChatRunning()) {
         Message({ type: 'warning', content: t('tryLater') });
         return;
       }
-      e.target.classList.add('source-word-click');
+      e.target.classList.add('reference-circle-active');
       let strs = e.target.dataset.reference;
       let referenceIndex = strs.split('-')[0];
-      let referenceStr = strs.split('-')[1];
+      let referenceNumber = strs.split('-')[1]; // 单个数字，如 "3"
+
       if (strs) {
-        setReferenceStr(referenceStr);
+        setReferenceStr(referenceNumber);
         setReferenceIndex(referenceIndex);
         setIsOpen(true);
       }
     }
   };
-  // 设置接受消息显示内容 
+
+  // 设置接受消息显示内容
   const getMessageContent = () => {
     if (pictureList) {
       return <PictureList pictureList={pictureList}></PictureList>;
@@ -113,12 +149,13 @@ const MessageBox = (props: any) => {
       return (
         <div
           className='receive-info-html'
-          onClick={(e) => onClickHTML(e)}
+          onClick={(e) => onClickReference(e)}
           dangerouslySetInnerHTML={{ __html: markedProcess(replacedText) }}
         ></div>
       );
     }
   };
+
   // a标签点击（打开新窗口跳转）
   const recieveClick = (event) => {
     if (event.target && event.target.nodeName.toLowerCase() === 'a') {
@@ -126,6 +163,7 @@ const MessageBox = (props: any) => {
       window.open(event.target.href, '_blank');
     }
   }
+
   // 智能体调度工具内容处理
   const getAgentOutput = (str: string) => {
     let lastOpenTag:any = null;
@@ -167,6 +205,7 @@ const MessageBox = (props: any) => {
     }
     return setClosureLabel(output);
   }
+
   // 智能体调度工具结束标签处理
   const setClosureLabel = (str:string) => {
     const regex = /<div class="final">([\s\S]*?)<\/div>/;
@@ -188,7 +227,7 @@ const MessageBox = (props: any) => {
     }
   }, [answerContent]);
 
-  
+
   useEffect(() => {
     const thinkStartIdx = content.indexOf('<think>');
     let thinkEndIdx = content.indexOf('</think>');
@@ -225,14 +264,14 @@ const MessageBox = (props: any) => {
   useEffect(() => {
     store.dispatch(setCurrentAnswer(replacedText));
   }, [replacedText]);
-  
+
   return (
     <>
       <div className='receive-info'>
         {(thinkContent && status !== 'TERMINATED') && <ThinkBlock content={thinkContent} thinkTime={thinkTime} />}
         {(showStep && status !== 'TERMINATED' ) && <StepBlock content={stepContent} finished={finished} />}
         {getMessageContent()}
-        { finished &&  
+        { finished &&
         <div className='feed-footer'>
           <Feedbacks
             instanceId={instanceId}
@@ -243,7 +282,7 @@ const MessageBox = (props: any) => {
         {/* 引用总览按钮 */}
         {reference?.length > 0 && (
           <div className='reference-overview-section'>
-            <button 
+            <button
               className='reference-overview-btn'
               onClick={() => setShowReferenceOverview(true)}
             >
