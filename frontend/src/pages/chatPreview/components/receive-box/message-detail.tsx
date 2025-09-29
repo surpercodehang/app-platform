@@ -333,6 +333,7 @@ const MessageBox = (props: any) => {
   }, [replacedText]);
 
   // 在 MessageBox 组件的返回部分修改
+  // 在 MessageBox 组件的返回部分修改
   return (
     <>
       <div className='receive-info'>

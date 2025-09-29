@@ -226,25 +226,6 @@
   }
 }
 
-.reference-overview-item-title {
-  color: #52c41a;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.4;
-  display: block;
-}
-
-/* 引用总览项目样式 */
-.reference-overview-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
-  
-  &:last-child {
-    border-bottom: none;
-  }
-}
 
 .reference-overview-item-number {
   flex-shrink: 0;
@@ -257,17 +238,6 @@
   border-radius: 10px;
   font-size: 11px;
   font-weight: 500;
-}
-
-.reference-overview-item-content {
-  flex: 1;
-}
-
-.reference-overview-item-text {
-  font-size: 13px;
-  line-height: 1.6;
-  color: #333;
-  display: block;
 }
 
 /* 行内引用数字样式 */
