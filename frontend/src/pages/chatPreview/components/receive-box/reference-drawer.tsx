@@ -24,30 +24,24 @@ const MessageRefence = (props: any) => {
   const { isOpen, setIsOpen, reference, referenceStr, referenceIndex } = props;
   const [text, setText] = useState([]);
 
-  // 在 MessageRefence 组件的 useEffect 中
   useEffect(() => {
     if (isOpen && referenceStr) {
+      // 新的逻辑：处理数字编号的引用
       let referenceList = reference[referenceIndex] || [];
-      const allRefKeys = Object.keys(referenceList);
 
       // 获取所有引用键的数组
-      const refKeysInOrder = [];
-      const tempMap = new Map();
+      const allRefKeys = Object.keys(referenceList);
 
-      // 建立引用键到数字的映射
-      allRefKeys.forEach((key, index) => {
-        tempMap.set(index + 1, key);
-      });
-
-      // 如果 referenceStr 是单个数字，只显示该引用
+      // 如果 referenceStr 是单个数字
       if (!isNaN(referenceStr)) {
         const refNumber = parseInt(referenceStr);
         if (refNumber > 0 && refNumber <= allRefKeys.length) {
-          const refKey = tempMap.get(refNumber);
+          const refKey = allRefKeys[refNumber - 1];
           setText([referenceList[refKey]]);
         }
-      } else {
-        // 保持对旧格式的兼容
+      }
+      // 保持对旧格式的兼容
+      else {
         let obj = {};
         Object.keys(referenceList).forEach((item) => {
           obj[item] = referenceList[item];
@@ -63,8 +57,8 @@ const MessageRefence = (props: any) => {
   // 关闭抽屉回调
   const onClose = () => {
     setIsOpen(false);
-    document.querySelectorAll('.reference-number-inline').forEach((item) => {
-      item.classList.remove('reference-number-active');
+    document.querySelectorAll('.reference-circle').forEach((item) => {
+      item.classList.remove('reference-circle-active');
     });
   };
 
@@ -94,7 +88,7 @@ const MessageRefence = (props: any) => {
             {sourceText && (
               <div className='reference-source'>
                 <div className='reference-source-header'>
-                  <span className='reference-number'>[{index + 1}]</span>
+                  {/* 移除编号显示 */}
                   <span className='reference-source-label'>来源：</span>
                 </div>
                 {isSourceUrl ? (
