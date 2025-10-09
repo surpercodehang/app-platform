@@ -55,7 +55,7 @@ const ReferenceOverviewDrawer = (props: any) => {
       title={
         <div className='reference-overview-title'>
           <span className='reference-overview-title-icon'>📚</span>
-          <span>引用总览 ({usedReferences.length} 个来源)</span>
+          <span>查看来源 ({usedReferences.length} 个来源)</span>
         </div>
       }
       width={800}
@@ -72,7 +72,7 @@ const ReferenceOverviewDrawer = (props: any) => {
             const item = ref.data; // 从 data 字段获取引用数据
             const sourceText = item?.source || item?.metadata?.url || '';
             const txtContent = item?.txt || item?.text || item || '';
-            const title = item?.metadata?.title || sourceText || '未知来源';
+            const title = item?.metadata?.fileName || sourceText || '未知来源';
             const sourceUrl = item?.metadata?.url || item?.source;
             const url = sourceUrl && isUrl(sourceUrl) ? sourceUrl : null;
 

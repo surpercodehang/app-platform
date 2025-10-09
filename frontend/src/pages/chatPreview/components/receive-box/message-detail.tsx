@@ -199,7 +199,7 @@ const MessageBox = (props: any) => {
         const ref = usedReferences.find(r => r.number === num);
         return {
           number: num,
-          title: ref?.data?.metadata?.title || ref?.data?.source || '未知来源',
+          title: ref?.data?.metadata?.fileName || ref?.data?.source || '未知来源',
           summary: ref?.data?.txt || ref?.data?.text || '无摘要',
           url: ref?.data?.metadata?.url || ref?.data?.source
         };
