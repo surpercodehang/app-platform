@@ -15,6 +15,7 @@ import PictureList from './picture-list';
 import ThinkBlock from './think-block';
 import StepBlock from './step-block';
 import ReferenceOverviewDrawer from './reference-overview-drawer';
+import { Tooltip } from 'antd';
 import 'highlight.js/styles/monokai-sublime.min.css';
 import './styles/message-detail.scss';
 import store from '@/store/store';
@@ -39,8 +40,7 @@ const MessageBox = (props: any) => {
   const [stepContent, setStepContent] = useState('');
   const [showStep, setShowStep] = useState(false);
   const [replacedText, setReplacedText] = useState<any>(null);
-  const [hoveredReference, setHoveredReference] = useState<{title: string, summary: string} | null>(null);
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [replacedNodes, setReplacedNodes] = useState<React.ReactNode>(null);
   const [showReferenceOverview, setShowReferenceOverview] = useState(false);
   const chatReference = useAppSelector((state) => state.chatCommonStore.chatReference);
   const referenceList = useAppSelector((state) => state.chatCommonStore.referenceList);
@@ -171,144 +171,98 @@ const MessageBox = (props: any) => {
     return null;
   };
 
-  // 在 MessageBox 组件中修改 regExpReplace 函数
-  // 新的正则替换逻辑 - 按使用顺序重新编号，支持悬停和点击
-  const regExpReplace = (content: string, index: any) => {
-    let strs = content;
-    let replacedStrs = strs.replace(/<\/ref><ref>/g, '_');
+  /**
+   * 渲染正文 + 引用 - 使用React组件方式，但修复页面展示问题
+   */
+  const renderWithReferences = (rawContent: string) => {
+    if (!rawContent) return null;
 
-    // 获取可用的引用键
-    const referenceListData = Array.isArray(reference) ? (reference[0] || {}) : (referenceList || {});
-    const allRefKeys = Object.keys(referenceListData);
-
-    // 收集所有使用的引用键（按出现顺序）
-    const usedRefKeysInOrder: string[] = [];
-    const tempUsedKeys = new Set<string>();
-
-    // 第一次遍历：收集所有使用的引用键（保持出现顺序）
-    replacedStrs.replace(/<ref>(.*?)<\/ref>/g, (match: string, key: string) => {
-      const splitStr = key.split('_');
-      splitStr.forEach((refKey: string) => {
-        if (allRefKeys.includes(refKey) && !tempUsedKeys.has(refKey)) {
-          tempUsedKeys.add(refKey);
-          usedRefKeysInOrder.push(refKey);
-        }
-      });
-      return '';
-    });
-
-    // 建立使用引用键到新编号的映射（从1开始重新编号）
+    let replacedStrs = rawContent.replace(/<\/ref><ref>/g, '_');
     const refKeyToNewNumber = new Map<string, number>();
-    usedRefKeysInOrder.forEach((key: string, index: number) => {
-      refKeyToNewNumber.set(key, index + 1);
+    usedReferences.forEach(ref => {
+      refKeyToNewNumber.set(ref.id, ref.number);
     });
 
-    // 第二次遍历：替换为重新编号的圆形数字，支持悬停和点击
-    const replacedStr = replacedStrs.replace(/<ref>(.*?)<\/ref>/g, (match: string, key: string) => {
-      const splitStr = key.split('_');
-      const validRefs = splitStr.filter((item: string) => allRefKeys.includes(item));
-
-      if (validRefs.length > 0) {
-        // 获取对应的新编号并排序
-        const refNumbers = validRefs.map((refKey: string) => refKeyToNewNumber.get(refKey)).filter((num): num is number => num !== undefined).sort((a: number, b: number) => a - b);
-
-        // 为每个数字创建独立的圆形元素，支持悬停和点击
-        const circleElements = refNumbers.map((num: number) => {
-          // 使用与引用总览相同的数据获取逻辑
-          const usedRefs = getUsedReferences();
-          const refItem = usedRefs.find(ref => ref.number === num);
-          const refData = refItem?.data;
-          
-          if (!refData) {
-            return `<span class="reference-circle">${num}</span>`;
-          }
-          
-          const sourceText = refData?.source || refData?.metadata?.url || '';
-          const txtContent = refData?.txt || refData?.text || refData || '';
-          const title = refData?.metadata?.title || sourceText || '未知来源';
-          const sourceUrl = refData?.metadata?.url || refData?.source;
-          const url = sourceUrl && isUrl(sourceUrl) ? sourceUrl : null;
-          
-          // 转义HTML属性值
-          const escapedTitle = title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-          const escapedSummary = txtContent.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-          const escapedUrl = (url || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-          
-          return `<span 
-            data-reference="${index}-${num}" 
-            data-title="${escapedTitle}" 
-            data-url="${escapedUrl}" 
-            data-summary="${escapedSummary}" 
-            class="reference-circle" 
-            title="${escapedTitle}"
-          >${num}</span>`;
-        }).join('');
-
-        return circleElements;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    const regex = /<ref>(.*?)<\/ref>/g;
+    let match;
+    
+    while ((match = regex.exec(replacedStrs)) !== null) {
+      // 处理引用前的文本
+      const beforeText = replacedStrs.slice(lastIndex, match.index);
+      if (beforeText) {
+        parts.push(
+          <span
+            key={`text-${lastIndex}`}
+            className="inline-markdown"
+            dangerouslySetInnerHTML={{
+              __html: markedProcess(beforeText).replace(/<\/?p>/g, '')
+            }}
+          />
+        );
       }
-      return '';
-    });
 
-    return replacedStr;
-  };
+      // 处理引用
+      const keyContent = match[1];
+      const keys = keyContent.split('_').filter(k => refKeyToNewNumber.has(k));
+      const refNumbers = keys.map(k => refKeyToNewNumber.get(k)!).sort((a, b) => a - b);
 
-  // 拼接content与reference
-  const replaceInfo = (content: string, type = '') => {
-    let metaContent = [content];
-    let mataStr = metaContent.map((item: string, index: number) => {
-      return regExpReplace(item, index);
-    });
-    type ? setThinkContent(mataStr.join('')) : setReplacedText(mataStr.join(''));
-  };
+      refNumbers.forEach(num => {
+        const refData = usedReferences.find(r => r.number === num);
+        const title = refData?.data?.metadata?.title || refData?.data?.source || '未知来源';
+        const summary = refData?.data?.txt || refData?.data?.text || '无摘要';
+        const url = refData?.data?.metadata?.url || refData?.data?.source;
 
-  // 点击引用数字的回调 - 直接跳转到URL
-  const onClickReference = (e: any) => {
-    if (e.target.classList.contains('reference-circle')) {
-      if (isChatRunning()) {
-        Message({ type: 'warning', content: t('tryLater') });
-        return;
-      }
-      
-      const url = e.target.dataset.url;
-      if (url) {
-        window.open(url, '_blank');
-      } else {
-        Message({ type: 'info', content: '该引用没有可访问的链接' });
-      }
-    }
-  };
+        const tooltipContent = (
+          <div>
+            <div style={{ fontWeight: 600 }}>{title}</div>
+            <div style={{ fontSize: '12px', color: '#888' }}>{summary}</div>
+          </div>
+        );
 
-  // 悬停引用数字的回调
-  const onMouseEnterReference = (e: any) => {
-    if (e.target.classList.contains('reference-circle')) {
-      const title = e.target.dataset.title;
-      const summary = e.target.dataset.summary;
-      const rect = e.target.getBoundingClientRect();
-      setTooltipPosition({
-        x: rect.left + rect.width / 2,
-        y: rect.top - 10
+        parts.push(
+          <Tooltip key={`ref-${num}`} title={tooltipContent} placement="top">
+            <span
+              className="reference-circle"
+              onClick={() => {
+                if (isChatRunning()) {
+                  Message({ type: 'warning', content: t('tryLater') });
+                  return;
+                }
+                if (url && /^https?:\/\//.test(url)) {
+                  window.open(url, '_blank');
+                } else {
+                  Message({ type: 'info', content: '该引用没有可访问的链接' });
+                }
+              }}
+            >
+              {num}
+            </span>
+          </Tooltip>
+        );
       });
-      setHoveredReference({ title, summary });
+
+      lastIndex = regex.lastIndex;
     }
+
+    // 处理引用后的文本
+    const afterText = replacedStrs.slice(lastIndex);
+    if (afterText) {
+      parts.push(
+        <span
+          key={`text-end`}
+          className="inline-markdown"
+          dangerouslySetInnerHTML={{
+            __html: markedProcess(afterText).replace(/<\/?p>/g, '')
+          }}
+        />
+      );
+    }
+
+    return <>{parts}</>;
   };
 
-  // 离开引用数字的回调
-  const onMouseLeaveReference = (e: any) => {
-    if (e.target.classList.contains('reference-circle')) {
-      setHoveredReference(null);
-    }
-  };
-
-  // 处理鼠标移动事件，用于更新悬停位置
-  const onMouseMoveReference = (e: any) => {
-    if (e.target.classList.contains('reference-circle')) {
-      const rect = e.target.getBoundingClientRect();
-      setTooltipPosition({
-        x: rect.left + rect.width / 2,
-        y: rect.top - 10
-      });
-    }
-  };
 
   // 设置接受消息显示内容
   const getMessageContent = () => {
@@ -316,10 +270,9 @@ const MessageBox = (props: any) => {
       return <PictureList pictureList={pictureList}></PictureList>;
     } else {
       return (
-        <div
-          className='receive-info-html'
-          dangerouslySetInnerHTML={{ __html: markedProcess(replacedText) }}
-        ></div>
+        <div className='receive-info-html'>
+          {replacedNodes}
+        </div>
       );
     }
   };
@@ -389,11 +342,11 @@ const MessageBox = (props: any) => {
   useEffect(() => {
     const finalContent = getAgentOutput(answerContent);
     if (msgType === 'META_MSG' || chatReference) {
-      replaceInfo(finalContent);
+      setReplacedNodes(renderWithReferences(finalContent));
     } else {
-      setReplacedText(finalContent);
+      setReplacedNodes(<span dangerouslySetInnerHTML={{ __html: finalContent }} />);
     }
-  }, [answerContent]);
+  }, [answerContent, usedReferences]);
 
 
   useEffect(() => {
@@ -407,11 +360,7 @@ const MessageBox = (props: any) => {
     }
     if (thinkStartIdx > -1) {
       const thinkContent = content.slice(thinkStartIdx, thinkEndIdx);
-      if (msgType === 'META_MSG' || chatReference) {
-        replaceInfo(thinkContent, 'deepseek');
-      } else {
-        setThinkContent(thinkContent);
-      }
+      setThinkContent(thinkContent);
       setAnswerContent(content.slice(thinkEndIdx));
     } else {
       setAnswerContent(content);
@@ -434,69 +383,9 @@ const MessageBox = (props: any) => {
   }, []);
 
   useEffect(() => {
-    store.dispatch(setCurrentAnswer(replacedText));
-    
-    // 在内容更新后，重新绑定引用数字的事件监听器
-    if (replacedText) {
-      // 延迟一点时间确保DOM已经更新
-      setTimeout(() => {
-        const referenceCircles = document.querySelectorAll('.reference-circle');
-        
-        referenceCircles.forEach((circle: any) => {
-          // 移除旧的事件监听器
-          circle.removeEventListener('click', handleReferenceClick);
-          circle.removeEventListener('mouseenter', handleReferenceMouseEnter);
-          circle.removeEventListener('mouseleave', handleReferenceMouseLeave);
-          circle.removeEventListener('mousemove', handleReferenceMouseMove);
-          
-          // 添加新的事件监听器
-          circle.addEventListener('click', handleReferenceClick);
-          circle.addEventListener('mouseenter', handleReferenceMouseEnter);
-          circle.addEventListener('mouseleave', handleReferenceMouseLeave);
-          circle.addEventListener('mousemove', handleReferenceMouseMove);
-        });
-      }, 100);
-    }
-  }, [replacedText]);
+    store.dispatch(setCurrentAnswer(replacedNodes));
+  }, [replacedNodes]);
 
-  // 定义引用数字的事件处理函数
-  const handleReferenceClick = (e: any) => {
-    e.stopPropagation();
-    if (isChatRunning()) {
-      Message({ type: 'warning', content: t('tryLater') });
-      return;
-    }
-    
-    const url = e.target.dataset.url;
-    if (url) {
-      window.open(url, '_blank');
-    } else {
-      Message({ type: 'info', content: '该引用没有可访问的链接' });
-    }
-  };
-
-  const handleReferenceMouseEnter = (e: any) => {
-    const title = e.target.dataset.title;
-    const summary = e.target.dataset.summary;
-    const rect = e.target.getBoundingClientRect();
-    setTooltipPosition({
-      x: rect.left + rect.width / 2,
-      y: rect.top - 10
-    });
-    setHoveredReference({ title, summary });
-  };
-
-  const handleReferenceMouseLeave = (e: any) => {
-    setHoveredReference(null);
-  };
-
-  const handleReferenceMouseMove = (e: any) => {
-    const rect = e.target.getBoundingClientRect();
-    setTooltipPosition({
-      x: rect.left + rect.width / 2,
-      y: rect.top - 10
-    });
-  };
 
   // 在 MessageBox 组件的返回部分修改
   return (
@@ -538,20 +427,6 @@ const MessageBox = (props: any) => {
           />
         )}
 
-        {/* 悬停显示引用信息 */}
-        {hoveredReference && (
-          <div 
-            className='reference-hover-tooltip'
-            style={{
-              left: `${tooltipPosition.x}px`,
-              top: `${tooltipPosition.y}px`,
-              transform: 'translateX(-50%)'
-            }}
-          >
-            <div className='reference-hover-title'>{hoveredReference.title}</div>
-            <div className='reference-hover-summary'>{hoveredReference.summary}</div>
-          </div>
-        )}
       </div>
     </>
   );
