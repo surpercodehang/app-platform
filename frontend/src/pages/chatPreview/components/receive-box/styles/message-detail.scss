@@ -142,7 +142,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 0px 16px;
+  height: 34px;
+  line-height: 34px;
   background-color: #f0f8ff;
   border: 1px solid #d6e4ff;
   border-radius: 34px;
@@ -283,7 +285,6 @@
 
   p {
     margin-bottom: 12px;
-    line-height: 1.6;
   }
 
   ul, ol {
@@ -292,7 +293,6 @@
     
     li {
       margin-bottom: 4px;
-      line-height: 1.6;
     }
   }
 
@@ -372,24 +372,21 @@
   justify-content: center;
   width: 18px;
   height: 18px;
-  background-color: #1890ff; /* 蓝色背景 */
-  color: white; /* 白色文字 */
+  background-color: #ebeef2;
+  color: #61666b;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   margin: 0 2px;
   cursor: pointer;
   transition: all 0.2s ease;
   vertical-align: middle;
   line-height: 1;
-  border: 1px solid #1890ff;
   position: relative;
 
   &:hover {
-    background-color: #40a9ff;
-    border-color: #40a9ff;
+    background-color: #dbe2e8;
     transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
   }
 }
 
