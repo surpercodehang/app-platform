@@ -55,7 +55,7 @@ const ReferenceOverviewDrawer = (props: any) => {
       title={
         <div className='reference-overview-title'>
           <span className='reference-overview-title-icon'>📚</span>
-          <span>引用总览 ({usedReferences.length} 个引用)</span>
+          <span>引用总览 ({usedReferences.length} 个来源)</span>
         </div>
       }
       width={800}

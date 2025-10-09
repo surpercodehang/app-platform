@@ -433,7 +433,7 @@ const MessageBox = (props: any) => {
             >
               <span className='reference-overview-icon'>📚</span>
               <span className='reference-overview-text'>
-                查看引用 ({usedReferenceCount} 个引用)
+                查看来源 ({usedReferenceCount} 个来源)
               </span>
             </button>
           </div>
