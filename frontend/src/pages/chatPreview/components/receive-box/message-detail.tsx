@@ -424,8 +424,8 @@ const MessageBox = (props: any) => {
           />
         </div> }
 
-        {/* 引用总览按钮 - 使用缓存的引用数量 */}
-        {reference?.length > 0 && (
+        {/* 引用总览按钮 - 只在有实际使用的引用时显示 */}
+        {reference?.length > 0 && usedReferenceCount > 0 && (
           <div className='reference-overview-section'>
             <button
               className='reference-overview-btn'
@@ -439,8 +439,8 @@ const MessageBox = (props: any) => {
           </div>
         )}
 
-        {/* 引用总览抽屉 - 传递缓存的引用数据 */}
-        {reference?.length > 0 && (
+        {/* 引用总览抽屉 - 只在有实际使用的引用时显示 */}
+        {reference?.length > 0 && usedReferenceCount > 0 && (
           <ReferenceOverviewDrawer
             isOpen={showReferenceOverview}
             setIsOpen={setShowReferenceOverview}
