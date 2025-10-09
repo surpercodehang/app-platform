@@ -172,7 +172,7 @@ const MessageBox = (props: any) => {
   };
 
   /**
-   * 渲染正文 + 引用 - 使用React组件方式，但修复页面展示问题
+   * 渲染正文 + 引用 - 确保正文和引用在同一行，段落之间换行
    */
   const renderWithReferences = (rawContent: string) => {
     if (!rawContent) return null;
@@ -183,84 +183,105 @@ const MessageBox = (props: any) => {
       refKeyToNewNumber.set(ref.id, ref.number);
     });
 
-    const parts: React.ReactNode[] = [];
-    let lastIndex = 0;
-    const regex = /<ref>(.*?)<\/ref>/g;
-    let match;
+    // 先按双换行符分割段落
+    const paragraphs = replacedStrs.split(/\n\n+/);
     
-    while ((match = regex.exec(replacedStrs)) !== null) {
-      // 处理引用前的文本
-      const beforeText = replacedStrs.slice(lastIndex, match.index);
-      if (beforeText) {
-        parts.push(
-          <span
-            key={`text-${lastIndex}`}
-            className="inline-markdown"
-            dangerouslySetInnerHTML={{
-              __html: markedProcess(beforeText).replace(/<\/?p>/g, '')
-            }}
-          />
-        );
-      }
+    return (
+      <>
+        {paragraphs.map((paragraph, pIndex) => {
+          const parts: React.ReactNode[] = [];
+          let lastIndex = 0;
+          const regex = /<ref>(.*?)<\/ref>/g;
+          let match;
+          
+          while ((match = regex.exec(paragraph)) !== null) {
+            // 处理引用前的文本
+            const beforeText = paragraph.slice(lastIndex, match.index);
+            if (beforeText) {
+              // 处理markdown并移除所有块级标签，保持内联
+              let processedHtml = markedProcess(beforeText)
+                .replace(/<\/?p>/g, '')
+                .replace(/<\/?div>/g, '')
+                .replace(/\n/g, ' '); // 将单个换行符转换为空格
+              
+              parts.push(
+                <span
+                  key={`text-${pIndex}-${lastIndex}`}
+                  className="inline-markdown"
+                  dangerouslySetInnerHTML={{ __html: processedHtml }}
+                />
+              );
+            }
 
-      // 处理引用
-      const keyContent = match[1];
-      const keys = keyContent.split('_').filter(k => refKeyToNewNumber.has(k));
-      const refNumbers = keys.map(k => refKeyToNewNumber.get(k)!).sort((a, b) => a - b);
+            // 处理引用
+            const keyContent = match[1];
+            const keys = keyContent.split('_').filter(k => refKeyToNewNumber.has(k));
+            const refNumbers = keys.map(k => refKeyToNewNumber.get(k)!).sort((a, b) => a - b);
 
-      refNumbers.forEach(num => {
-        const refData = usedReferences.find(r => r.number === num);
-        const title = refData?.data?.metadata?.title || refData?.data?.source || '未知来源';
-        const summary = refData?.data?.txt || refData?.data?.text || '无摘要';
-        const url = refData?.data?.metadata?.url || refData?.data?.source;
+            refNumbers.forEach(num => {
+              const refData = usedReferences.find(r => r.number === num);
+              const title = refData?.data?.metadata?.title || refData?.data?.source || '未知来源';
+              const summary = refData?.data?.txt || refData?.data?.text || '无摘要';
+              const url = refData?.data?.metadata?.url || refData?.data?.source;
 
-        const tooltipContent = (
-          <div>
-            <div style={{ fontWeight: 600 }}>{title}</div>
-            <div style={{ fontSize: '12px', color: '#888' }}>{summary}</div>
-          </div>
-        );
+              const tooltipContent = (
+                <div>
+                  <div style={{ fontWeight: 600 }}>{title}</div>
+                  <div style={{ fontSize: '12px', color: '#888' }}>{summary}</div>
+                </div>
+              );
 
-        parts.push(
-          <Tooltip key={`ref-${num}`} title={tooltipContent} placement="top">
-            <span
-              className="reference-circle"
-              onClick={() => {
-                if (isChatRunning()) {
-                  Message({ type: 'warning', content: t('tryLater') });
-                  return;
-                }
-                if (url && /^https?:\/\//.test(url)) {
-                  window.open(url, '_blank');
-                } else {
-                  Message({ type: 'info', content: '该引用没有可访问的链接' });
-                }
-              }}
-            >
-              {num}
-            </span>
-          </Tooltip>
-        );
-      });
+              parts.push(
+                <Tooltip key={`ref-${pIndex}-${num}`} title={tooltipContent} placement="top">
+                  <span
+                    className="reference-circle"
+                    onClick={() => {
+                      if (isChatRunning()) {
+                        Message({ type: 'warning', content: t('tryLater') });
+                        return;
+                      }
+                      if (url && /^https?:\/\//.test(url)) {
+                        window.open(url, '_blank');
+                      } else {
+                        Message({ type: 'info', content: '该引用没有可访问的链接' });
+                      }
+                    }}
+                  >
+                    {num}
+                  </span>
+                </Tooltip>
+              );
+            });
 
-      lastIndex = regex.lastIndex;
-    }
+            lastIndex = regex.lastIndex;
+          }
 
-    // 处理引用后的文本
-    const afterText = replacedStrs.slice(lastIndex);
-    if (afterText) {
-      parts.push(
-        <span
-          key={`text-end`}
-          className="inline-markdown"
-          dangerouslySetInnerHTML={{
-            __html: markedProcess(afterText).replace(/<\/?p>/g, '')
-          }}
-        />
-      );
-    }
+          // 处理段落剩余的文本
+          const afterText = paragraph.slice(lastIndex);
+          if (afterText) {
+            let processedHtml = markedProcess(afterText)
+              .replace(/<\/?p>/g, '')
+              .replace(/<\/?div>/g, '')
+              .replace(/\n/g, ' ');
+            
+            parts.push(
+              <span
+                key={`text-${pIndex}-end`}
+                className="inline-markdown"
+                dangerouslySetInnerHTML={{ __html: processedHtml }}
+              />
+            );
+          }
 
-    return <>{parts}</>;
+          // 每个段落用div包裹，段落之间自动换行
+          return (
+            <div key={`paragraph-${pIndex}`} className="paragraph-container">
+              {parts}
+            </div>
+          );
+        })}
+      </>
+    );
   };
 
 

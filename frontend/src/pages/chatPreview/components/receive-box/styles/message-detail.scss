@@ -270,6 +270,35 @@
   // 可以保留或移除，根据是否需要向后兼容
 }
 
+/* 确保正文内容和引用在同一行 */
+.inline-markdown {
+  display: inline;
+  
+  /* 移除markdown生成的多余块级元素样式 */
+  * {
+    display: inline;
+  }
+  
+  /* 保留代码块的块级显示 */
+  pre, code {
+    display: block;
+  }
+  
+  pre code {
+    display: block;
+  }
+}
+
+/* 段落容器 */
+.paragraph-container {
+  display: block;
+  margin-bottom: 0;
+  
+  &:not(:last-child) {
+    margin-bottom: 12px;
+  }
+}
+
 /* 独立的圆形引用数字样式 */
 .reference-circle {
   display: inline-flex;
