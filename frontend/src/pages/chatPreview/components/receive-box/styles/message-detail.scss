@@ -277,8 +277,8 @@
   justify-content: center;
   width: 18px;
   height: 18px;
-  background-color: #f0f0f0; /* 灰色背景 */
-  color: #666; /* 深灰色文字 */
+  background-color: #1890ff; /* 蓝色背景 */
+  color: white; /* 白色文字 */
   border-radius: 50%;
   font-size: 11px;
   font-weight: 500;
@@ -287,19 +287,21 @@
   transition: all 0.2s ease;
   vertical-align: middle;
   line-height: 1;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #1890ff;
+  position: relative;
 
   &:hover {
-    background-color: #e6e6e6;
-    border-color: #bfbfbf;
+    background-color: #40a9ff;
+    border-color: #40a9ff;
     transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
   }
 }
 
 .reference-circle-active {
-  background-color: #d9d9d9;
-  border-color: #8c8c8c;
-  box-shadow: 0 0 0 2px rgba(140, 140, 140, 0.1);
+  background-color: #096dd9;
+  border-color: #096dd9;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
 /* 确保引用数字之间没有额外的空格 */
@@ -308,6 +310,49 @@
     & + .reference-circle {
       margin-left: 2px;
     }
+  }
+}
+
+/* 悬停显示引用信息样式 */
+.reference-hover-tooltip {
+  position: fixed;
+  z-index: 1000;
+  background-color: #fff;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 12px 16px;
+  max-width: 400px;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.reference-hover-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 6px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.reference-hover-summary {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  word-break: break-word;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

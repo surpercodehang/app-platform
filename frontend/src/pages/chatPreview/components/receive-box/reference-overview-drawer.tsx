@@ -14,16 +14,14 @@ import './styles/message-detail.scss';
  *
  * @isOpen 显示隐藏
  * @setIsOpen 显示隐藏回调
- * @reference 溯源数据
  * @usedReferences 使用的引用数据
  */
-// 修改 ReferenceOverviewDrawer 组件中的数据使用方式
 const ReferenceOverviewDrawer = (props: any) => {
   const { t } = useTranslation();
   const { isOpen, setIsOpen, usedReferences } = props;
 
   // 判断是否为URL
-  const isUrl = (str) => {
+  const isUrl = (str: string) => {
     try {
       new URL(str);
       return true;
@@ -35,6 +33,20 @@ const ReferenceOverviewDrawer = (props: any) => {
   // 关闭抽屉回调
   const onClose = () => {
     setIsOpen(false);
+  };
+
+  // 点击引用项的回调
+  const onClickReference = (ref: any) => {
+    const sourceText = ref.data?.source || ref.data?.metadata?.url || '';
+    const sourceUrl = ref.data?.metadata?.url || ref.data?.source;
+    const url = sourceUrl && isUrl(sourceUrl) ? sourceUrl : null;
+    
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      // 如果没有URL，可以显示提示或者不做任何操作
+      console.log('该引用没有可访问的链接');
+    }
   };
 
   return (
@@ -56,34 +68,29 @@ const ReferenceOverviewDrawer = (props: any) => {
             <span>暂无引用数据</span>
           </div>
         ) : (
-          usedReferences.map((ref) => {
+          usedReferences.map((ref: any) => {
             const item = ref.data; // 从 data 字段获取引用数据
-            const title = item?.metadata?.title || item?.source || '未知来源';
+            const sourceText = item?.source || item?.metadata?.url || '';
+            const txtContent = item?.txt || item?.text || item || '';
+            const title = item?.metadata?.title || sourceText || '未知来源';
             const sourceUrl = item?.metadata?.url || item?.source;
             const url = sourceUrl && isUrl(sourceUrl) ? sourceUrl : null;
-            const txtContent = item?.txt || item?.text || '无文本内容';
 
             return (
-              <div key={ref.id} className='reference-overview-item'>
+              <div 
+                key={ref.id} 
+                className='reference-overview-item'
+                onClick={() => onClickReference(ref)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className='reference-overview-item-number-circle'>
                   {ref.number}
                 </div>
                 <div className='reference-overview-item-content'>
                   <div className='reference-overview-item-header'>
-                    {url ? (
-                      <a
-                        href={url}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        className='reference-overview-item-title-link'
-                      >
-                        {title}
-                      </a>
-                    ) : (
-                      <span className='reference-overview-item-title'>
-                        {title}
-                      </span>
-                    )}
+                    <span className='reference-overview-item-title'>
+                      {title}
+                    </span>
                   </div>
                   <div className='reference-overview-item-text'>
                     {txtContent}
