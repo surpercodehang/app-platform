@@ -4,7 +4,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { markedProcess } from '../../utils/marked-process';
 import { useTranslation } from 'react-i18next';
 import { Message } from '@/shared/utils/message';
@@ -44,6 +44,7 @@ const MessageBox = (props: any) => {
   const [showReferenceOverview, setShowReferenceOverview] = useState(false);
   const chatReference = useAppSelector((state) => state.chatCommonStore.chatReference);
   const referenceList = useAppSelector((state) => state.chatCommonStore.referenceList);
+  const contentContainerRef = useRef<HTMLDivElement>(null);
   
   // 计算实际引用数量
   const getReferenceCount = () => {
@@ -172,116 +173,100 @@ const MessageBox = (props: any) => {
   };
 
   /**
-   * 渲染正文 + 引用 - 确保正文和引用在同一行，段落之间换行
+   * 渲染正文 + 引用 - 保持 Markdown 格式完整性
    */
   const renderWithReferences = (rawContent: string) => {
     if (!rawContent) return null;
 
-    let replacedStrs = rawContent.replace(/<\/ref><ref>/g, '_');
+    // 合并相邻的引用标签
+    let processedContent = rawContent.replace(/<\/ref><ref>/g, '_');
+    
+    // 构建引用键到新编号的映射
     const refKeyToNewNumber = new Map<string, number>();
     usedReferences.forEach(ref => {
       refKeyToNewNumber.set(ref.id, ref.number);
     });
-
-    // 先按双换行符分割段落
-    const paragraphs = replacedStrs.split(/\n\n+/);
     
-    return (
-      <>
-        {paragraphs.map((paragraph, pIndex) => {
-          const parts: React.ReactNode[] = [];
-          let lastIndex = 0;
-          const regex = /<ref>(.*?)<\/ref>/g;
-          let match;
-          
-          while ((match = regex.exec(paragraph)) !== null) {
-            // 处理引用前的文本
-            const beforeText = paragraph.slice(lastIndex, match.index);
-            if (beforeText) {
-              // 处理markdown并移除所有块级标签，保持内联
-              let processedHtml = markedProcess(beforeText)
-                .replace(/<\/?p>/g, '')
-                .replace(/<\/?div>/g, '')
-                .replace(/\n/g, ' '); // 将单个换行符转换为空格
-              
-              parts.push(
-                <span
-                  key={`text-${pIndex}-${lastIndex}`}
-                  className="inline-markdown"
-                  dangerouslySetInnerHTML={{ __html: processedHtml }}
-                />
-              );
-            }
+    // 收集引用数据用于后续替换
+    const refPlaceholders: Array<{id: string, refData: any[]}> = [];
+    let placeholderIndex = 0;
+    
+    processedContent = processedContent.replace(/<ref>(.*?)<\/ref>/g, (match, keyContent) => {
+      const keys = keyContent.split('_').filter((k: string) => refKeyToNewNumber.has(k));
+      const refNumbers = keys.map((k: string) => refKeyToNewNumber.get(k)!).sort((a: number, b: number) => a - b);
+      
+      const refData = refNumbers.map((num: number) => {
+        const ref = usedReferences.find(r => r.number === num);
+        return {
+          number: num,
+          title: ref?.data?.metadata?.title || ref?.data?.source || '未知来源',
+          summary: ref?.data?.txt || ref?.data?.text || '无摘要',
+          url: ref?.data?.metadata?.url || ref?.data?.source
+        };
+      });
+      
+      // 使用特殊标记作为占位符
+      const placeholderId = `REFPLACEHOLDER${placeholderIndex}ENDREF`;
+      refPlaceholders.push({ id: placeholderId, refData });
+      placeholderIndex++;
+      return placeholderId;
+    });
 
-            // 处理引用
-            const keyContent = match[1];
-            const keys = keyContent.split('_').filter(k => refKeyToNewNumber.has(k));
-            const refNumbers = keys.map(k => refKeyToNewNumber.get(k)!).sort((a, b) => a - b);
+    console.log('[Debug 1] Before markdown processing:', processedContent.substring(0, 200));
+    console.log('[Debug 1] Placeholders created:', refPlaceholders.length);
 
-            refNumbers.forEach(num => {
-              const refData = usedReferences.find(r => r.number === num);
-              const title = refData?.data?.metadata?.title || refData?.data?.source || '未知来源';
-              const summary = refData?.data?.txt || refData?.data?.text || '无摘要';
-              const url = refData?.data?.metadata?.url || refData?.data?.source;
+    // 使用 marked 处理 markdown（保留完整格式）
+    let htmlContent = markedProcess(processedContent);
 
-              const tooltipContent = (
-                <div>
-                  <div style={{ fontWeight: 600 }}>{title}</div>
-                  <div style={{ fontSize: '12px', color: '#888' }}>{summary}</div>
-                </div>
-              );
+    console.log('[Debug 2] After markdown processing:', htmlContent.substring(0, 300));
+    console.log('[Debug 2] HTML still contains placeholder:', htmlContent.includes('REFPLACEHOLDER'));
 
-              parts.push(
-                <Tooltip key={`ref-${pIndex}-${num}`} title={tooltipContent} placement="top">
-                  <span
-                    className="reference-circle"
-                    onClick={() => {
-                      if (isChatRunning()) {
-                        Message({ type: 'warning', content: t('tryLater') });
-                        return;
-                      }
-                      if (url && /^https?:\/\//.test(url)) {
-                        window.open(url, '_blank');
-                      } else {
-                        Message({ type: 'info', content: '该引用没有可访问的链接' });
-                      }
-                    }}
-                  >
-                    {num}
-                  </span>
-                </Tooltip>
-              );
-            });
-
-            lastIndex = regex.lastIndex;
+    // 将占位符替换为可点击的引用标签
+    refPlaceholders.forEach(({ id, refData }) => {
+      const refHtml = refData.map((data: any) => {
+        // 更安全的转义函数 - 但是不要转义已经存在的实体
+        const escapeAttribute = (str: string) => {
+          return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        };
+        
+        const escapedTitle = escapeAttribute(data.title);
+        const escapedSummary = escapeAttribute(data.summary);
+        const escapedUrl = escapeAttribute(data.url || '');
+        
+        return `<span class="reference-circle" data-ref-number="${data.number}" data-ref-url="${escapedUrl}" data-ref-title="${escapedTitle}" data-ref-summary="${escapedSummary}">${data.number}</span>`;
+      }).join('');
+      
+      console.log('[Debug 3] Replacing placeholder:', id, 'with HTML:', refHtml);
+      
+      // 替换占位符 - 注意可能被 markdown 包裹或转义
+      // 尝试多种可能的格式
+      const patterns = [
+        id,  // 原始格式
+        `<p>${id}</p>`,  // 被包裹在 p 标签中
+        `>${id}<`,  // 在标签之间
+      ];
+      
+      patterns.forEach(pattern => {
+        if (htmlContent.includes(pattern)) {
+          // 如果是被 p 标签包裹的，替换整个 p 标签
+          if (pattern.startsWith('<p>')) {
+            htmlContent = htmlContent.replace(pattern, refHtml);
+          } else {
+            htmlContent = htmlContent.replace(new RegExp(pattern, 'g'), refHtml);
           }
+        }
+      });
+    });
 
-          // 处理段落剩余的文本
-          const afterText = paragraph.slice(lastIndex);
-          if (afterText) {
-            let processedHtml = markedProcess(afterText)
-              .replace(/<\/?p>/g, '')
-              .replace(/<\/?div>/g, '')
-              .replace(/\n/g, ' ');
-            
-            parts.push(
-              <span
-                key={`text-${pIndex}-end`}
-                className="inline-markdown"
-                dangerouslySetInnerHTML={{ __html: processedHtml }}
-              />
-            );
-          }
+    console.log('[Debug 4] Final HTML contains references:', htmlContent.includes('reference-circle'));
+    console.log('[Debug 4] Final HTML sample:', htmlContent.substring(0, 400));
 
-          // 每个段落用div包裹，段落之间自动换行
-          return (
-            <div key={`paragraph-${pIndex}`} className="paragraph-container">
-              {parts}
-            </div>
-          );
-        })}
-      </>
-    );
+    return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
   };
 
 
@@ -291,7 +276,7 @@ const MessageBox = (props: any) => {
       return <PictureList pictureList={pictureList}></PictureList>;
     } else {
       return (
-        <div className='receive-info-html'>
+        <div className='receive-info-html' ref={contentContainerRef}>
           {replacedNodes}
         </div>
       );
@@ -402,6 +387,82 @@ const MessageBox = (props: any) => {
       }
     }
   }, []);
+
+  // 处理引用标签的点击和悬停事件
+  useEffect(() => {
+    const container = contentContainerRef.current;
+    if (!container) return;
+
+    const handleReferenceClick = (event: Event) => {
+      const target = event.target as HTMLElement;
+      if (target.classList.contains('reference-circle')) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const url = target.getAttribute('data-ref-url');
+        
+        if (isChatRunning()) {
+          Message({ type: 'warning', content: t('tryLater') });
+          return;
+        }
+        
+        if (url && /^https?:\/\//.test(url)) {
+          window.open(url, '_blank');
+        } else {
+          Message({ type: 'info', content: '该引用没有可访问的链接' });
+        }
+      }
+    };
+
+    const handleReferenceMouseEnter = (event: Event) => {
+      const target = event.target as HTMLElement;
+      if (target.classList.contains('reference-circle')) {
+        // 清除之前可能存在的 tooltip
+        const existingTooltips = document.querySelectorAll('[data-tooltip-id="ref-tooltip"]');
+        existingTooltips.forEach(t => t.remove());
+        
+        const title = target.getAttribute('data-ref-title') || '未知来源';
+        const summary = target.getAttribute('data-ref-summary') || '无摘要';
+        
+        const tooltip = document.createElement('div');
+        tooltip.className = 'reference-hover-tooltip';
+        tooltip.setAttribute('data-tooltip-id', 'ref-tooltip');
+        tooltip.innerHTML = `
+          <div class="reference-hover-title">${title}</div>
+          <div class="reference-hover-summary">${summary}</div>
+        `;
+        
+        // 计算 tooltip 位置
+        const rect = target.getBoundingClientRect();
+        tooltip.style.left = `${rect.left}px`;
+        tooltip.style.top = `${rect.bottom + 8}px`;
+        
+        document.body.appendChild(tooltip);
+        
+        // 移除 tooltip
+        const removeTooltip = () => {
+          const existingTooltip = document.querySelector('[data-tooltip-id="ref-tooltip"]');
+          if (existingTooltip) {
+            existingTooltip.remove();
+          }
+          target.removeEventListener('mouseleave', removeTooltip);
+        };
+        
+        target.addEventListener('mouseleave', removeTooltip);
+      }
+    };
+
+    container.addEventListener('click', handleReferenceClick);
+    container.addEventListener('mouseenter', handleReferenceMouseEnter, true);
+
+    return () => {
+      container.removeEventListener('click', handleReferenceClick);
+      container.removeEventListener('mouseenter', handleReferenceMouseEnter, true);
+      // 清理可能残留的 tooltip
+      const tooltips = document.querySelectorAll('[data-tooltip-id="ref-tooltip"]');
+      tooltips.forEach(t => t.remove());
+    };
+  }, [replacedNodes, t]);
 
   useEffect(() => {
     store.dispatch(setCurrentAnswer(replacedNodes));
