@@ -408,8 +408,6 @@ const MessageBox = (props: any) => {
         
         if (url && /^https?:\/\//.test(url)) {
           window.open(url, '_blank');
-        } else {
-          Message({ type: 'info', content: '该引用没有可访问的链接' });
         }
       }
     };

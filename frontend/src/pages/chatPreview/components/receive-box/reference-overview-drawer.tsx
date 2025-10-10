@@ -43,22 +43,20 @@ const ReferenceOverviewDrawer = (props: any) => {
     
     if (url) {
       window.open(url, '_blank');
-    } else {
-      // 如果没有URL，可以显示提示或者不做任何操作
-      console.log('该引用没有可访问的链接');
     }
   };
 
   return (
     <Drawer
       destroyOnClose
+      placement="right"
       title={
         <div className='reference-overview-title'>
           <span className='reference-overview-title-icon'>📚</span>
           <span>查看来源 ({usedReferences.length} 个来源)</span>
         </div>
       }
-      width={800}
+      width={480}
       open={isOpen}
       onClose={onClose}
     >
